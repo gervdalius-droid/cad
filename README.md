@@ -1,62 +1,64 @@
-# Braižyklė · 2.5D CAD
+# Braižyklė — 2.5D CAD in a browser tab
 
-Vienos bylos CAD detalėms: tiksliai nubraižai 2D kontūrą, jis pats virsta detale su storiu,
-pasisuki 3D peržiūroje ir išsiveži DXF į frezavimą. Be diegimo, be licencijų, veikia naršyklėje.
+**Draw an outline, give it a thickness, export DXF to the router.** No install, no licence,
+no sign-up. One HTML file.
 
-## Paleidimas
+![Braižyklė](docs/screenshot.png)
+
+> 🇱🇹 Lietuviškas aprašymas: [README.lt.md](README.lt.md) · The app's UI has an LT/EN toggle.
+
+## Why this exists
+
+I needed to draw one-off parts for CNC routing — a panel with a few holes, a curved front,
+a jig. The commercial CAD we had was overkill for that, and the capable free options are
+licensed for **non-commercial use only**, which a working shop can't use.
+
+So this does exactly the slice I needed: precise 2D geometry in, a DXF the CAM software
+accepts out.
+
+## What it does
+
+**Drawing** — line (chained), rectangle, circle, arc (centre → start → end), dimensions.
+While drawing you can **type the numbers**: start typing a length, <kbd>Tab</kbd> for the
+angle, <kbd>Enter</kbd> to place. <kbd>Shift</kbd> constrains to perpendicular / 45°.
+
+**Snapping** — endpoints, midpoints, centres, quadrants, intersections, point-on-line and
+grid. The status bar names whatever it just snapped to, so you're never guessing.
+
+**Editing** — fillet, chamfer, trim against *real* computed intersections, offset with
+sharp corners, move, copy, mirror, rotate, rectangular and polar arrays. Every line and
+circle is also editable **numerically** in the properties panel (X1, Y1, length, angle, R, Ø).
+
+**Parts** — closed loops are detected automatically and inner loops become holes. The app
+reports area, perimeter, cut length and volume — and **flags open ends in red**, because an
+unclosed contour is the thing CAM will reject after you've already walked to the machine.
+
+**3D preview** — the contour is extruded to its thickness (per part), orbit with the mouse.
+2D / 3D / split view.
+
+**Export** — DXF R12 (LINE, ARC, CIRCLE + layer table, mm), SVG, PNG, project as JSON.
+Construction lines and dimensions are deliberately **excluded** from the DXF so the CAM
+software can't mistake them for geometry.
+
+## The parts that were actually hard
+
+- **Exact arc areas.** Shoelace over polyline approximations drifts, and the area feeds the
+  material cost. Arc segments contribute their exact circular-segment area instead.
+- **Consistent winding.** Outer loops are forced CCW and holes CW, so extrusion, area and
+  DXF output all agree on what is solid and what is a hole.
+- **Trim against true intersections**, not against rendered pixels — so trimming stays
+  correct at any zoom.
+
+## Run it
 
 ```bash
 python3 serve.py          # http://localhost:8752/
-python3 serve.py 9000     # kitas prievadas
+python3 serve.py 9000     # different port
 ```
 
-Testai: <http://localhost:8752/test.html> (72 patikros – geometrija, kontūrai, eksportas ir pati sąsaja).
+Tests: <http://localhost:8752/test.html> — **72 checks** covering geometry, loop detection,
+export and the UI itself. No runner to install; it's a page you open.
 
-## Ką moka
+## Built with
 
-**Braižymas** — linija (grandine), stačiakampis, apskritimas, lankas (centras→pradžia→pabaiga),
-matmenys. Braižant galima **įvesti skaičių**: pradėk vesti ilgį, Tab – kampas, Enter – padėta.
-Shift – statmenai / 45°.
-
-**Trauka** — galai, vidurys, centras, ketvirčiai, sankirtos, taškas ant linijos ir tinklelis.
-Statuso juostoje matai, prie ko prilipo.
-
-**Redagavimas** — suapvalinimas (fillet), nuožulna (chamfer), apkirpimas (trim) pagal realias
-sankirtas, ekvidistantė (offset) su aštriais kampais, perkėlimas, kopijavimas, veidrodis,
-sukimas, stačiakampis ir apskritas masyvas. Savybių lange kiekvieną liniją/apskritimą gali
-redaguoti **skaičiais** (X1, Y1, ilgis, kampas, R, Ø).
-
-**Detalės** — uždari kontūrai aptinkami automatiškai, vidiniai tampa skylėmis. Programa rodo
-plotą, perimetrą, pjovimo ilgį, tūrį ir **raudonai pažymi laisvus galus** – neuždarytą kontūrą,
-kurio CAM nepriims.
-
-**3D peržiūra** — kontūras išspaudžiamas iki nurodyto storio (skirtingoms detalėms galima
-skirtingą), sukama pele. 2D / 3D / abu vaizdai.
-
-**Eksportas** — DXF (R12: LINE, ARC, CIRCLE + sluoksnių lentelė, mm), SVG, PNG, projektas į JSON.
-Pagalbinės linijos ir matmenys į DXF **neeksportuojami**, kad frezavimo programa jų nepriimtų
-už geometriją.
-
-## Klavišai
-
-`S` žymėti · `L` linija · `R` stačiakampis · `C` apskritimas · `A` lankas · `D` matmuo
-`F` suapvalinti · `H` nuožulna · `T` apkirpti · `O` ekvidistantė
-`M` perkelti · `K` kopijuoti · `X` veidrodis · `W` sukti · `E` matuoti · `N` pagalbinė linija
-`Esc` atšaukti · `Del` trinti · `Ctrl/⌘+Z` atgal · `Ctrl/⌘+A` viską · tarpas+tempimas arba
-vidurinis klavišas – slinkti · ratukas – artinti
-
-## Ko nėra (sąmoningai)
-
-Tai ne SolidWorks: nėra ryšių (constraint) sprendiklio, nėra tikro 3D kūnų modeliavimo,
-Bulio operacijų, sriegių ar surinkimų. Yra tiksli 2D geometrija + storis — būtent tai, ką
-suėda staklės. Sudėtingesnėms mechaninėms detalėms — FreeCAD.
-
-## Failai
-
-| | |
-|---|---|
-| `index.html` | visa programa (be priklausomybių) |
-| `serve.py` | vietinis serveris, 8752 |
-| `test.html` | 72 testai |
-
-Paskutinis brėžinys išsaugomas naršyklėje automatiškai.
+Vanilla JavaScript, HTML Canvas, no dependencies, no build step. ~1,800 lines.
