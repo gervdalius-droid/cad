@@ -60,3 +60,12 @@ suėda staklės. Sudėtingesnėms mechaninėms detalėms — FreeCAD.
 | `test.html` | 72 testai |
 
 Paskutinis brėžinys išsaugomas naršyklėje automatiškai.
+
+## Draft v3.0 — DXF redaktorius ir peržiūra (`draft.html`)
+
+Atidaro esamą DXF/DWG (arba STEP/IGES/STL/OBJ modelį), leidžia jį redaguoti ir vėl įrašyti DXF.
+Gyvai: <https://gervdalius-droid.github.io/cad/draft.html>
+
+- Redagavimas: perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti, lygiagreti kopija, nukirpti, nuožula, apvalinimas (pakeičia ir esamus; R0 – status kampas), tikslūs dydžiai skydelyje.
+- Lapas su detalėmis: randa lapą ir detales (ir esančias išpjovose), tempimas su pritraukimu, R – pasukti, F – apversti, persidengimo / už lapo / tarpo įspėjimai, automatinis išdėstymas.
+- Peržiūra: matmenys ir kampai, skylės pagal skersmenį, pjovimo ilgis, 3D STEP/IGES/STL/OBJ su matavimu ir projekcija į DXF.

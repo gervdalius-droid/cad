@@ -49,6 +49,15 @@ software can't mistake them for geometry.
 - **Trim against true intersections**, not against rendered pixels — so trimming stays
   correct at any zoom.
 
+## Draft v3.0 — DXF editor + viewer (`draft.html`)
+
+A second tool in this repo: open an existing DXF/DWG (or a STEP/IGES/STL/OBJ model), edit it and save DXF again.
+Live: <https://gervdalius-droid.github.io/cad/draft.html>
+
+- **Edit** — move, copy, rotate, scale, mirror, stretch, offset, trim, chamfer, fillet (also replaces existing fillets; R0 = sharp corner), join/explode, grips, exact sizes in the panel.
+- **Sheets with parts** — detects the sheet and every part (including parts nested in cutouts), drag parts with snapping, R rotate / F flip, overlap / off-sheet / gap warnings, auto-arrange.
+- **Viewer** — distance/angle dimensions, holes by diameter, cut length, open-contour warning; 3D STEP/IGES/STL/OBJ with measuring and projection to DXF (straight into the 2D editor).
+
 ## Run it
 
 ```bash
