@@ -1102,6 +1102,71 @@ function parseDXF(text) {
   return res;
 }
 
+/* ===================== DWG (libredwg-web database) -> same pipeline as DXF ===================== */
+// Each DWG entity is rewritten as DXF group codes, so blocks, splines, ellipses, OCS and text alignment
+// are handled by exactly the same code as DXF files.
+function dwgDbToDoc(db) {
+  const D = v => (v || 0) * 180 / PI;
+  const res = { ents: [], layers: {}, units: (db.header && parseInt(db.header.INSUNITS, 10)) || 0, skipped: {} };
+  const pt = (g, cx, cy, p) => { if (p) g.push([cx, p.x || 0], [cy, p.y || 0]); };
+  const toRaw = e => {
+    const T = String(e.type || '').toUpperCase(), g = [[8, e.layer || '0']];
+    if (e.colorIndex != null) g.push([62, e.colorIndex]);
+    if (e.extrusionDirection && e.extrusionDirection.z < 0) g.push([230, e.extrusionDirection.z]);
+    switch (T) {
+      case 'LINE': pt(g, 10, 20, e.startPoint); pt(g, 11, 21, e.endPoint); return { type: 'LINE', g };
+      case 'CIRCLE': pt(g, 10, 20, e.center); g.push([40, e.radius]); return { type: 'CIRCLE', g };
+      case 'ARC': pt(g, 10, 20, e.center); g.push([40, e.radius], [50, D(e.startAngle)], [51, D(e.endAngle)]); return { type: 'ARC', g };
+      case 'LWPOLYLINE': g.push([70, (e.flag & 512) ? 1 : 0]); for (const v of e.vertices || []) { g.push([10, v.x], [20, v.y]); if (v.bulge) g.push([42, v.bulge]); } return { type: 'LWPOLYLINE', g };
+      case 'POLYLINE2D': case 'POLYLINE3D': case 'POLYLINE':
+        g.push([70, (e.flag || 0) & 1]);
+        return { type: 'POLYLINE', g, verts: (e.vertices || []).map(v => ({ g: [[10, v.x || 0], [20, v.y || 0], [42, T === 'POLYLINE3D' ? 0 : (v.bulge || 0)], [70, (v.flag || 0) & 16]] })) };
+      case 'SPLINE':
+        g.push([71, e.degree || 3], [70, e.flag || 0]); for (const k of e.knots || []) g.push([40, k]); for (const w of e.weights || []) g.push([41, w]);
+        for (const c of e.controlPoints || []) g.push([10, c.x], [20, c.y]); for (const f of e.fitPoints || []) g.push([11, f.x], [21, f.y]);
+        return { type: 'SPLINE', g };
+      case 'ELLIPSE': pt(g, 10, 20, e.center); pt(g, 11, 21, e.majorAxisEndPoint); g.push([40, e.axisRatio || 1], [41, e.startAngle || 0], [42, e.endAngle == null ? TAU : e.endAngle]); return { type: 'ELLIPSE', g };
+      case 'TEXT': case 'ATTRIB': {
+        const b = e.text && typeof e.text === 'object' ? e.text : e;
+        pt(g, 10, 20, b.startPoint); pt(g, 11, 21, b.endPoint); g.push([40, b.textHeight || 2.5], [1, String(b.text || '')], [50, D(b.rotation)], [72, b.halign || 0], [73, b.valign || 0]);
+        return { type: 'TEXT', g };
+      }
+      case 'MTEXT': pt(g, 10, 20, e.insertionPoint); g.push([40, e.textHeight || 2.5], [1, String(e.text || '')]); if (e.direction && (e.direction.x || e.direction.y)) g.push([11, e.direction.x], [21, e.direction.y]); else g.push([50, D(e.rotation)]); return { type: 'MTEXT', g };
+      case 'INSERT':
+        g.push([2, e.name || '']); pt(g, 10, 20, e.insertionPoint);
+        g.push([41, e.xScale == null ? 1 : e.xScale], [42, e.yScale == null ? 1 : e.yScale], [50, D(e.rotation)], [70, e.columnCount || 1], [71, e.rowCount || 1], [44, e.columnSpacing || 0], [45, e.rowSpacing || 0]);
+        return { type: 'INSERT', g };
+      default: return { type: T, g };
+    }
+  };
+  const blocks = {};
+  for (const b of (db.tables && db.tables.BLOCK_RECORD && db.tables.BLOCK_RECORD.entries) || []) {
+    if (!b.name || /^\*(model|paper)_space/i.test(b.name)) continue;
+    blocks[b.name] = { base: { x: (b.basePoint && b.basePoint.x) || 0, y: (b.basePoint && b.basePoint.y) || 0 }, ents: (b.entities || []).filter(e => e.type !== 'ATTDEF').map(toRaw) };
+  }
+  for (const l of (db.tables && db.tables.LAYER && db.tables.LAYER.entries) || []) {
+    const ci = l.colorIndex == null ? 7 : l.colorIndex; res.layers[l.name || '0'] = { color: Math.abs(ci) || 7, visible: ci >= 0 && !l.off && !l.frozen };
+  }
+  const model = (db.entities || []).filter(e => !e.isInPaperSpace && e.isVisible !== false);
+  const attribSeen = new Set(model.filter(e => e.type === 'ATTRIB').map(e => e.handle));
+  const raws = [];
+  for (const e of model) {
+    raws.push(toRaw(e));
+    if (e.type === 'INSERT') for (const a of e.attribs || []) if (!attribSeen.has(a.handle)) raws.push(toRaw({ ...a, type: 'ATTRIB' }));
+  }
+  const ctx = { blocks, depth: 0, skip: t => { res.skipped[t] = (res.skipped[t] || 0) + 1; } };
+  for (const r of raws) {
+    if (/^(DIMENSION|HATCH|SOLID|VIEWPORT|LEADER|IMAGE|WIPEOUT|XLINE|RAY|MULTILEADER|ACAD_TABLE|TOLERANCE|3DFACE|3DSOLID|MLINE|REGION|BODY|POINT)$/.test(r.type)) { ctx.skip(r.type); continue; }
+    for (const e of convRaw(r, ctx)) {
+      if ((e.type === 'circle' || e.type === 'arc') && !(e.r > 0)) continue;
+      e.id = nid(); res.ents.push(e);
+    }
+  }
+  for (const e of res.ents) if (!res.layers[e.layer]) res.layers[e.layer] = { color: 7, visible: true };
+  if (!res.layers['0']) res.layers['0'] = { color: 7, visible: true };
+  return res;
+}
+
 /* ===================== DXF writing ===================== */
 function fnum(n) { if (!isFinite(n) || Math.abs(n) < 1e-10) return '0'; let s = (Math.round(n * 1e6) / 1e6).toString(); if (s.includes('e')) s = n.toFixed(6); return s; }
 function writeDXF(doc, fmt = 'r12') {
@@ -3896,7 +3961,7 @@ function writeDXF2000(doc) {
   }
   const body = o.join('\r\n');
   const fill = { HS: hd(), MIN0: fnum(bb[0]), MIN1: fnum(bb[1]), MAX0: fnum(bb[2]), MAX1: fnum(bb[3]), LAYERS: layers, ENTS: body };
-  return DXF2000_SKELETON.split('\n').map(l => { const m = /^\{\{(\w+)\}\}$/.exec(l); return m ? fill[m[1]] : l; }).join('\r\n') + '\r\n';
+  return DXF2000_SKELETON.split('\n').flatMap(l => { const m = /^\{\{(\w+)\}\}$/.exec(l); return m ? (fill[m[1]] ? [fill[m[1]]] : []) : [l]; }).join('\r\n') + '\r\n';
 }
 
 /* ---------- input parsing ---------- */
@@ -3920,6 +3985,40 @@ function parsePoint(s, base, dirPt) {
   return null;
 }
 
+/* ---------- duplicates: objects drawn twice make the CNC cut twice ---------- */
+// returns ids that can be deleted: exact copies (any type, same layer) and lines lying completely on another line of the same layer
+function findDuplicates(ents) {
+  const q = v => (Math.round(v * 1e4) / 1e4).toFixed(4), seen = new Map(), out = new Set();
+  const segKey = (a, b, bu) => { const ka = q(a.x) + ',' + q(a.y), kb = q(b.x) + ',' + q(b.y); return ka < kb ? ka + '>' + kb + ':' + q(bu || 0) : kb + '>' + ka + ':' + q(-(bu || 0)); };
+  const keyOf = e => {
+    switch (e.type) {
+      case 'line': return 'L' + segKey({ x: e.x1, y: e.y1 }, { x: e.x2, y: e.y2 }, 0);
+      case 'circle': return 'C' + q(e.cx) + ',' + q(e.cy) + ',' + q(e.r);
+      case 'arc': return 'A' + q(e.cx) + ',' + q(e.cy) + ',' + q(e.r) + ',' + q(normAng(e.a0)) + ',' + q(normAng(e.a1));
+      case 'text': return 'T' + q(e.x) + ',' + q(e.y) + ',' + q(e.h) + ',' + e.text;
+      case 'poly': { const n = e.pts.length, segs = []; for (let i = 0; i < (e.closed ? n : n - 1); i++) segs.push(segKey(e.pts[i], e.pts[(i + 1) % n], e.pts[i].b)); return 'P' + segs.sort().join('|'); }
+    }
+    return null;
+  };
+  for (const e of ents) { const k = keyOf(e); if (k == null) continue; const kk = (e.layer || '') + '#' + k; if (seen.has(kk)) out.add(e.id); else seen.set(kk, e.id); }
+  // lines covered by a longer collinear line
+  const groups = new Map();
+  for (const e of ents) {
+    if (e.type !== 'line' || out.has(e.id)) continue;
+    let dx = e.x2 - e.x1, dy = e.y2 - e.y1; const L = Math.hypot(dx, dy); if (L < 1e-9) continue; dx /= L; dy /= L;
+    if (dx < -1e-12 || (Math.abs(dx) <= 1e-12 && dy < 0)) { dx = -dx; dy = -dy; }
+    const off = -dy * e.x1 + dx * e.y1, k = (e.layer || '') + '#' + (Math.round(Math.atan2(dy, dx) * 1e5)) + '#' + Math.round(off * 1e3);
+    const t1 = dx * e.x1 + dy * e.y1, t2 = dx * e.x2 + dy * e.y2;
+    let g = groups.get(k); if (!g) groups.set(k, g = []); g.push({ id: e.id, a: Math.min(t1, t2), b: Math.max(t1, t2) });
+  }
+  for (const g of groups.values()) {
+    if (g.length < 2) continue;
+    g.sort((u, v) => u.a - v.a || v.b - u.b);
+    let reach = -Infinity;
+    for (const it of g) { if (it.b <= reach + 1e-6) out.add(it.id); else reach = Math.max(reach, it.b); }
+  }
+  return [...out];
+}
 
 /* ===================== Sheet & parts: detection, checks, snapping, packing ===================== */
 const SHEET_RX = /(^|[^a-z])(sheet|lapas|board|plok[sš]t|stock|ruo[sš]in|material)/i;
@@ -4286,8 +4385,8 @@ const I18N = {
     help_chamfer: 'Spustelėkite šalia figūros kampo arba ant esamo apvalinimo (jis bus pakeistas nuožula). Dvi atskiros linijos – spustelėkite abi.', help_fillet: 'Spustelėkite esamą apvalinimą – jis bus pakeistas nauju spinduliu. Spindulys 0 – status kampas. Taip pat sujungia dvi linijas kampu.',
     help_measure: 'Du taškai – atstumas, ΔX, ΔY ir kampas.',
     saved: 'Įrašyta: {0}', opened: 'Atidaryta: {0} – {1} obj.', inserted: 'Įterpta {0} obj. – nurodykite, kur padėti', skipped: 'Praleista: {0}',
-    units: 'Failo vienetai: {0}. Redaktorius skaičiuoja mm.', unitIn: 'coliai', unitCm: 'cm', unitM: 'm',
-    readErr: 'Nepavyko perskaityti failo', emptyFile: 'Faile nerasta brėžinio objektų',
+    units: 'Failas nubraižytas {0} – perskaičiuota į mm (×{1})', u1: 'coliais', u2: 'pėdomis', u5: 'centimetrais', u6: 'metrais', u9: 'miliais', u10: 'jardais', u13: 'mikronais', u14: 'decimetrais',
+    binDxf: 'Dvejetainis (binary) DXF nepalaikomas – CAD programoje išsaugokite kaip ASCII DXF', readErr: 'Nepavyko perskaityti failo', emptyFile: 'Faile nerasta brėžinio objektų',
     errTooLong: 'Per didelis atstumas – kraštinė per trumpa', errParallel: 'Linijos lygiagrečios', errArcSeg: 'Kampas šalia lanko – nuožulos/apvalinimo čia padaryti negalima', errEnd: 'Atviros linijos galas – kampo nėra', errStraight: 'Kampo nėra (linijos vienoje tiesėje)', errNoCorner: 'Kampas nerastas – spustelėkite arčiau kampo arba pirmą liniją',
     errOffset: 'Lygiagrečios kopijos padaryti nepavyko (per didelis atstumas?)', badInput: 'Neatpažinta įvestis', needSel: 'Pirmiausia pažymėkite objektus',
     nonUniform: 'Lankai iškraipyti mastelio – paversti tiesiomis atkarpomis. Kad jie liktų lankais, naudokite „Ištempti“.',
@@ -4296,6 +4395,8 @@ const I18N = {
     copyMade: 'Kopija padėta', rotated: 'Pasukta', layerName: 'Pavadinimas', closed: 'Uždara', vertices: 'Viršūnės', bulge: 'Išgaub.',
     length: 'Ilgis', angle: 'Kampas °', text: 'Tekstas', textH: 'Aukštis', start: 'Pradžia °', end: 'Pabaiga °', diameter: 'Skersmuo',
 
+    dupWarn: 'Dubliuotų / uždengtų linijų: {0} – CNC jas pjautų du kartus.', dupDel: 'Pašalinti', dupDone: 'Pašalinta dublikatų: {0}',
+    cycleHint: 'Čia {0} obj. vienas ant kito – spustelėkite dar kartą kitam', cycleN: 'Objektas {0} iš {1} šioje vietoje',
     copiedN: 'Nukopijuota: {0} obj. (Ctrl+V – įklijuoti)', cutN: 'Iškirpta: {0} obj. (Ctrl+V – įklijuoti)', pastedN: '{0} obj. – spustelėkite, kur padėti', clipEmpty: 'Nieko nenukopijuota – pirmiausia Ctrl+C', pPlace: 'Spustelėkite, kur padėti (arba įveskite poslinkį) · Esc – atšaukti', pasteCancel: 'Atšaukta', copyClip: 'Kopijuoti', paste: 'Įklijuoti',
     chainSel: 'Pažymėtas visas kontūras: {0} obj.', openShort: 'atviras', repeat: 'Kartoti: {0}', rot90: 'Pasukti 90°', selAll: 'Pažymėti viską', zoomSel: 'Priartinti pažymėtus',
     helpTitle: 'Klavišai ir pelė', dropWarn: 'Dėmesio: {0}', pOverlaps: '#{0} persidengia su #{1}', pOutside: '#{0} išlenda už lapo', pClose: '#{0} per arti #{1}',
@@ -4378,8 +4479,8 @@ const I18N = {
     help_chamfer: 'Click near a corner of a shape, or on an existing fillet to turn it into a chamfer. For two separate lines click both.', help_fillet: 'Click an existing fillet to replace it with the new radius. Radius 0 makes a sharp corner. Also joins two lines into a corner.',
     help_measure: 'Two points – distance, ΔX, ΔY and angle.',
     saved: 'Saved: {0}', opened: 'Opened: {0} – {1} objects', inserted: 'Inserted {0} objects – pick where to place them', skipped: 'Skipped: {0}',
-    units: 'File units: {0}. The editor works in mm.', unitIn: 'inches', unitCm: 'cm', unitM: 'm',
-    readErr: 'Could not read the file', emptyFile: 'No drawing objects found in the file',
+    units: 'The file was drawn in {0} – converted to mm (×{1})', u1: 'inches', u2: 'feet', u5: 'centimetres', u6: 'metres', u9: 'mils', u10: 'yards', u13: 'microns', u14: 'decimetres',
+    binDxf: 'Binary DXF is not supported – save it as ASCII DXF in your CAD program', readErr: 'Could not read the file', emptyFile: 'No drawing objects found in the file',
     errTooLong: 'Distance too large for the edge', errParallel: 'The lines are parallel', errArcSeg: 'The corner touches an arc – cannot chamfer/fillet here', errEnd: 'Open end – there is no corner', errStraight: 'No corner (the lines are collinear)', errNoCorner: 'No corner found – click closer to a corner or on the first line',
     errOffset: 'Offset failed (distance too large?)', badInput: 'Input not recognised', needSel: 'Select objects first',
     nonUniform: 'Arcs were distorted by the scale and turned into straight segments. Use “Stretch” to keep them as arcs.',
@@ -4388,6 +4489,8 @@ const I18N = {
     copyMade: 'Copy placed', rotated: 'Rotated', layerName: 'Name', closed: 'Closed', vertices: 'Vertices', bulge: 'Bulge',
     length: 'Length', angle: 'Angle °', text: 'Text', textH: 'Height', start: 'Start °', end: 'End °', diameter: 'Diameter',
 
+    dupWarn: 'Duplicate / overlapped objects: {0} – the CNC would cut them twice.', dupDel: 'Remove', dupDone: 'Removed duplicates: {0}',
+    cycleHint: '{0} objects on top of each other here – click again for the next one', cycleN: 'Object {0} of {1} at this spot',
     copiedN: 'Copied {0} objects (Ctrl+V to paste)', cutN: 'Cut {0} objects (Ctrl+V to paste)', pastedN: '{0} objects – click where to place them', clipEmpty: 'Nothing copied yet – press Ctrl+C first', pPlace: 'Click where to place (or type an offset) · Esc – cancel', pasteCancel: 'Cancelled', copyClip: 'Copy', paste: 'Paste',
     chainSel: 'Whole outline selected: {0} objects', openShort: 'open', repeat: 'Repeat: {0}', rot90: 'Rotate 90°', selAll: 'Select all', zoomSel: 'Zoom to selection',
     helpTitle: 'Keys and mouse', dropWarn: 'Check: {0}', pOverlaps: '#{0} overlaps #{1}', pOutside: '#{0} is off the sheet', pClose: '#{0} is too close to #{1}',
@@ -4464,7 +4567,7 @@ function undo() { if (!S.undo.length) return; S.redo.push(snapDoc(S.doc)); resto
 function redo() { if (!S.redo.length) return; S.undo.push(snapDoc(S.doc)); restore(S.redo.pop()); resetTool(); commit(); }
 let saveTimer = 0;
 function commit() {
-  S.an = null; S.partChk = null; S.rev = (S.rev || 0) + 1;
+  S.an = null; S.partChk = null; S.rev = (S.rev || 0) + 1; S.docRev = (S.docRev || 0) + 1;
   reindex(); dirtyBase = true; renderPanel(); updateInfo(); requestDraw();
   clearTimeout(saveTimer); saveTimer = setTimeout(() => { try { const js = JSON.stringify({ doc: S.doc, fname: S.fname, sample: S.sample, sheetRect: S.sheetRect }); if (js.length < 4.5e6) localStorage.setItem('dxfed.doc', js); } catch (e) { } }, 500);
 }
@@ -4615,6 +4718,16 @@ function hitEnt(w, filter) {
   }
   return best;
 }
+// every object under the cursor, nearest first (for clicking through overlapping objects)
+function hitAll(w) {
+  const tol = 7 / S.view.s, out = [];
+  for (let i = S.doc.ents.length - 1; i >= 0; i--) {
+    const e = S.doc.ents[i]; if (!layerVis(e.layer)) continue;
+    const bb = entBBox(e); if (w.x < bb[0] - tol || w.x > bb[2] + tol || w.y < bb[1] - tol || w.y > bb[3] + tol) continue;
+    const d = distEnt(w, e); if (d < tol) out.push({ e, d });
+  }
+  return out.sort((a, b) => a.d - b.d).map(o => o.e);
+}
 function segHitsRect(a, b, r) {
   const inside = p => p.x >= r[0] && p.x <= r[2] && p.y >= r[1] && p.y <= r[3];
   if (inside(a) || inside(b)) return true;
@@ -4648,7 +4761,10 @@ function clickSelect(w, mode) {
   if (mode === 'toggle') { if (e) { if (S.sel.has(e.id)) S.sel.delete(e.id); else S.sel.add(e.id); } }
   else if (mode === 'add') { if (e) S.sel.add(e.id); }
   else if (mode === 'remove') { if (e) S.sel.delete(e.id); }
-  else { S.sel.clear(); if (e) S.sel.add(e.id); }
+  else {
+    S.sel.clear(); if (e) S.sel.add(e.id);
+    if (e) { const all = hitAll(w); if (all.length > 1 && distEnt(w, all[1]) - distEnt(w, all[0]) < 1 / S.view.s) toast(t('cycleHint', all.length)); }
+  }
   selChanged();
 }
 // connected chain of open lines / arcs / polylines (double-click selects the whole outline)
@@ -4983,7 +5099,7 @@ const TOOLS = {
       const g = hitGrip(info.screen);
       if (g) { this.hot = g; this.dragging = true; S.hover = null; updatePrompt(); return; }
       // press on an already selected object (or inside a selected closed outline) and drag = move the selection
-      const mod = info.shift || info.ctrl, e = hitEnt(info.world);
+      const mod = info.shift || info.ctrl, under = hitAll(info.world), e = under.find(x => S.sel.has(x.id)) || under[0] || null;
       if (!mod && ((e && S.sel.has(e.id)) || (!e && insideSelected(info.world)))) { this.mv = { start: p, moved: false, hit: e ? e.id : null }; return; }
       pick = { start: info.screen };
     },
@@ -4998,6 +5114,9 @@ const TOOLS = {
         const mv = this.mv; this.mv = null; updatePrompt();
         if (mv.moved) { const d = vsub(p, mv.start); if (!S.snap) { d.x = Math.round(d.x * 100) / 100; d.y = Math.round(d.y * 100) / 100; } if (vlen(d) > 1e-9) { applyM(mTrans(d.x, d.y)); toast(t('movedBy', fmt(d.x, 2), fmt(d.y, 2))); } }
         else if (mv.hit != null && S.sel.size > 1) { S.sel.clear(); S.sel.add(mv.hit); selChanged(); }
+        else if (mv.hit != null && S.sel.size === 1) { // clicking the selected object again picks the next one underneath
+          const all = hitAll(info.world); if (all.length > 1) { const i = all.findIndex(e => e.id === mv.hit), nx = all[(i + 1) % all.length]; S.sel.clear(); S.sel.add(nx.id); selChanged(); toast(t('cycleN', ((i + 1) % all.length) + 1, all.length)); }
+        }
         return;
       }
       if (this.hot) { if (info.moved) this.place(p); this.dragging = false; return; }
@@ -5454,6 +5573,7 @@ function readFile(file, insert) {
   const fr = new FileReader();
   fr.onload = () => {
     let res;
+    if (new TextDecoder('latin1').decode(new Uint8Array(fr.result, 0, Math.min(18, fr.result.byteLength))) === 'AutoCAD Binary DXF') return toast(t('binDxf'), true);
     try { res = parseDXF(decodeDXF(fr.result)); } catch (err) { console.error(err); return toast(t('readErr') + ': ' + err.message, true); }
     loadParsed(res, file, insert);
   };
@@ -5461,6 +5581,9 @@ function readFile(file, insert) {
 }
 function loadParsed(res, file, insert) {
   if (!res.ents.length) return toast(t('emptyFile'), true);
+  // everything here is millimetres: drawings made in other units are scaled once on import (and saved as mm)
+  const k = { 1: 25.4, 2: 304.8, 5: 10, 6: 1000, 9: 0.0254, 10: 914.4, 13: 0.001, 14: 100 }[res.units];
+  if (k) res.ents = res.ents.map(e => { const ne = transformEnt(e, mScale(k, k))[0]; ne.id = e.id; ne.layer = e.layer; if (e.color != null) ne.color = e.color; return ne; });
   switchMode('2d');
   if (insert) {
     pushUndo();
@@ -5473,10 +5596,10 @@ function loadParsed(res, file, insert) {
     S.curLayer = S.doc.layers['0'] ? '0' : Object.keys(S.doc.layers)[0];
     reindex(); fit(); commit();
     const an = getAn(); setTool(an.parts.length >= 2 ? 'parts' : 'select');
-    const sk = Object.entries(res.skipped).map(([k, v]) => `${k} ×${v}`).join(', ');
+    const skl = Object.entries(res.skipped).sort((a, b) => b[1] - a[1]), sk = skl.slice(0, 3).map(([k, v]) => `${k} ×${v}`).join(', ') + (skl.length > 3 ? ` +${skl.length - 3}` : '');
     toast(t('opened', file.name, res.ents.length) + (an.parts.length >= 2 ? ' · ' + an.parts.length + ' ' + t('partsN') : '') + (sk ? ' · ' + t('skipped', sk) : ''));
   }
-  const u = { 1: t('unitIn'), 5: t('unitCm'), 6: t('unitM') }[res.units]; if (u) setTimeout(() => toast(t('units', u), true), 3000);
+  if (k) setTimeout(() => toast(t('units', t('u' + res.units), k)), 2600);
 }
 function saveDXF(selOnly) {
   const doc = selOnly ? { ents: selEnts(), layers: S.doc.layers } : S.doc;
@@ -7149,6 +7272,7 @@ function renderDims() {
 
 /* ---------- drawing info: size, cut length, holes by diameter, contours, open ends ---------- */
 const ANNO_RX = /(dim|anno|defpoints|text|tekst|hatch|label|engrav|grav)/i;
+function dupIds() { if (!S.dupCache || S.dupCache.rev !== S.docRev) S.dupCache = { rev: S.docRev, ids: findDuplicates(visEnts()) }; return S.dupCache.ids; }
 function infoHtml() {
   const ents = visEnts(); if (!ents.length) return '';
   const bb = bboxOf(ents), an = getAn();
@@ -7161,6 +7285,7 @@ function infoHtml() {
     <div><span>${t('objects')}</span><b>${ents.length}</b></div><div><span>${t('cutLen')}</span><b>${fmt(cut / 1000, 2)} m</b></div></div>`;
   if (eng > 0) h += `<p class="hint">${t('engLen', fmt(eng / 1000, 2))}</p>`;
   if (an.open.length) h += `<div class="warnbox">${t('openEnds', an.open.length)} <button class="btn small" data-act="selOpen">${t('show')}</button></div>`;
+  const dups = dupIds(); if (dups.length) h += `<div class="warnbox">${t('dupWarn', dups.length)} <button class="btn small" data-act="selDups">${t('show')}</button> <button class="btn small" data-act="delDups">${t('dupDel')}</button></div>`;
   if (hk.length) {
     h += `<div class="sub"><h4>${t('holes')} <em>${hk.reduce((s, k) => s + holes[k].length, 0)}</em></h4><div class="flist">`;
     for (const k of hk) h += `<button class="frow" data-act="selHoles" data-d="${k}"><span class="dot"></span><span>⌀ ${fmt(+k, 2)}</span><span class="q">× ${holes[k].length}</span></button>`;
@@ -7459,6 +7584,8 @@ function extAction(b) {
   if (a === 'dimDel') { S.dims.splice(+b.dataset.i, 1); saveDims(); renderDims(); requestDraw(); return true; }
   if (a === 'dimClear') { S.dims = []; saveDims(); renderDims(); requestDraw(); return true; }
   if (a === 'selHoles') { const d = +b.dataset.d; S.sel.clear(); for (const e of visEnts()) if (e.type === 'circle' && Math.abs(2 * e.r - d) < 0.006 && !ANNO_RX.test(e.layer)) S.sel.add(e.id); selChanged(); return true; }
+  if (a === 'selDups') { S.sel.clear(); for (const id of dupIds()) S.sel.add(id); selChanged(); zoomToBB(bboxOf(selEnts())); return true; }
+  if (a === 'delDups') { const ids = dupIds(); if (!ids.length) return true; pushUndo(); removeIds(ids); commit(); toast(t('dupDone', ids.length)); return true; }
   if (a === 'selOpen') { S.sel.clear(); for (const ch of getAn().open) ch.ids.forEach(id => S.sel.add(id)); selChanged(); return true; }
   if (a === 'pSel') { const P = getAn().parts[+b.dataset.i]; if (P) { if (tool.name !== 'parts') setTool('parts'); selectParts([P], false); } return true; }
   if (/^p[A-Z]/.test(a)) { partsAction(a); return true; }
@@ -7467,13 +7594,15 @@ function extAction(b) {
 
 /* ---------- DWG via libredwg-web (from Draft viewer) ---------- */
 let libredwgPromise = null;
+// pinned version: the wrapper's output format changes between releases
+const LIBREDWG = 'https://cdn.jsdelivr.net/npm/@mlightcad/libredwg-web@0.7.17/';
 function loadLibreDwg() {
   if (libredwgPromise) return libredwgPromise;
   libredwgPromise = (async () => {
-    const mod = await import('https://cdn.jsdelivr.net/npm/@mlightcad/libredwg-web@latest/+esm');
+    const mod = await import(LIBREDWG + 'dist/libredwg-web.js');
     const LibreDwg = mod.LibreDwg || (mod.default && mod.default.LibreDwg);
     if (!LibreDwg) throw new Error('LibreDwg not found');
-    return { lib: await LibreDwg.create(), mod };
+    return { lib: await LibreDwg.create(LIBREDWG + 'wasm'), mod };
   })().catch(err => { libredwgPromise = null; throw err; });
   return libredwgPromise;
 }
@@ -7482,29 +7611,14 @@ async function readDWG(file) {
   try {
     const buf = new Uint8Array(await file.arrayBuffer());
     const { lib, mod } = await loadLibreDwg();
-    const ft = (mod.Dwg_File_Type || (mod.default && mod.default.Dwg_File_Type) || { DWG: 0 }).DWG ?? 0;
-    let dwg; try { dwg = lib.dwg_read_data(buf, ft); } catch (e) { dwg = lib.dwg_read_data(buf); }
-    const db = lib.convert ? lib.convert(dwg) : dwg;
-    if (lib.dwg_free) try { lib.dwg_free(dwg); } catch (e) { }
-    const raw = (db && (db.entities || (db.modelSpace && db.modelSpace.entities) || db.objects)) || [];
-    const ents = [];
-    for (const r of raw) {
-      const T = String(r.type || '').toUpperCase(), layer = r.layer || r.layerName || '0';
-      const P = (o, a, b) => o ? { x: o.x ?? 0, y: o.y ?? 0 } : { x: a || 0, y: b || 0 };
-      if (T === 'LINE') { const a = P(r.startPoint || r.start), b = P(r.endPoint || r.end); ents.push({ layer, type: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y }); }
-      else if (T === 'CIRCLE' && r.radius > 0) { const c = P(r.center); ents.push({ layer, type: 'circle', cx: c.x, cy: c.y, r: r.radius }); }
-      else if (T === 'ARC' && r.radius > 0) { const c = P(r.center); ents.push({ layer, type: 'arc', cx: c.x, cy: c.y, r: r.radius, a0: r.startAngle || 0, a1: r.endAngle || 0 }); }
-      else if (T === 'LWPOLYLINE' || T === 'POLYLINE') { const pts = (r.vertices || []).map(v => ({ x: v.x ?? (v.point && v.point.x) ?? 0, y: v.y ?? (v.point && v.point.y) ?? 0, b: v.bulge || 0 })); if (pts.length > 1) ents.push({ layer, type: 'poly', closed: !!(r.closed || r.isClosed || (r.flag & 1)), pts }); }
-      else if (T === 'SPLINE') { const src = (r.fitPoints && r.fitPoints.length > 1 ? r.fitPoints : r.controlPoints) || []; if (src.length > 1) ents.push({ layer, type: 'poly', closed: false, pts: src.map(p => ({ x: p.x, y: p.y, b: 0 })) }); }
-      else if ((T === 'TEXT' || T === 'MTEXT') && (r.text || r.contents)) { const p = P(r.startPoint || r.insertionPoint || r.position); ents.push({ layer, type: 'text', x: p.x, y: p.y, h: r.textHeight || r.height || 2.5, rot: r.rotation || 0, text: stripMText(String(r.text || r.contents)) }); }
-    }
-    const layers = {}; const ls = (db && db.tables && db.tables.LAYER && db.tables.LAYER.entries) || [];
-    for (const l of ls) layers[l.name || '0'] = { color: Math.abs(l.colorIndex || l.color || 7) || 7, visible: true };
-    for (const e of ents) { e.id = nid(); if (!layers[e.layer]) layers[e.layer] = { color: 7, visible: true }; }
-    if (!layers['0']) layers['0'] = { color: 7, visible: true };
+    const ft = (mod.Dwg_File_Type || { DWG: 0 }).DWG ?? 0;
+    const dwg = lib.dwg_read_data(buf, ft); if (!dwg) throw new Error(t('readErr'));
+    const db = lib.convert(dwg);
+    try { lib.dwg_free(dwg); } catch (e) { }
+    const res = dwgDbToDoc(db); // same conversion path as DXF: blocks, splines, ellipses, text alignment
     hideLoading();
-    if (!ents.length) throw new Error(t('emptyFile'));
-    return { ents, layers, units: 0, skipped: {} };
+    if (!res.ents.length) throw new Error(t('emptyFile'));
+    return res;
   } catch (err) { hideLoading(); throw err; }
 }
 
@@ -7566,6 +7680,12 @@ tool = TOOLS.select();
 bindPanels(); bind3D(); syncToggles(); applyLang(); switchMode('2d');
 new ResizeObserver(() => { const first = W <= 1; resize(); if (first) fit(); }).observe(stage);
 resize(); fit(); updateInfo(); focusCmd();
+// reopening the page continues where it was left: same zoom and, on a sheet, the parts tool
+function saveUi() { LS.set('dxfed.ui', { view: S.view, tool: tool && tool.name === 'parts' ? 'parts' : 'select' }); }
+window.addEventListener('pagehide', saveUi); document.addEventListener('visibilitychange', () => { if (document.hidden) saveUi(); });
+{ const ui = saved && saved.doc && saved.doc.ents && saved.doc.ents.length ? LS.get('dxfed.ui', null) : null;
+  if (ui && ui.view && [ui.view.cx, ui.view.cy, ui.view.s].every(Number.isFinite) && ui.view.s > 0) { S.view = { cx: ui.view.cx, cy: ui.view.cy, s: ui.view.s }; dirtyBase = true; requestDraw(); }
+  if (ui && ui.tool === 'parts') setTool('parts'); }
 window.__dxfed = { S, S3, getAn, getChk, partsAction, packSheet, switchMode, projectionDoc, segsToEnts, w2s, s2w, setTool, parseDXF, writeDXF, fit, readFile, doResize, runAction, getTool: () => tool, commit, pushUndo };
 })();
 
