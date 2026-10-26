@@ -93,7 +93,13 @@ button,input,select{font:inherit;color:inherit}
 .layers{display:flex;flex-direction:column;gap:2px}
 .layer{display:grid;grid-template-columns:18px 12px minmax(0,1fr) auto 18px;gap:6px;align-items:center;padding:3px 4px;border-radius:3px}
 .layer.cur{background:var(--accent-soft)}
-.layer .sw{width:12px;height:12px;border-radius:2px;border:1px solid var(--line)}
+.layer .sw{width:12px;height:12px;border-radius:2px;border:1px solid var(--line);padding:0;cursor:pointer}
+.layer .ldel{border:0;background:none;color:var(--muted);cursor:pointer;padding:0;font-size:11px}
+.layer .ldel:hover{color:var(--hot)}
+.lpal{display:flex;gap:4px;padding:2px 4px 6px 28px}
+.lpal button{width:16px;height:16px;border-radius:3px;border:1px solid var(--line);padding:0;cursor:pointer}
+.lpal button.on{outline:2px solid var(--accent);outline-offset:1px}
+.lren{height:22px;border:1px solid var(--accent);border-radius:3px;background:var(--raise);padding:0 4px;min-width:0;font:inherit}
 .layer .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .layer .ct{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .layer input{margin:0}
@@ -842,7 +848,7 @@ function offsetPolyAll(e, d) {
     if (closed && !isClosed) continue; // stray bits of an inside loop
     const pts = ch.map(o => ({ x: o.s.x, y: o.s.y, b: o.q.k === 'A' ? Math.tan(o.q.sw / 4) : 0 }));
     if (!isClosed) { const l = ch[ch.length - 1].e; pts.push({ x: l.x, y: l.y, b: 0 }); }
-    const pp = mergeCollinear(dedupePts(pts, isClosed), isClosed);
+    const pp = mergeCollinear(dedupePts(pts, isClosed, Math.max(1e-6, 1e-8 * sz)), isClosed); // (input coordinates often carry ~1e-6 noise)
     if (pp.length < (isClosed ? 3 : 2)) continue;
     if (isClosed && Math.abs(polyAreaBulge(pp)) < 1e-6) continue;
     out.push({ ...baseOf(e), id: undefined, type: 'poly', closed: isClosed, pts: pp });
@@ -4497,7 +4503,7 @@ const I18N = {
     circleC: 'Centras', circleR: 'Spindulys', circleD: 'Skersmuo',
     arc1: 'Lanko pradžia', arc2: 'Taškas ant lanko', arc3: 'Lanko pabaiga',
     pBase: 'Bazinis taškas', pDest: 'Kur perkelti: taškas arba atstumas', pDestCopy: 'Kopijos vieta (Enter – baigti)',
-    pAngle: 'Kampas laipsniais (pvz. 90) arba taškas', pFactor: 'Mastelio koeficientas (pvz. 2 arba 0.5) arba taškas',
+    pAngle: 'Kampas laipsniais (pvz. 90) arba taškas', pFactor: 'Mastelio koeficientas (pvz. 2 arba 0.5; X ir Y atskirai 2;1) arba taškas',
     pMir1: 'Veidrodžio ašies pirmas taškas', pMir2: 'Ašies antras taškas',
     pSt1: 'Rėmelio pirmas kampas – taškai rėmelyje bus perkelti', pSt2: 'Rėmelio antras kampas',
     pOffObj: 'Pasirinkite objektą (atstumas {0} mm – įveskite skaičių, kad pakeistumėte)', pOffSide: 'Spustelėkite, į kurią pusę',
@@ -4535,7 +4541,7 @@ const I18N = {
     copyMade: 'Kopija padėta', rotated: 'Pasukta', layerName: 'Pavadinimas', closed: 'Uždara', vertices: 'Viršūnės', bulge: 'Išgaub.',
     length: 'Ilgis', angle: 'Kampas °', text: 'Tekstas', textH: 'Aukštis', start: 'Pradžia °', end: 'Pabaiga °', diameter: 'Skersmuo',
 
-    close: 'Uždaryti', backParts: 'Atgal į detales (G)', trimOneCut: 'Uždarą kontūrą kerta tik viena linija – nukirpti nėra ko (reikia dviejų sankirtų)', notNeg: 'Reikšmė negali būti neigiama', needThree: 'Uždarai polilinijai reikia bent 3 viršūnių', arcSame: 'Lanko pradžia ir pabaiga negali sutapti', noJoin: 'Nėra ką sujungti – objektų galai nesutampa', bigNoSave: 'Brėžinys per didelis išsaugoti naršyklėje – nepamirškite įrašyti DXF', offsetSplit: 'Lygiagreti kopija suskilo į {0} kontūrus', dupWarn: 'Dubliuotų / uždengtų linijų: {0} – CNC jas pjautų du kartus.', dupDel: 'Pašalinti', dupRemoved: 'Pašalinta dublikatų: {0}',
+    diameterAll: 'Skersmuo (visų {0})', layerColor: 'Spalva', layerHint: 'Spustelėkite – dabartinis, dukart – pervadinti', layerExists: 'Sluoksnis {0} jau yra', layerShown: 'Sluoksnis {0} buvo paslėptas – vėl rodomas', factorPos: 'Koeficientas turi būti didesnis už 0 (X ir Y atskirai: 2;1)', stretchNone: 'Rėmelis nieko neapėmė – nubrėžkite jį per kraštą, kurį norite perstumti', noExplode: 'Išskaidyti galima tik polilinijas', arcLine: 'Trys taškai vienoje tiesėje – lanko nėra', close: 'Uždaryti', backParts: 'Atgal į detales (G)', trimOneCut: 'Uždarą kontūrą kerta tik viena linija – nukirpti nėra ko (reikia dviejų sankirtų)', notNeg: 'Reikšmė negali būti neigiama', needThree: 'Uždarai polilinijai reikia bent 3 viršūnių', arcSame: 'Lanko pradžia ir pabaiga negali sutapti', noJoin: 'Nėra ką sujungti – objektų galai nesutampa', bigNoSave: 'Brėžinys per didelis išsaugoti naršyklėje – nepamirškite įrašyti DXF', offsetSplit: 'Lygiagreti kopija suskilo į {0} kontūrus', dupWarn: 'Dubliuotų / uždengtų linijų: {0} – CNC jas pjautų du kartus.', dupDel: 'Pašalinti', dupRemoved: 'Pašalinta dublikatų: {0}',
     cycleHint: 'Čia {0} obj. vienas ant kito – spustelėkite dar kartą kitam', cycleN: 'Objektas {0} iš {1} šioje vietoje',
     copiedN: 'Nukopijuota: {0} obj. (Ctrl+V – įklijuoti)', cutN: 'Iškirpta: {0} obj. (Ctrl+V – įklijuoti)', pastedN: '{0} obj. – spustelėkite, kur padėti', clipEmpty: 'Nieko nenukopijuota – pirmiausia Ctrl+C', pPlace: 'Spustelėkite, kur padėti (arba įveskite poslinkį) · Esc – atšaukti', pasteCancel: 'Atšaukta', copyClip: 'Kopijuoti', paste: 'Įklijuoti',
     chainSel: 'Pažymėtas visas kontūras: {0} obj.', openShort: 'atviras', repeat: 'Kartoti: {0}', rot90: 'Pasukti 90°', selAll: 'Pažymėti viską', zoomSel: 'Priartinti pažymėtus',
@@ -4592,7 +4598,7 @@ const I18N = {
     circleC: 'Center', circleR: 'Radius', circleD: 'Diameter',
     arc1: 'Arc start', arc2: 'Point on the arc', arc3: 'Arc end',
     pBase: 'Base point', pDest: 'Destination: point or distance', pDestCopy: 'Copy destination (Enter to finish)',
-    pAngle: 'Angle in degrees (e.g. 90) or a point', pFactor: 'Scale factor (e.g. 2 or 0.5) or a point',
+    pAngle: 'Angle in degrees (e.g. 90) or a point', pFactor: 'Scale factor (e.g. 2 or 0.5; X and Y separately 2;1) or a point',
     pMir1: 'First point of the mirror axis', pMir2: 'Second point of the axis',
     pSt1: 'First window corner – points inside will move', pSt2: 'Second window corner',
     pOffObj: 'Pick an object (distance {0} mm – type a number to change it)', pOffSide: 'Click the side',
@@ -4630,7 +4636,7 @@ const I18N = {
     copyMade: 'Copy placed', rotated: 'Rotated', layerName: 'Name', closed: 'Closed', vertices: 'Vertices', bulge: 'Bulge',
     length: 'Length', angle: 'Angle °', text: 'Text', textH: 'Height', start: 'Start °', end: 'End °', diameter: 'Diameter',
 
-    close: 'Close', backParts: 'Back to the parts (G)', trimOneCut: 'Only one line crosses this closed outline – there is nothing to cut out (two crossings are needed)', notNeg: 'The value cannot be negative', needThree: 'A closed polyline needs at least 3 vertices', arcSame: 'The arc start and end cannot be the same', noJoin: 'Nothing to join – the ends of the objects do not meet', bigNoSave: 'This drawing is too big to keep in the browser – remember to save the DXF', offsetSplit: 'The offset split into {0} outlines', dupWarn: 'Duplicate / overlapped objects: {0} – the CNC would cut them twice.', dupDel: 'Remove', dupRemoved: 'Removed duplicates: {0}',
+    diameterAll: 'Diameter (all {0})', layerColor: 'Colour', layerHint: 'Click – make current, double-click – rename', layerExists: 'Layer {0} already exists', layerShown: 'Layer {0} was hidden – it is shown again', factorPos: 'The factor must be greater than 0 (X and Y separately: 2;1)', stretchNone: 'The window caught nothing – draw it across the edge you want to move', noExplode: 'Only polylines can be exploded', arcLine: 'The three points are in a line – there is no arc', close: 'Close', backParts: 'Back to the parts (G)', trimOneCut: 'Only one line crosses this closed outline – there is nothing to cut out (two crossings are needed)', notNeg: 'The value cannot be negative', needThree: 'A closed polyline needs at least 3 vertices', arcSame: 'The arc start and end cannot be the same', noJoin: 'Nothing to join – the ends of the objects do not meet', bigNoSave: 'This drawing is too big to keep in the browser – remember to save the DXF', offsetSplit: 'The offset split into {0} outlines', dupWarn: 'Duplicate / overlapped objects: {0} – the CNC would cut them twice.', dupDel: 'Remove', dupRemoved: 'Removed duplicates: {0}',
     cycleHint: '{0} objects on top of each other here – click again for the next one', cycleN: 'Object {0} of {1} at this spot',
     copiedN: 'Copied {0} objects (Ctrl+V to paste)', cutN: 'Cut {0} objects (Ctrl+V to paste)', pastedN: '{0} objects – click where to place them', clipEmpty: 'Nothing copied yet – press Ctrl+C first', pPlace: 'Click where to place (or type an offset) · Esc – cancel', pasteCancel: 'Cancelled', copyClip: 'Copy', paste: 'Paste',
     chainSel: 'Whole outline selected: {0} objects', openShort: 'open', repeat: 'Repeat: {0}', rot90: 'Rotate 90°', selAll: 'Select all', zoomSel: 'Zoom to selection',
@@ -4698,7 +4704,7 @@ const selEnts = () => {
   return out.sort((a, b) => entIndex(a.id) - entIndex(b.id)); // drawing order, as before
 };
 function ensureLayer(n) { if (!S.doc.layers[n]) S.doc.layers[n] = { color: 7, visible: true }; }
-function addEnt(e) { if (e.id == null) e.id = nid(); if (!e.layer) e.layer = S.curLayer; ensureLayer(e.layer); idxOf.set(e.id, S.doc.ents.length); S.doc.ents.push(e); byId.set(e.id, e); return e; }
+function addEnt(e) { if (e.id == null) e.id = nid(); if (!e.layer) { e.layer = S.curLayer; const L = S.doc.layers[e.layer]; if (L && L.visible === false) { L.visible = true; toast(t('layerShown', e.layer)); } } ensureLayer(e.layer); idxOf.set(e.id, S.doc.ents.length); S.doc.ents.push(e); byId.set(e.id, e); return e; }
 function removeIds(ids) { const set = new Set(ids); S.doc.ents = S.doc.ents.filter(e => !set.has(e.id)); for (const id of set) { byId.delete(id); S.sel.delete(id); } idxOf = new Map(); S.doc.ents.forEach((e, i) => idxOf.set(e.id, i)); }
 function replaceEnt(id, ne) { const i = entIndex(id); if (i < 0) return; ne.id = id; if (!ne.layer) ne.layer = S.doc.ents[i].layer; S.doc.ents[i] = ne; byId.set(id, ne); }
 // entities are never changed in place (edits replace the object), so an undo step only needs a copy of the list, not of the geometry
@@ -4739,11 +4745,24 @@ function commit() {
 /* ---------- autosave: localStorage, or IndexedDB for drawings too big for it ---------- */
 function idbOpen() { return new Promise((res, rej) => { try { const r = indexedDB.open('draft-cad', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
 function idbDo(mode, fn) { return idbOpen().then(db => new Promise((res, rej) => { const tx = db.transaction('kv', mode), q = fn(tx.objectStore('kv')); tx.oncomplete = () => res(q && q.result); tx.onerror = () => rej(tx.error); })); }
+// Each tab keeps its own copy (sessionStorage survives reloads of that tab only), so two tabs never overwrite each
+// other's work; localStorage holds the latest drawing for a newly opened tab. Big drawings go to IndexedDB.
+const TAB = Math.random().toString(36).slice(2, 10);
 function saveDoc() {
   let js; try { js = JSON.stringify({ doc: S.doc, fname: S.fname, sample: S.sample, sheetRect: S.sheetRect }); } catch (e) { return; }
-  if (js.length < 4.5e6) { try { localStorage.setItem('dxfed.doc', js); if (S.inIdb) { S.inIdb = false; idbDo('readwrite', st => st.delete('doc')).catch(() => { }); } return; } catch (e) { } }
-  idbDo('readwrite', st => st.put(js, 'doc')).then(() => { S.inIdb = true; try { localStorage.setItem('dxfed.doc', JSON.stringify({ idb: true, fname: S.fname })); } catch (e) { } })
-    .catch(() => { if (!S.bigWarned) { S.bigWarned = true; toast(t('bigNoSave'), true); } });
+  if (js.length < 4.5e6) {
+    let ok = false; try { sessionStorage.setItem('dxfed.doc', js); ok = true; } catch (e) { }
+    try { localStorage.setItem('dxfed.doc', js); ok = true; } catch (e) { }
+    if (ok) { if (S.inIdb) { S.inIdb = false; idbDo('readwrite', st => { st.delete('tab:' + TAB); }).catch(() => { }); } return; }
+  }
+  idbDo('readwrite', st => { st.put(js, 'doc'); st.put(js, 'tab:' + TAB); st.put(Date.now(), 'seen:' + TAB); }).then(() => {
+    S.inIdb = true; try { sessionStorage.setItem('dxfed.doc', JSON.stringify({ idb: 'tab:' + TAB, fname: S.fname })); } catch (e) { }
+    try { localStorage.setItem('dxfed.doc', JSON.stringify({ idb: 'doc', fname: S.fname })); } catch (e) { }
+    pruneIdb();
+  }).catch(() => { if (!S.bigWarned) { S.bigWarned = true; toast(t('bigNoSave'), true); } });
+}
+function pruneIdb() { // per-tab copies older than two weeks are dropped
+  idbOpen().then(db => { const tx = db.transaction('kv', 'readwrite'), st = tx.objectStore('kv'), q = st.getAllKeys(); q.onsuccess = () => { for (const k of q.result) if (String(k).startsWith('seen:')) { const id = String(k).slice(5), g = st.get(k); g.onsuccess = () => { if (Date.now() - (g.result || 0) > 14 * 864e5) { st.delete(k); st.delete('tab:' + id); } }; } }; }).catch(() => { });
 }
 
 /* ---------- canvas & colours ---------- */
@@ -4853,8 +4872,9 @@ function gripsOf(e) {
     case 'arc': {
       const P = prims(e)[0], c = P.c;
       G.push({ p: c, kind: 'cen', apply: p => ({ ...e, cx: p.x, cy: p.y }) });
-      G.push({ p: ptOn(P, 0), apply: p => ({ ...e, a0: vang(vsub(p, c)) }) });
-      G.push({ p: ptOn(P, 1), apply: p => ({ ...e, a1: vang(vsub(p, c)) }) });
+      const arcOk = ne => Math.abs(normAng(ne.a1 - ne.a0)) > 1e-6 && Math.abs(normAng(ne.a1 - ne.a0) - TAU) > 1e-6 ? ne : null; // never collapse into a full circle
+      G.push({ p: ptOn(P, 0), apply: p => arcOk({ ...e, a0: vang(vsub(p, c)) }) });
+      G.push({ p: ptOn(P, 1), apply: p => arcOk({ ...e, a1: vang(vsub(p, c)) }) });
       G.push({ p: ptOn(P, .5), kind: 'mid', apply: p => { const r = vdist(p, c); return r > 1e-9 ? { ...e, r } : null; } });
       break;
     }
@@ -5056,6 +5076,7 @@ function label(c, x, y, text, color) {
 // how the typed text will be read – "12,5" in a point prompt is X 12, Y 5, so this is shown before Enter
 function cmdPreview() {
   const s = cmd.value.trim(); if (!s || tool.phase === 'pick') return '';
+  if (tool.name === 'scale' && tool.phase === 'f') { if (/;/.test(s)) { const [a, b] = s.split(';').map(evalNum); return a && b ? `→ X ×${fmt(a, 4)}  Y ×${fmt(b, 4)}` : '→ ?'; } const v = evalNum(s); if (v !== null) return v > 0 ? `→ ×${fmt(v, 4)}` : '→ ?'; }
   if (tool.acceptsValue && tool.acceptsValue()) {
     if (tool.raw && /[;,]/.test(s) && tool.name === 'chamfer') { const p = s.split(/[;,\s]+/); if (p.length === 2) { const a = evalNum(p[0]), b = evalNum(p[1]); if (a !== null && b !== null) return `→ ${fmt(a, 3)} / ${fmt(b, 3)} mm`; } }
     const v = evalNum(s); if (v !== null) return '→ ' + fmt(v, 4);
@@ -5155,9 +5176,19 @@ function renderOverlay() {
 /* ---------- tools ---------- */
 let tool = null, boxDrag = null, pick = null;
 const NEED_SEL = new Set(['move', 'copy', 'rotate', 'scale', 'mirror']);
+// dimensions stay attached: every dimension point lying on (or at the centre of) a moved object moves with it
+function carryDims(list, m) {
+  if (!S.dims || !S.dims.length || !list.length) return;
+  const bb = bboxOf(list), tol = 1e-6 * Math.max(1, bb[2] - bb[0], bb[3] - bb[1]);
+  const on = p => p.x >= bb[0] - tol && p.x <= bb[2] + tol && p.y >= bb[1] - tol && p.y <= bb[3] + tol && list.some(e => distEnt(p, e) < tol || ((e.type === 'circle' || e.type === 'arc') && Math.hypot(p.x - e.cx, p.y - e.cy) < tol));
+  let any = false;
+  for (const d of S.dims) for (const k of ['a', 'b', 'v']) if (d[k] && on(d[k])) { d[k] = mApply(m, d[k]); any = true; }
+  if (any) saveDims();
+}
 function applyM(m, copy, opt = {}) {
   const list = selEnts(); if (!list.length) return;
   pushUndo(); let warped = false;
+  if (!copy) carryDims(list, m);
   for (const e of list) {
     const r = transformEnt(e, m, opt); if (r[0].type !== e.type) warped = true;
     if (copy) for (const ne of r) { delete ne.id; addEnt(ne); }
@@ -5295,7 +5326,7 @@ const TOOLS = {
       if (g) { this.hot = g; this.dragging = true; S.hover = null; updatePrompt(); return; }
       // press on an already selected object (or inside a selected closed outline) and drag = move the selection
       const mod = info.shift || info.ctrl, under = hitAll(info.world), e = under.find(x => S.sel.has(x.id)) || under[0] || null;
-      if (!mod && ((e && S.sel.has(e.id)) || (!e && insideSelected(info.world)))) { this.mv = { start: p, moved: false, hit: e ? e.id : null }; return; }
+      if (!mod && e && S.sel.has(e.id)) { this.mv = { start: p, moved: false, hit: e.id }; return; } // (pressing inside an outline starts a box, so holes can be picked)
       pick = { start: info.screen };
     },
     move() {
@@ -5378,7 +5409,7 @@ const TOOLS = {
     prompt() { return [t('arc1'), t('arc2'), t('arc3')][this.pts.length]; }, base() { return this.pts[this.pts.length - 1] || null; }, wantsPoint: () => true,
     point(p) {
       this.pts.push(p);
-      if (this.pts.length === 3) { const A = arc3(...this.pts); this.pts = []; if (!A) return; const a0 = A.sw > 0 ? A.a0 : A.a0 + A.sw, a1 = A.sw > 0 ? A.a0 + A.sw : A.a0; pushUndo(); addEnt({ type: 'arc', cx: A.c.x, cy: A.c.y, r: A.r, a0, a1 }); commit(); }
+      if (this.pts.length === 3) { const A = arc3(...this.pts); if (!A) { this.pts.pop(); return toast(t('arcLine'), true); } this.pts = []; const a0 = A.sw > 0 ? A.a0 : A.a0 + A.sw, a1 = A.sw > 0 ? A.a0 + A.sw : A.a0; pushUndo(); addEnt({ type: 'arc', cx: A.c.x, cy: A.c.y, r: A.r, a0, a1 }); commit(); }
     },
     draw(c, cur) {
       if (this.pts.length === 1) ghost(c, [{ type: 'line', x1: this.pts[0].x, y1: this.pts[0].y, x2: cur.x, y2: cur.y }]);
@@ -5403,7 +5434,9 @@ const TOOLS = {
     prompt() { return this.phase === 'base' ? t('pBase') : t('pFactor'); },
     base() { return this.phase === 'f' ? this.b : null; }, wantsPoint() { return true; }, acceptsValue() { return this.phase === 'f'; },
     point(p) { if (this.phase === 'base') { this.b = p; this.ref = refDist(p); this.phase = 'f'; return; } this.go(vdist(p, this.b) / this.ref); },
-    value(v) { if (v > 0) this.go(v); },
+    value(v) { if (v > 0) this.go(v); else toast(t('factorPos'), true); },
+    // "2;1" scales X by 2 and Y by 1 (a semicolon, because the comma is the decimal separator here)
+    raw(s) { if (this.phase !== 'f' || !/^[^;]+;[^;]+$/.test(s)) return false; const [a, b] = s.split(';').map(evalNum); if (a === null || b === null || !a || !b) { toast(t('factorPos'), true); return true; } applyM(mScale(a, b, this.b)); setTool('select'); return true; },
     go(k) { if (!(k > 0)) return; applyM(mScale(k, k, this.b)); setTool('select'); },
     draw(c, cur) { if (this.phase === 'f') { const k = vdist(cur, this.b) / this.ref; if (k > 0) ghostSel(c, mScale(k, k, this.b)); rubber(c, this.b, cur); } },
     tipText(cur) { return this.phase === 'f' ? '× ' + fmt(vdist(cur, this.b) / this.ref, 4) : ''; }
@@ -5426,7 +5459,12 @@ const TOOLS = {
       this.point(p);
     },
     up(p, info) { if (this.phase === 'w2' && this.dragStart && info.moved) this.setWin(info.world); this.dragStart = false; },
-    setWin(w) { const a = this.c1; this.r = [Math.min(a.x, w.x), Math.min(a.y, w.y), Math.max(a.x, w.x), Math.max(a.y, w.y)]; this.targets = entsInBox(this.r, true); this.phase = this.targets.length ? 'base' : 'w1'; updatePrompt(); },
+    setWin(w) {
+      const a = this.c1; this.r = [Math.min(a.x, w.x), Math.min(a.y, w.y), Math.max(a.x, w.x), Math.max(a.y, w.y)]; this.targets = entsInBox(this.r, true);
+      if (this.targets.length) this.phase = 'base'; else { this.r = null; this.targets = null; this.phase = 'w1'; toast(t('stretchNone'), true); }
+      updatePrompt();
+    },
+    undoStep() { const back = { dest: 'base', base: 'w1', w2: 'w1' }[this.phase]; if (!back) return false; this.phase = back; if (back === 'w1') { this.r = null; this.targets = null; this.c1 = null; } return true; },
     point(p) { if (this.phase === 'base') { this.b = p; this.phase = 'dest'; return; } if (this.phase === 'dest') { const d = vsub(p, this.b); pushUndo(); for (const e of this.targets) replaceEnt(e.id, stretchEnt(e, this.f(d))); commit(); setTool('select'); } },
     f(d) { const r = this.r, z = { x: 0, y: 0 }; return q => (q.x >= r[0] - 1e-9 && q.x <= r[2] + 1e-9 && q.y >= r[1] - 1e-9 && q.y <= r[3] + 1e-9) ? d : z; },
     draw(c, cur) {
@@ -5513,7 +5551,7 @@ function runAction(a) {
   const list = selEnts();
   if (a === 'del') { if (!list.length) return toast(t('needSel'), true); pushUndo(); removeIds(list.map(e => e.id)); commit(); toast(t('deleted', list.length)); return; }
   if (a === 'explode') {
-    const polys = list.filter(e => e.type === 'poly'); if (!polys.length) return toast(t('needSel'), true);
+    const polys = list.filter(e => e.type === 'poly'); if (!polys.length) return toast(list.length ? t('noExplode') : t('needSel'), true);
     pushUndo(); for (const e of polys) { const parts = explodeEnt(e); removeIds([e.id]); for (const p of parts) S.sel.add(addEnt(p).id); } commit(); toast(t('exploded')); return;
   }
   if (a === 'join') {
@@ -5642,6 +5680,10 @@ function renderSel() {
   let html = `<h3>${t('selection')} <em>${ty}</em></h3><p class="dimline">${t('W')} <b>${fmt(w, 2)}</b> × ${t('H')} <b>${fmt(h, 2)}</b> mm</p>`;
   html += `<div class="f"><label for="pf_layer">${t('layer')}</label><select id="pf_layer" data-f="layer">${lays.length > 1 ? '<option value="">—</option>' : ''}${Object.keys(S.doc.layers).map(n => `<option ${lays.length === 1 && lays[0] === n ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>`;
   if (list.length === 1) html += propsHtml(list[0]);
+  else if (list.every(e => e.type === 'circle')) { // several holes: one diameter for all of them
+    const d0 = 2 * list[0].r, same = list.every(e => Math.abs(2 * e.r - d0) < 1e-9);
+    html += `<div class="sub"><div class="kv">${field('diaAll', t('diameterAll', list.length), same ? fmt(d0) : '')}</div></div>`;
+  }
   html += resizeHtml(w, h) + quickHtml();
   el.innerHTML = html;
 }
@@ -5652,6 +5694,10 @@ function doResize() {
   // a size that is 0 now (a horizontal or vertical line) is simply left alone
   if (W1 === null || H1 === null || (w0 > 1e-9 && !(W1 > 0)) || (h0 > 1e-9 && !(H1 > 0))) return toast(t('badInput'), true);
   const ax = a[1] === 'l' ? bb[0] : a[1] === 'r' ? bb[2] : (bb[0] + bb[2]) / 2, ay = a[0] === 'b' ? bb[1] : a[0] === 't' ? bb[3] : (bb[1] + bb[3]) / 2;
+  if (list.every(e => e.type === 'text')) { // text only: letters grow in proportion (a text cannot be stretched)
+    const k = Math.abs(W1 - w0) > 1e-9 && w0 > 1e-9 ? W1 / w0 : h0 > 1e-9 ? H1 / h0 : 1; if (!(k > 0)) return toast(t('badInput'), true);
+    pushUndo(); for (const e of list) replaceEnt(e.id, transformEnt(e, mScale(k, k, { x: ax, y: ay }))[0]); commit(); return;
+  }
   if (list.length === 1 && list[0].type === 'circle') { // a single circle: the size is its diameter
     const e = list[0], D = Math.abs(W1 - w0) > 1e-9 ? W1 : H1, fx = a[1] === 'l' ? 0 : a[1] === 'r' ? 1 : .5, fy = a[0] === 'b' ? 0 : a[0] === 't' ? 1 : .5;
     if (!(D > 0)) return toast(t('badInput'), true);
@@ -5701,16 +5747,26 @@ function renderOpts() {
   if (n === 'poly' && tool.pts && tool.pts.length >= 2) h += `<div class="row">${tool.pts.length >= 3 ? `<button class="btn small" data-act="polyClose">${t('closePoly')}</button>` : ''}<button class="btn small" data-act="polyFinish">${t('finish')}</button></div>`;
   el.innerHTML = h;
 }
+const LAYER_COLS = [1, 2, 3, 4, 5, 6, 7, 8, 30, 140];
 function renderLayers() {
   const el = $('layerPanel'), counts = {};
   for (const e of S.doc.ents) counts[e.layer] = (counts[e.layer] || 0) + 1;
   let h = `<h3>${t('layers')}</h3><div class="layers">`;
   for (const [n, l] of Object.entries(S.doc.layers)) {
-    const c = (l.color === 7 ? col.fg : aciColor(l.color)) || '#888';
-    h += `<div class="layer ${n === S.curLayer ? 'cur' : ''}"><input type="checkbox" data-lv="${esc(n)}" ${l.visible !== false ? 'checked' : ''} aria-label="${esc(n)}"><span class="sw" style="background:${c}"></span><span class="nm" data-lc="${esc(n)}" title="${t('current')}">${esc(n)}</span><span class="ct">${counts[n] || 0}</span><span>${n === S.curLayer ? '●' : ''}</span></div>`;
+    const c = (l.color === 7 ? col.fg : aciColor(l.color)) || '#888', cnt = counts[n] || 0, canDel = !cnt && n !== '0' && n !== S.curLayer;
+    h += `<div class="layer ${n === S.curLayer ? 'cur' : ''}"><input type="checkbox" data-lv="${esc(n)}" ${l.visible !== false ? 'checked' : ''} aria-label="${esc(n)}"><button type="button" class="sw" data-lcol="${esc(n)}" style="background:${c}" title="${t('layerColor')}" aria-label="${t('layerColor')}"></button><span class="nm" data-lc="${esc(n)}" title="${t('layerHint')}">${esc(n)}</span><span class="ct">${cnt}</span><span>${canDel ? `<button type="button" class="ldel" data-ldel="${esc(n)}" title="${t('del')}" aria-label="${t('del')}">✕</button>` : n === S.curLayer ? '●' : ''}</span></div>`;
+    if (S.layerPal === n) h += `<div class="lpal">${LAYER_COLS.map(k => `<button type="button" data-lset="${esc(n)}" data-k="${k}" style="background:${k === 7 ? col.fg : aciColor(k)}" class="${l.color === k ? 'on' : ''}" aria-label="${k}"></button>`).join('')}</div>`;
   }
   h += `</div><div class="row"><input id="newLayer" placeholder="${t('addLayer')}" style="flex:1;height:27px;border:1px solid var(--line);border-radius:3px;background:var(--raise);padding:0 6px;min-width:0"><button class="btn small" data-act="addLayer">+</button></div>`;
   el.innerHTML = h;
+}
+// layer names: AutoCAD does not allow < > / \ " : ; ? * | = ` in them
+const cleanLayer = n => n.replace(/[<>\/\\":;?*|=`,]/g, '_').trim().slice(0, 255);
+function renameLayer(from, to) {
+  to = cleanLayer(to); if (!to || to === from) return renderLayers(); if (S.doc.layers[to]) { toast(t('layerExists', to), true); return renderLayers(); }
+  pushUndo(); const L = {}; for (const [k, v] of Object.entries(S.doc.layers)) L[k === from ? to : k] = v; S.doc.layers = L;
+  for (const e of S.doc.ents) if (e.layer === from) replaceEnt(e.id, { ...e, layer: to });
+  if (S.curLayer === from) S.curLayer = to; commit();
 }
 function renderPanel() {
   // keep the caret where the user is typing: re-rendering replaces the inputs, so focus is restored on the matching new one
@@ -5730,6 +5786,7 @@ function bindPanels() {
       const list = selEnts();
       // the panel is re-rendered on the next tick so Tab can move focus to the next field first
       if (f === 'layer') { if (!el.value) return; pushUndo(); for (const e of list) replaceEnt(e.id, { ...e, layer: el.value }); setTimeout(() => { commit(); focusCmd(); }, 0); return; }
+      if (f === 'diaAll') { const v = evalNum(el.value); if (!(v > 0)) { toast(t('badInput'), true); return setTimeout(renderPanel, 0); } pushUndo(); for (const e of list) if (e.type === 'circle') replaceEnt(e.id, { ...e, r: v / 2 }); setTimeout(commit, 0); return; }
       if (list.length !== 1) return;
       const e = list[0], ne = applyProp(e, f, el.type === 'checkbox' ? el.checked : el.value);
       if (ne) { pushUndo(); replaceEnt(e.id, ne); setTimeout(commit, 0); } else setTimeout(renderPanel, 0);
@@ -5740,7 +5797,7 @@ function bindPanels() {
     if (el.id === 'rsLock') { S.opts.lock = el.checked; saveOpts(); return; }
     if (el.id === 'rsHoles') { S.opts.keepHoles = el.checked; saveOpts(); return; }
     if (el.name === 'rsMode') { S.opts.rsMode = el.value; saveOpts(); const hb = $('rsHoles'); if (hb) hb.disabled = el.value === 'stretch'; return; }
-    if (el.dataset.lv) { S.doc.layers[el.dataset.lv].visible = el.checked; for (const id of [...S.sel]) { const e = getEnt(id); if (e && !layerVis(e.layer)) S.sel.delete(id); } commit(); return; }
+    if (el.dataset.lv) { S.doc.layers[el.dataset.lv].visible = el.checked; if (!el.checked && el.dataset.lv === S.curLayer) { const nx = Object.keys(S.doc.layers).find(k => S.doc.layers[k].visible !== false); if (nx) S.curLayer = nx; } for (const id of [...S.sel]) { const e = getEnt(id); if (e && !layerVis(e.layer)) S.sel.delete(id); } commit(); return; }
   });
   side.addEventListener('input', ev => {
     const el = ev.target; if (!S.opts.lock || (el.dataset.f !== 'rsW' && el.dataset.f !== 'rsH')) return;
@@ -5759,7 +5816,20 @@ function bindPanels() {
     }
     if (ev.key === 'Escape') { ev.target.blur(); focusCmd(); }
   });
+  side.addEventListener('dblclick', ev => { // double-click a layer name to rename it
+    const nm = ev.target.closest('[data-lc]'); if (!nm) return; const from = nm.dataset.lc, inp = document.createElement('input');
+    inp.value = from; inp.className = 'lren'; nm.replaceWith(inp); inp.focus(); inp.select(); let done = false;
+    const fin = ok => { if (done) return; done = true; if (ok) renameLayer(from, inp.value); else renderLayers(); focusCmd(); };
+    inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); fin(true); } else if (e.key === 'Escape') { e.preventDefault(); fin(false); } });
+    inp.addEventListener('blur', () => fin(true));
+  });
   side.addEventListener('click', ev => {
+    const lb = ev.target.closest('[data-lcol],[data-lset],[data-ldel]');
+    if (lb) {
+      if (lb.dataset.lcol != null) { S.layerPal = S.layerPal === lb.dataset.lcol ? null : lb.dataset.lcol; renderLayers(); return; }
+      if (lb.dataset.lset != null) { const L = S.doc.layers[lb.dataset.lset]; if (L) { pushUndo(); L.color = +lb.dataset.k; S.layerPal = null; commit(); } return; }
+      if (lb.dataset.ldel != null) { pushUndo(); delete S.doc.layers[lb.dataset.ldel]; commit(); return; }
+    }
     const b = ev.target.closest('[data-act],[data-anc],[data-lc]'); if (!b) return;
     setTimeout(focusCmd, 0);
     if (b.dataset.anc) { S.opts.anchor = b.dataset.anc; saveOpts(); b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); return; }
@@ -5778,10 +5848,10 @@ function bindPanels() {
     quick(a);
   });
 }
-function addLayer() { const inp = $('newLayer'), n = inp.value.trim(); if (!n) return; ensureLayer(n); S.curLayer = n; inp.value = ''; commit(); }
+function addLayer() { const inp = $('newLayer'), n = cleanLayer(inp.value); if (!n) return; if (S.doc.layers[n]) { S.curLayer = n; inp.value = ''; renderLayers(); return; } ensureLayer(n); S.curLayer = n; inp.value = ''; commit(); }
 
 /* ---------- file I/O ---------- */
-function toast(msg, warn) { const el = $('toast'); el.textContent = msg; el.className = warn ? 'warn' : ''; el.hidden = false; clearTimeout(toast.tm); toast.tm = setTimeout(() => { el.hidden = true; }, warn ? 4200 : 2800); }
+function toast(msg, warn) { if (lang === 'en') msg = String(msg).replace(/\b1 (objects|outlines|parts|contours|holes)\b/g, (m, w) => '1 ' + w.slice(0, -1)); const el = $('toast'); el.textContent = msg; el.className = warn ? 'warn' : ''; el.hidden = false; clearTimeout(toast.tm); toast.tm = setTimeout(() => { el.hidden = true; }, warn ? 4200 : 2800); }
 function updateInfo() { if (S3.mode === '3d') { const m = S3.model3d; $('fname').textContent = m ? m.filename : ''; $('info').textContent = m ? `${m.triangleCount.toLocaleString()} ${t('tris').toLowerCase()} · mm` : ''; return; } $('info').textContent = `${S.doc.ents.length} ${t('objs')} · mm${S.sample ? ' · ' + t('sample') : ''}`; $('fname').textContent = S.fname || ''; $('bUndo').disabled = !S.undo.length; $('bRedo').disabled = !S.redo.length; }
 function readFile(file, insert) {
   const ext = (file.name.split('.').pop() || '').toLowerCase();
@@ -5871,7 +5941,7 @@ cmd.addEventListener('input', () => requestDraw());
 cmd.addEventListener('keydown', ev => {
   if (overlayKey(ev)) { ev.stopPropagation(); return; }
   if (S3.mode === '3d') return;
-  if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
+  if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1 && S.mouse && S.mouse.inside) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
   if (ev.key === ' ' && !cmd.value) { ev.preventDefault(); if (!ev.repeat && !S.space) { S.space = { panned: false, panning: false }; updateCursor(); } return; }
   if (ev.key === '?' && !cmd.value) { ev.preventDefault(); openHelp(); return; }
   if (ev.key === 'Enter') { ev.preventDefault(); onCmd(); return; }
@@ -5994,7 +6064,7 @@ ov.addEventListener('pointermove', ev => {
   if (pick && downInfo && downInfo.moved) boxDrag = { a: pick.start, b: sp };
   updateSnapNow(); updateHover();
   S.gripHover = tool.name === 'select' && !tool.hot && !downInfo ? hitGrip(sp) : null;
-  S.insideSel = tool.name === 'select' && !downInfo && S.hover == null ? insideSelected(S.world) : false;
+  S.insideSel = false;
   S.hoverPart = tool.name === 'parts' && !(tool.drag && tool.drag.moved) ? (partAt(S.world) || null) : null;
   if (S.space && downInfo == null && pan) S.space.panning = true;
   const w = curPoint(); $('coords').textContent = `X ${fmt(w.x, 2)}   Y ${fmt(w.y, 2)}`;
@@ -7314,7 +7384,7 @@ function apply3DTheme() {
 // Project sharp model edges to a 2D plane -> raw segments
 function projectModel(projection, selected) {
   const useSet = selected ? new Set(selected) : null, segs = [];
-  const project = (x, y, z) => { switch (projection) { case 'front': return [x, y]; case 'back': return [-x, y]; case 'right': return [z, y]; case 'left': return [-z, y]; case 'bottom': return [x, z]; default: return [x, -z]; } };
+  const project = (x, y, z) => { switch (projection) { case 'front': return [x, y]; case 'back': return [-x, y]; case 'right': return [-z, y]; case 'left': return [z, y]; /* seen from +X, screen-right is -Z (matches the 3D Right view) */ case 'bottom': return [x, z]; default: return [x, -z]; } };
   const off = three.modelGroup.position;
   three.groupMeshes.forEach((g, gi) => {
     if (useSet && !useSet.has(gi)) return;
@@ -7373,7 +7443,11 @@ function openExportDialog() {
   if (!three.groupMeshes || !three.groupMeshes.length) return toast(t('no3d'), true);
   const list = $('exportParts'), groups = S3.model3d && S3.model3d.groups;
   if (!groups || groups.length <= 1) list.innerHTML = `<p class="hint">${t('singlePart')}</p>`;
-  else list.innerHTML = groups.map((g, i) => { const gm = three.groupMeshes[i]; return `<label class="chk"><input type="checkbox" data-idx="${i}" ${gm && gm.visible !== false ? 'checked' : ''}> ${esc(g.name)}</label>`; }).join('');
+  else {
+    // repeated names (e.g. 18 × "SOLID") get a running number so the list can be told apart
+    const cnt = {}, seen = {}; groups.forEach(g => { cnt[g.name] = (cnt[g.name] || 0) + 1; });
+    list.innerHTML = groups.map((g, i) => { const gm = three.groupMeshes[i], nm = cnt[g.name] > 1 ? `${g.name || '—'} ${seen[g.name] = (seen[g.name] || 0) + 1}` : (g.name || '—'); return `<label class="chk"><input type="checkbox" data-idx="${i}" ${gm && gm.visible !== false ? 'checked' : ''}> ${esc(nm)}</label>`; }).join('');
+  }
   const act = document.querySelector('.view-preset.active'); const v = act ? act.dataset.view : 'top';
   document.querySelectorAll('#exportProj input').forEach(r => { r.checked = r.value === (v === 'front' || v === 'right' ? v : 'top'); });
   $('exportOverlay').hidden = false;
@@ -7397,8 +7471,9 @@ function bind3D() {
   $('exportDl').onclick = () => {
     const s = exportSelection(); if (!s) return; $('exportOverlay').hidden = true;
     const base = (S3.model3d && S3.model3d.filename || 'model').replace(/\.[^.]+$/, '');
-    const sides = s.proj === '__all__' ? SIDES : [s.proj];
-    sides.forEach((side, i) => setTimeout(() => { const d = projectionDoc(side, s.selected); if (!d.ents.length) return toast(t('noEdges'), true); downloadText(writeDXF(d, S.fmt), base + '_' + side + '.dxf'); }, i * 250));
+    // all six sides go into one file, laid out side by side with labels (one download, no browser prompt)
+    const d = projectionDoc(s.proj, s.selected); if (!d.ents.length) return toast(t('noEdges'), true);
+    downloadText(writeDXF(d, S.fmt), base + '_' + (s.proj === '__all__' ? 'vaizdai' : s.proj) + '.dxf');
   };
   $('exportTo2D').onclick = () => {
     const s = exportSelection(); if (!s) return; $('exportOverlay').hidden = true;
@@ -7650,6 +7725,7 @@ function packSheet() {
     if (p.rot) { m = mRot(PI / 2, c); [w, h] = [h, w]; }
     const nx0 = c.x - w / 2, ny0 = c.y - h / 2;
     m = mMul(mTrans(p.x - nx0, p.y - ny0), m);
+    carryDims([...g.ids].map(getEnt).filter(Boolean), m);
     for (const id of g.ids) { const e = getEnt(id); if (e) replaceEnt(id, transformEnt(e, m)[0]); }
   });
   commit();
@@ -7905,6 +7981,7 @@ function openCtx(x, y) {
   m.onclick = ev => { const b = ev.target.closest('[data-ci]'); if (!b || b.disabled) return; const o = items[+b.dataset.ci]; closeCtx(); o.fn(); focusCmd(); };
 }
 document.addEventListener('pointerdown', ev => { if (!ev.target.closest('#ctx')) closeCtx(); }, true);
+document.addEventListener('keydown', ev => { if (ev.key !== 'Escape' && ev.key !== 'Tab' && !/^Arrow/.test(ev.key)) closeCtx(); }, true); // a shortcut closes the menu
 window.addEventListener('resize', closeCtx);
 
 /* ---------- keyboard shortcut overlay ---------- */
@@ -7921,8 +7998,9 @@ $('zFit').onclick = () => { fit(); focusCmd(); };
 /* ---------- boot ---------- */
 const th = LS.get('dxfed.theme', null); if (th) document.documentElement.dataset.theme = th;
 readColors();
-const saved = LS.get('dxfed.doc', null);
-const fromIdb = !!(saved && saved.idb);
+let saved = null; try { const ss = sessionStorage.getItem('dxfed.doc'); if (ss) saved = JSON.parse(ss); } catch (e) { } // this tab's own drawing first
+if (!saved) saved = LS.get('dxfed.doc', null);
+const fromIdb = !!(saved && saved.idb), idbKey = saved && typeof saved.idb === 'string' ? saved.idb : 'doc';
 if (saved && saved.doc && saved.doc.ents && saved.doc.ents.length) { S.doc = saved.doc; S.fname = saved.fname || ''; S.sample = !!saved.sample; S.sheetRect = saved.sheetRect || null; bumpIds(S.doc.ents); }
 else if (fromIdb) { S.doc = { ents: [], layers: { '0': { color: 7, visible: true } } }; S.fname = saved.fname || ''; S.inIdb = true; }
 else { S.doc = sampleDoc(); S.sample = true; S.fname = ''; }
@@ -7933,17 +8011,17 @@ bindPanels(); bind3D(); syncToggles(); applyLang(); switchMode('2d');
 new ResizeObserver(() => { const first = W <= 1; resize(); if (first) fit(); }).observe(stage);
 resize(); fit(); updateInfo(); focusCmd();
 // reopening the page continues where it was left: same zoom and, on a sheet, the parts tool
-function saveUi() { LS.set('dxfed.ui', { view: S.view, tool: tool && tool.name === 'parts' ? 'parts' : 'select' }); }
+function saveUi() { const u = { view: S.view, tool: tool && tool.name === 'parts' ? 'parts' : 'select' }; LS.set('dxfed.ui', u); try { sessionStorage.setItem('dxfed.ui', JSON.stringify(u)); } catch (e) { } }
 window.addEventListener('pagehide', saveUi); document.addEventListener('visibilitychange', () => { if (document.hidden) saveUi(); });
 function restoreUi() {
-  const ui = LS.get('dxfed.ui', null);
+  let ui = null; try { ui = JSON.parse(sessionStorage.getItem('dxfed.ui') || 'null'); } catch (e) { } if (!ui) ui = LS.get('dxfed.ui', null);
   if (ui && ui.view && [ui.view.cx, ui.view.cy, ui.view.s].every(Number.isFinite) && ui.view.s > 0) { S.view = { cx: ui.view.cx, cy: ui.view.cy, s: ui.view.s }; dirtyBase = true; requestDraw(); }
   if (ui && ui.tool === 'parts') setTool('parts');
 }
 if (saved && saved.doc && saved.doc.ents && saved.doc.ents.length) restoreUi();
 else if (fromIdb) { // big drawing kept in IndexedDB
   showLoading(t('loading'));
-  idbDo('readonly', st => st.get('doc')).then(js => {
+  idbDo('readonly', st => st.get(idbKey)).then(js => {
     hideLoading(); const sv = js && JSON.parse(js);
     if (sv && sv.doc && sv.doc.ents && sv.doc.ents.length) { S.doc = sv.doc; S.fname = sv.fname || ''; S.sample = !!sv.sample; S.sheetRect = sv.sheetRect || null; bumpIds(S.doc.ents); }
     else { S.doc = sampleDoc(); S.sample = true; S.fname = ''; }
