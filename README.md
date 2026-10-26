@@ -57,6 +57,9 @@ Live: <https://gervdalius-droid.github.io/cad/draft.html>
 - **Edit** — move, copy, rotate, scale, mirror, stretch, offset, trim, chamfer, fillet (also replaces existing fillets; R0 = sharp corner), join/explode, grips, exact sizes in the panel.
 - **Sheets with parts** — detects the sheet and every part (including parts nested in cutouts), drag parts with snapping, R rotate / F flip, overlap / off-sheet / gap warnings, auto-arrange.
 - **Viewer** — distance/angle dimensions, holes by diameter, cut length, open-contour warning; 3D STEP/IGES/STL/OBJ with measuring and projection to DXF (straight into the 2D editor).
+- **Files** — DXF (any version) and DWG (blocks, splines, ellipses included); drawings in inches/cm/m are converted to mm. Saves DXF R12 or a complete DXF 2000 (LWPOLYLINE) that AutoCAD-strict readers accept.
+- **Checks before cutting** — duplicate / overlapped lines (would be cut twice) with one-click removal, open contours, parts overlapping or too close.
+- **Feels like CAD** — type values at the cursor (`50`, `600,400`, `#0,0`, `100<45`), Tab cycles snap points, Ctrl+C/X/V (also between tabs), Ctrl+D, arrows nudge, click again to pick the object underneath, right-click menu, `?` for all keys. Stays smooth on sheets with thousands of parts.
 
 ## Run it
 

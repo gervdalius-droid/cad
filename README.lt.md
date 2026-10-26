@@ -69,3 +69,6 @@ Gyvai: <https://gervdalius-droid.github.io/cad/draft.html>
 - Redagavimas: perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti, lygiagreti kopija, nukirpti, nuožula, apvalinimas (pakeičia ir esamus; R0 – status kampas), tikslūs dydžiai skydelyje.
 - Lapas su detalėmis: randa lapą ir detales (ir esančias išpjovose), tempimas su pritraukimu, R – pasukti, F – apversti, persidengimo / už lapo / tarpo įspėjimai, automatinis išdėstymas.
 - Peržiūra: matmenys ir kampai, skylės pagal skersmenį, pjovimo ilgis, 3D STEP/IGES/STL/OBJ su matavimu ir projekcija į DXF.
+- Failai: DXF (bet kokia versija) ir DWG (su blokais, splainais, elipsėmis); brėžiniai coliais / cm / m perskaičiuojami į mm. Įrašo DXF R12 arba pilną DXF 2000 (LWPOLYLINE), kurį priima ir griežtos CAD programos.
+- Patikra prieš pjovimą: dubliuotos / uždengtos linijos (būtų pjaunamos du kartus) su pašalinimu vienu mygtuku, neuždari kontūrai, persidengiančios ar per arti esančios detalės.
+- Kaip CAD programoje: reikšmės vedamos prie žymeklio (`50`, `600,400`, `#0,0`, `100<45`), Tab – kitas pritraukimo taškas, Ctrl+C/X/V (ir tarp skirtukų), Ctrl+D, rodyklės stumia, pakartotinis spustelėjimas paima apačioje esantį objektą, dešinio mygtuko meniu, `?` – visi klavišai. Veikia sklandžiai ir lapuose su tūkstančiais detalių.
