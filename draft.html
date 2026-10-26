@@ -7717,13 +7717,24 @@ function drawPartsOverlay(c, drag) {
     for (const [i, j] of chk.pairs || []) { if (live.has(i) && !live.has(j)) touched.add(j); else if (live.has(j) && !live.has(i)) touched.add(i); }
   }
   let sig = ''; for (let i = 0; i < an.parts.length; i++) if (still(i)) { const st = statusOf(cacheChk[i] || {}); if (st !== 'ok') sig += i + st[0] + ','; }
-  const key = [S.view.cx, S.view.cy, S.view.s, W, H, dpr, S.rev, an.parts.length, col.ok, col.hot, col.panel, live ? [...live].join('.') : '', sig].join('|');
-  if (!partsCache || partsCache.key !== key) {
-    const cv = partsCache ? partsCache.cv : document.createElement('canvas'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    drawPartSet(g, an, cacheChk, still, () => Z); partsCache = { key, cv };
+  const key = [W, H, dpr, S.rev, an.parts.length, col.ok, col.hot, col.panel, live ? [...live].join('.') : '', sig].join('|'), vk = [S.view.cx, S.view.cy, S.view.s].join('|');
+  // while the view is being zoomed or panned the last bitmap is only re-projected; it is redrawn once the view rests
+  const now = performance.now(); if (vk !== drawPartsOverlay.vk) { drawPartsOverlay.vk = vk; drawPartsOverlay.moved = now; }
+  const reuse = partsCache && partsCache.key === key && partsCache.vk !== vk && now - drawPartsOverlay.moved < 110 && partsCache.view.s / S.view.s < 3 && S.view.s / partsCache.view.s < 3;
+  if (reuse) {
+    const v0 = partsCache.view, s0 = v0.s, s1 = S.view.s, k = s1 / s0;
+    // screen0 -> world -> screen1 for a pure zoom + pan
+    const ex = W / 2 - S.view.cx * s1 + (v0.cx * s0 - W / 2) * k, ey = H / 2 + S.view.cy * s1 - (v0.cy * s0 + H / 2) * k;
+    c.save(); c.setTransform(dpr * k, 0, 0, dpr * k, dpr * ex, dpr * ey); c.drawImage(partsCache.cv, 0, 0, W, H); c.restore();
+    clearTimeout(drawPartsOverlay.tm); drawPartsOverlay.tm = setTimeout(requestDraw, 130);
+  } else {
+    if (!partsCache || partsCache.key !== key || partsCache.vk !== vk) {
+      const cv = partsCache ? partsCache.cv : document.createElement('canvas'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+      drawPartSet(g, an, cacheChk, still, () => Z); partsCache = { key, vk, cv, view: { ...S.view } };
+    }
+    c.drawImage(partsCache.cv, 0, 0, W, H);
   }
-  c.drawImage(partsCache.cv, 0, 0, W, H);
   if (touched && touched.size) drawPartSet(c, an, chk, i => touched.has(i), () => Z);
   if (live) drawPartSet(c, an, chk, i => live.has(i), () => drag.d);
   const hp = !drag && S.hoverPart; if (hp) {
