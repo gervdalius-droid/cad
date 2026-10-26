@@ -275,6 +275,7 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
     <button class="tg only-2d" data-snap="per" data-i="sPer"></button>
     <button class="tg only-2d" data-snap="nea" data-i="sNea"></button>
     <button class="tg only-2d" data-snap="grid" data-i="sGrid"></button>
+    <button class="tg only-2d" id="tPolar" data-i="polar" data-ti="polarTip"></button>
     <button class="tg only-2d" id="tOrtho" data-i="ortho"></button>
     <button class="tg only-2d" id="tWheel"></button>
     <span class="info" id="info"></span>
@@ -4489,7 +4490,7 @@ const I18N = {
   lt: {
     open: 'Atidaryti', insert: 'Įterpti', save: 'Įrašyti DXF', new: 'Naujas', undo: 'Atšaukti', redo: 'Grąžinti', fit: 'Visas vaizdas', props: 'Savybės',
     dropHere: 'Paleiskite DXF failą čia',
-    wheel_auto: 'Ratukas: auto', wheel_zoom: 'Ratukas: mastelis', wheel_pan: 'Ratukas: slinkti', wheelTip: 'Auto: pelės ratukas keičia mastelį, jutiklinio kilimėlio dviem pirštais – slenka, suspaudus – keičia mastelį', sNea: 'Ant linijos', sEnd: 'Galas', sMid: 'Vidurys', sCen: 'Centras', sInt: 'Sankirta', sQua: 'Kvadrantas', sPer: 'Statmuo', sGrid: 'Tinklelis', ortho: 'Orto (F8)',
+    wheel_auto: 'Ratukas: auto', wheel_zoom: 'Ratukas: mastelis', wheel_pan: 'Ratukas: slinkti', wheelTip: 'Auto: pelės ratukas keičia mastelį, jutiklinio kilimėlio dviem pirštais – slenka, suspaudus – keičia mastelį', sNea: 'Ant linijos', sEnd: 'Galas', sMid: 'Vidurys', sCen: 'Centras', sScen: 'Figūros centras', sInt: 'Sankirta', sQua: 'Kvadrantas', sPer: 'Statmuo', sGrid: 'Tinklelis', ortho: 'Orto (F8)', polar: '90° (F10)', polarTip: 'Judant beveik horizontaliai ar vertikaliai, kryptis užfiksuojama tiksliai 0° / 90°', polarOn: '90° fiksavimas įjungtas', polarOff: '90° fiksavimas išjungtas',
     gDraw: 'Braižyti', gEdit: 'Keisti', gMore: 'Kita',
     select: 'Žymėti', line: 'Linija', poly: 'Polilinija', rect: 'Stačiakampis', circle: 'Apskritimas', arc: 'Lankas per 3 taškus',
     move: 'Perkelti', copy: 'Kopijuoti', rotate: 'Pasukti', scale: 'Mastelis', mirror: 'Veidrodis', stretch: 'Ištempti',
@@ -4502,7 +4503,7 @@ const I18N = {
     rectP1: 'Pirmas kampas', rectP2: 'Priešingas kampas arba plotis,aukštis (pvz. 600,400)',
     circleC: 'Centras', circleR: 'Spindulys', circleD: 'Skersmuo',
     arc1: 'Lanko pradžia', arc2: 'Taškas ant lanko', arc3: 'Lanko pabaiga',
-    pBase: 'Bazinis taškas', pDest: 'Kur perkelti: taškas arba atstumas', pDestCopy: 'Kopijos vieta (Enter – baigti)',
+    pBase: 'Bazinis taškas (Enter – figūros centras)', pDest: 'Kur perkelti: taškas arba atstumas', pDestCopy: 'Kopijos vieta (Enter – baigti)',
     pAngle: 'Kampas laipsniais (pvz. 90) arba taškas', pFactor: 'Mastelio koeficientas (pvz. 2 arba 0.5; X ir Y atskirai 2;1) arba taškas',
     pMir1: 'Veidrodžio ašies pirmas taškas', pMir2: 'Ašies antras taškas',
     pSt1: 'Rėmelio pirmas kampas – taškai rėmelyje bus perkelti', pSt2: 'Rėmelio antras kampas',
@@ -4548,12 +4549,12 @@ const I18N = {
     helpTitle: 'Klavišai ir pelė', dropWarn: 'Dėmesio: {0}', pOverlaps: '#{0} persidengia su #{1}', pOutside: '#{0} išlenda už lapo', pClose: '#{0} per arti #{1}',
     helpHtml: '<div class="keys"><h4>Vaizdas</h4><kbd>Ratukas</kbd><span>Priartinti / nutolinti</span><kbd>2 pirštai</kbd><span>Slinkti (kilimėlis), suspaudus – mastelis</span><kbd>Tarpas + tempti</kbd><span>Slinkti vaizdą</span><kbd>Vidurinis / dešinys + tempti</kbd><span>Slinkti vaizdą</span><kbd>Z</kbd><span>Visas vaizdas</span>'
       + '<h4>Žymėjimas</h4><kbd>Spustelėti</kbd><span>Pažymėti objektą</span><kbd>Shift / Ctrl + spustelėti</kbd><span>Pridėti / atžymėti</span><kbd>Dukart spustelėti</kbd><span>Visas sujungtas kontūras</span><kbd>Tempti rėmelį →</kbd><span>Tik visiškai rėmelyje</span><kbd>Tempti rėmelį ←</kbd><span>Viskas, ką rėmelis kerta</span><kbd>Tempti pažymėtą</kbd><span>Perkelti</span><kbd>Dešinys spustelėjimas</kbd><span>Veiksmų meniu</span><kbd>Ctrl+A</kbd><span>Pažymėti viską</span><kbd>Del / Backspace</kbd><span>Ištrinti</span><kbd>Rodyklės</kbd><span>Pastumti pažymėtus 1 mm (Shift – 10 mm)</span><kbd>Ctrl+C / X / V</kbd><span>Kopijuoti / iškirpti / įklijuoti (veikia ir tarp skirtukų)</span><kbd>Ctrl+D</kbd><span>Dubliuoti ir padėti pele</span>'
-      + '<h4>Įvedimas</h4><kbd>50</kbd><span>Atstumas pelės kryptimi</span><kbd>600,400</kbd><span>Poslinkis X,Y nuo paskutinio taško</span><kbd>#0,0</kbd><span>Absoliuti koordinatė</span><kbd>100&lt;45</kbd><span>Atstumas ir kampas</span><kbd>Tab</kbd><span>Kitas pritraukimo taškas</span><kbd>Shift / F8</kbd><span>Tik horizontaliai / vertikaliai</span><kbd>Enter / tarpas</kbd><span>Patvirtinti, baigti</span><kbd>Esc</kbd><span>Atšaukti</span>'
+      + '<h4>Įvedimas</h4><kbd>50</kbd><span>Atstumas pelės kryptimi</span><kbd>600,400</kbd><span>Poslinkis X,Y nuo paskutinio taško</span><kbd>#0,0</kbd><span>Absoliuti koordinatė</span><kbd>100&lt;45</kbd><span>Atstumas ir kampas</span><kbd>Tab</kbd><span>Kitas pritraukimo taškas</span><kbd>F10</kbd><span>90° fiksavimas: beveik tiesus judesys tampa tiksliai horizontalus / vertikalus</span><kbd>Shift / F8</kbd><span>Tik horizontaliai / vertikaliai</span><kbd>Enter / tarpas</kbd><span>Patvirtinti, baigti</span><kbd>Esc</kbd><span>Atšaukti</span>'
       + '<h4>Įrankiai</h4><kbd>V</kbd><span>Žymėti</span><kbd>G</kbd><span>Detalės lape (R pasukti, F apversti, rodyklės stumti, Ctrl+D kopija)</span><kbd>L P R C A</kbd><span>Linija, polilinija, stačiakampis, apskritimas, lankas</span><kbd>M K Q S I H</kbd><span>Perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti</span><kbd>O T N F</kbd><span>Lygiagreti kopija, nukirpti, nuožula, apvalinimas</span><kbd>J X D U</kbd><span>Sujungti, išskaidyti, matmuo, kampas</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Atšaukti / grąžinti</span><kbd>Ctrl+S</kbd><span>Įrašyti DXF</span></div>',
     gSel: '', gSheet: 'Lapas', parts: 'Detalės lape', dim: 'Matmuo', angle: 'Kampas',
-    joinedForEdit: 'Kontūrai sujungti redagavimui: {0} · G – atgal į detales', refilleted: 'Kampas pakeistas', notfillet: 'Tai ne apvalinimas tarp dviejų tiesių', movedBy: 'Perkelta: {0}, {1}', pMoveDrag: 'Paleiskite, kur padėti · prisitraukia prie taškų · Shift – tiesiai', help_parts: 'Spustelėkite detalę ir tempkite. R – pasukti 90°, F – apversti, rodyklės – po 1 mm (Shift – 10 mm), Ctrl+D – kopija, Alt – be pritraukimo. Detalė nusidažo raudonai, jei persidengia ar išlenda už lapo.',
+    joinedForEdit: 'Kontūrai sujungti redagavimui: {0} · G – atgal į detales', refilleted: 'Kampas pakeistas', notfillet: 'Tai ne apvalinimas tarp dviejų tiesių', movedBy: 'Perkelta: {0}, {1}', pMoveDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · paėmus už kampo – prisitraukia prie taškų', help_parts: 'Spustelėkite detalę ir tempkite. R – pasukti 90°, F – apversti, rodyklės – po 1 mm (Shift – 10 mm), Ctrl+D – kopija, Alt – be pritraukimo. Detalė nusidažo raudonai, jei persidengia ar išlenda už lapo.',
     help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją. Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
-    pParts: 'Spustelėkite detalę ir tempkite · R pasukti · F apversti · rodyklės – stumti', pPartDrag: 'Paleiskite, kur padėti · Alt – be pritraukimo · Shift – tik horizontaliai/vertikaliai',
+    pParts: 'Spustelėkite detalę ir tempkite · R pasukti · F apversti · rodyklės – stumti', pPartDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · Alt – be pritraukimo',
     pAng1: 'Pirmo spindulio taškas', pAng2: 'Kampo viršūnė', pAng3: 'Antro spindulio taškas',
     measurements: 'Matavimai', hideDims: 'Slėpti', clearAll: 'Išvalyti', noMeas: 'Matavimų nėra',
     drawingInfo: 'Brėžinys', objects: 'Objektai', cutLen: 'Pjovimo ilgis', engLen: 'Graviravimas / žymės: {0} m', openEnds: 'Neuždarų kontūrų: {0} – CAM jų gali nepriimti.', show: 'Rodyti',
@@ -4584,7 +4585,7 @@ const I18N = {
   en: {
     open: 'Open', insert: 'Insert', save: 'Save DXF', new: 'New', undo: 'Undo', redo: 'Redo', fit: 'Zoom extents', props: 'Properties',
     dropHere: 'Drop the DXF file here',
-    wheel_auto: 'Wheel: auto', wheel_zoom: 'Wheel: zoom', wheel_pan: 'Wheel: pan', wheelTip: 'Auto: the mouse wheel zooms; on a touchpad two fingers pan and a pinch zooms', sNea: 'Nearest', sEnd: 'End', sMid: 'Mid', sCen: 'Center', sInt: 'Intersect', sQua: 'Quadrant', sPer: 'Perp.', sGrid: 'Grid', ortho: 'Ortho (F8)',
+    wheel_auto: 'Wheel: auto', wheel_zoom: 'Wheel: zoom', wheel_pan: 'Wheel: pan', wheelTip: 'Auto: the mouse wheel zooms; on a touchpad two fingers pan and a pinch zooms', sNea: 'Nearest', sEnd: 'End', sMid: 'Mid', sCen: 'Center', sScen: 'Shape centre', sInt: 'Intersect', sQua: 'Quadrant', sPer: 'Perp.', sGrid: 'Grid', ortho: 'Ortho (F8)', polar: '90° (F10)', polarTip: 'When moving almost horizontally or vertically the direction locks to exactly 0° / 90°', polarOn: '90° lock on', polarOff: '90° lock off',
     gDraw: 'Draw', gEdit: 'Modify', gMore: 'More',
     select: 'Select', line: 'Line', poly: 'Polyline', rect: 'Rectangle', circle: 'Circle', arc: 'Arc through 3 points',
     move: 'Move', copy: 'Copy', rotate: 'Rotate', scale: 'Scale', mirror: 'Mirror', stretch: 'Stretch',
@@ -4597,7 +4598,7 @@ const I18N = {
     rectP1: 'First corner', rectP2: 'Opposite corner or width,height (e.g. 600,400)',
     circleC: 'Center', circleR: 'Radius', circleD: 'Diameter',
     arc1: 'Arc start', arc2: 'Point on the arc', arc3: 'Arc end',
-    pBase: 'Base point', pDest: 'Destination: point or distance', pDestCopy: 'Copy destination (Enter to finish)',
+    pBase: 'Base point (Enter – centre of the shape)', pDest: 'Destination: point or distance', pDestCopy: 'Copy destination (Enter to finish)',
     pAngle: 'Angle in degrees (e.g. 90) or a point', pFactor: 'Scale factor (e.g. 2 or 0.5; X and Y separately 2;1) or a point',
     pMir1: 'First point of the mirror axis', pMir2: 'Second point of the axis',
     pSt1: 'First window corner – points inside will move', pSt2: 'Second window corner',
@@ -4643,12 +4644,12 @@ const I18N = {
     helpTitle: 'Keys and mouse', dropWarn: 'Check: {0}', pOverlaps: '#{0} overlaps #{1}', pOutside: '#{0} is off the sheet', pClose: '#{0} is too close to #{1}',
     helpHtml: '<div class="keys"><h4>View</h4><kbd>Wheel</kbd><span>Zoom in / out</span><kbd>2 fingers</kbd><span>Pan (touchpad), pinch to zoom</span><kbd>Space + drag</kbd><span>Pan</span><kbd>Middle / right + drag</kbd><span>Pan</span><kbd>Z</kbd><span>Zoom to everything</span>'
       + '<h4>Selecting</h4><kbd>Click</kbd><span>Select an object</span><kbd>Shift / Ctrl + click</kbd><span>Add / remove</span><kbd>Double-click</kbd><span>Whole connected outline</span><kbd>Drag box →</kbd><span>Only what is fully inside</span><kbd>Drag box ←</kbd><span>Everything the box touches</span><kbd>Drag selection</kbd><span>Move it</span><kbd>Right-click</kbd><span>Action menu</span><kbd>Ctrl+A</kbd><span>Select all</span><kbd>Del / Backspace</kbd><span>Delete</span><kbd>Arrows</kbd><span>Nudge the selection 1 mm (Shift – 10 mm)</span><kbd>Ctrl+C / X / V</kbd><span>Copy / cut / paste (also between tabs)</span><kbd>Ctrl+D</kbd><span>Duplicate and place with the mouse</span>'
-      + '<h4>Typing values</h4><kbd>50</kbd><span>Distance in the mouse direction</span><kbd>600,400</kbd><span>Offset X,Y from the last point</span><kbd>#0,0</kbd><span>Absolute coordinate</span><kbd>100&lt;45</kbd><span>Distance and angle</span><kbd>Tab</kbd><span>Next snap point</span><kbd>Shift / F8</kbd><span>Horizontal / vertical only</span><kbd>Enter / Space</kbd><span>Confirm, finish</span><kbd>Esc</kbd><span>Cancel</span>'
+      + '<h4>Typing values</h4><kbd>50</kbd><span>Distance in the mouse direction</span><kbd>600,400</kbd><span>Offset X,Y from the last point</span><kbd>#0,0</kbd><span>Absolute coordinate</span><kbd>100&lt;45</kbd><span>Distance and angle</span><kbd>Tab</kbd><span>Next snap point</span><kbd>F10</kbd><span>90° lock: an almost straight move becomes exactly horizontal / vertical</span><kbd>Shift / F8</kbd><span>Horizontal / vertical only</span><kbd>Enter / Space</kbd><span>Confirm, finish</span><kbd>Esc</kbd><span>Cancel</span>'
       + '<h4>Tools</h4><kbd>V</kbd><span>Select</span><kbd>G</kbd><span>Parts on sheet (R rotate, F flip, arrows nudge, Ctrl+D copy)</span><kbd>L P R C A</kbd><span>Line, polyline, rectangle, circle, arc</span><kbd>M K Q S I H</kbd><span>Move, copy, rotate, scale, mirror, stretch</span><kbd>O T N F</kbd><span>Offset, trim, chamfer, fillet</span><kbd>J X D U</kbd><span>Join, explode, dimension, angle</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Undo / redo</span><kbd>Ctrl+S</kbd><span>Save DXF</span></div>',
     gSel: '', gSheet: 'Sheet', parts: 'Parts on sheet', dim: 'Dimension', angle: 'Angle',
-    joinedForEdit: 'Contours joined for editing: {0} · G – back to the parts', refilleted: 'Corner changed', notfillet: 'This is not a fillet between two straight edges', movedBy: 'Moved by {0}, {1}', pMoveDrag: 'Release to place · snaps to points · Shift keeps it straight', help_parts: 'Click a part and drag it. R rotates 90°, F flips, arrows nudge 1 mm (Shift 10 mm), Ctrl+D copies, hold Alt to drag without snapping. A part turns red when it overlaps another or leaves the sheet.',
+    joinedForEdit: 'Contours joined for editing: {0} · G – back to the parts', refilleted: 'Corner changed', notfillet: 'This is not a fillet between two straight edges', movedBy: 'Moved by {0}, {1}', pMoveDrag: 'Release to place · almost straight locks to 0°/90° · grab by a corner to snap to points', help_parts: 'Click a part and drag it. R rotates 90°, F flips, arrows nudge 1 mm (Shift 10 mm), Ctrl+D copies, hold Alt to drag without snapping. A part turns red when it overlaps another or leaves the sheet.',
     help_dim: 'Two points, then a third click places the dimension line. Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
-    pParts: 'Click a part and drag · R rotate · F flip · arrows nudge', pPartDrag: 'Release to place · Alt disables snapping · Shift keeps it straight',
+    pParts: 'Click a part and drag · R rotate · F flip · arrows nudge', pPartDrag: 'Release to place · almost straight locks to 0°/90° · Alt disables snapping',
     pAng1: 'Point on the first ray', pAng2: 'Vertex', pAng3: 'Point on the second ray',
     measurements: 'Measurements', hideDims: 'Hide', clearAll: 'Clear all', noMeas: 'No measurements yet',
     drawingInfo: 'Drawing', objects: 'Objects', cutLen: 'Cut length', engLen: 'Engraving / marks: {0} m', openEnds: 'Open contours: {0} – CAM may reject them.', show: 'Show',
@@ -4685,7 +4686,7 @@ const S = {
   doc: { ents: [], layers: { '0': { color: 7, visible: true } } },
   sel: new Set(), view: { cx: 0, cy: 0, s: 1 }, fname: '', sample: false,
   snaps: Object.assign({ end: true, mid: true, cen: true, int: true, qua: false, per: true, nea: true, grid: false }, LS.get('dxfed.snaps', {})),
-  ortho: LS.get('dxfed.ortho', false), curLayer: '0', undo: [], redo: [],
+  ortho: LS.get('dxfed.ortho', false), polar: LS.get('dxfed.polar', true), curLayer: '0', undo: [], redo: [],
   opts: Object.assign({ chD1: 5, chD2: 5, fR: 5, offD: 16, mirrorKeep: false, rectR: 0, circDia: false, anchor: 'bl', rsMode: 'stretch', keepHoles: true, lock: false, gap: 8, margin: 4, withNested: true, allowRot: true }, LS.get('dxfed.opts', {})),
   fmt: LS.get('dxfed.fmt', 'r12'), lastTool: null, hover: null, snap: null, shift: false, mouse: null, world: { x: 0, y: 0 }, measure: null,
   dims: LS.get('dxfed.dims', []), dimsHidden: false, an: null, partChk: null, sheetRect: null, alt: false
@@ -4900,7 +4901,7 @@ function gripsOf(e) {
 }
 let gripCache = [];
 function hitGrip(sp) {
-  let best = null, bd = 8;
+  let best = null, bd = 7;
   if (!S.sel.size || S.sel.size > 120) return null;
   const list = selEnts().flatMap(gripsOf);
   for (const g of list) { const s = w2s(g.p), d = Math.max(Math.abs(s.x - sp.x), Math.abs(s.y - sp.y)); if (d <= bd) { bd = d; best = g; } }
@@ -5039,6 +5040,7 @@ function computeSnap(w, base) {
     if (f) consider(f, 'per', .1);
   }
   if (tool && tool.extraSnaps) for (const p of tool.extraSnaps()) consider(p, 'end', .4);
+  { const sc = selCenterSnap(); if (sc) { const d0 = vdist(sc, w); if (d0 <= 18 / S.view.s) { const c = { p: sc, kind: 'scen', d: d0 - tol }; cands.push(c); if (!best || c.d < best.d) best = c; } } }
   if (!best && S.snaps.grid) { const st = gridStep(); best = { p: { x: Math.round(w.x / st) * st, y: Math.round(w.y / st) * st }, kind: 'grid', d: 0 }; }
   // Tab cycles through the distinct candidates under the cursor
   const uniq = []; cands.sort((a, b) => a.d - b.d).forEach(c => { if (!uniq.some(u => vdist(u.p, c.p) < 1e-9)) uniq.push(c); });
@@ -5052,12 +5054,34 @@ function roundPt(w) {
   const r = v => +(Math.round(v / step) * step).toFixed(Math.min(dec, 8));
   return { x: r(w.x), y: r(w.y) };
 }
+// 90° lock: when the cursor is within a few pixels of the horizontal or vertical line through the base point, the point is
+// put exactly on that line (like polar tracking). Object snaps then only choose the position along the line.
+function axisLock(w, base) {
+  if (!base || !S.polar || (S.ortho !== S.shift)) return null;
+  const d = vsub(w, base), ax = Math.abs(d.x), ay = Math.abs(d.y), band = 10 / S.view.s;
+  if (Math.hypot(ax, ay) < band * 1.5) return null;
+  if (ay <= band && ax > ay * 2) return 'h';
+  if (ax <= band && ay > ax * 2) return 'v';
+  return null;
+}
 function curPoint() {
-  const w = S.world, base = tool && tool.base ? tool.base() : null;
-  if (S.snap && S.snap.kind !== 'grid') return S.snap.p;
-  let p = S.snap ? S.snap.p : roundPt(w);
+  const w = S.world, base = tool && tool.base ? tool.base() : null, lock = axisLock(w, base); S.lock = lock ? { kind: lock, base } : null;
+  if (S.snap && S.snap.kind !== 'grid') {
+    const sp = S.snap.p; if (!lock) return sp;
+    const band = 10 / S.view.s;
+    if (lock === 'h' && Math.abs(sp.y - base.y) <= band) return { x: sp.x, y: base.y };
+    if (lock === 'v' && Math.abs(sp.x - base.x) <= band) return { x: base.x, y: sp.y };
+    if (vdist(sp, w) < 4 / S.view.s) { S.lock = null; return sp; } // right on a snap point off the line: the snap wins
+  }
+  let p = S.snap && S.snap.kind === 'grid' ? S.snap.p : roundPt(w);
   if (base && (S.ortho !== S.shift)) { const d = vsub(w, base); p = Math.abs(d.x) >= Math.abs(d.y) ? { x: p.x, y: base.y } : { x: base.x, y: p.y }; }
+  else if (lock === 'h') p = { x: p.x, y: base.y }; else if (lock === 'v') p = { x: base.x, y: p.y };
   return p;
+}
+function drawLock(c, L) { // dashed guide along the locked direction
+  const b = w2s(L.base); c.save(); c.strokeStyle = col.win; c.globalAlpha = .7; c.lineWidth = 1; c.setLineDash([6, 5]); c.beginPath();
+  if (L.kind === 'h') { c.moveTo(0, Math.round(b.y) + .5); c.lineTo(W, Math.round(b.y) + .5); } else { c.moveTo(Math.round(b.x) + .5, 0); c.lineTo(Math.round(b.x) + .5, H); }
+  c.stroke(); c.restore();
 }
 
 /* ---------- overlay ---------- */
@@ -5107,6 +5131,7 @@ function drawSnap(c, s) {
     case 'end': c.rect(p.x - r, p.y - r, 2 * r, 2 * r); break;
     case 'mid': c.moveTo(p.x, p.y - r); c.lineTo(p.x + r, p.y + r * .8); c.lineTo(p.x - r, p.y + r * .8); c.closePath(); break;
     case 'cen': c.arc(p.x, p.y, r, 0, TAU); break;
+    case 'scen': c.arc(p.x, p.y, r + 2, 0, TAU); c.moveTo(p.x - r - 5, p.y); c.lineTo(p.x + r + 5, p.y); c.moveTo(p.x, p.y - r - 5); c.lineTo(p.x, p.y + r + 5); break;
     case 'int': c.moveTo(p.x - r, p.y - r); c.lineTo(p.x + r, p.y + r); c.moveTo(p.x + r, p.y - r); c.lineTo(p.x - r, p.y + r); break;
     case 'qua': c.moveTo(p.x, p.y - r); c.lineTo(p.x + r, p.y); c.lineTo(p.x, p.y + r); c.lineTo(p.x - r, p.y); c.closePath(); break;
     case 'per': c.moveTo(p.x - r, p.y + r); c.lineTo(p.x + r, p.y + r); c.moveTo(p.x - r, p.y + r); c.lineTo(p.x - r, p.y - r); c.moveTo(p.x - r, p.y); c.lineTo(p.x, p.y); c.lineTo(p.x, p.y + r); break;
@@ -5114,7 +5139,7 @@ function drawSnap(c, s) {
     default: c.moveTo(p.x - 4, p.y); c.lineTo(p.x + 4, p.y); c.moveTo(p.x, p.y - 4); c.lineTo(p.x, p.y + 4);
   }
   c.stroke();
-  const names = { end: 'sEnd', mid: 'sMid', cen: 'sCen', int: 'sInt', qua: 'sQua', per: 'sPer', nea: 'sNea', grid: 'sGrid' };
+  const names = { scen: 'sScen', end: 'sEnd', mid: 'sMid', cen: 'sCen', int: 'sInt', qua: 'sQua', per: 'sPer', nea: 'sNea', grid: 'sGrid' };
   if (names[s.kind]) {
     let txt = t(names[s.kind]).toUpperCase(); if (S.snapCands && S.snapCands.length > 1) txt += '  ⇥ ' + ((S.snapPick || 0) % S.snapCands.length + 1) + '/' + S.snapCands.length;
     c.font = '600 10px ' + getComputedStyle(document.body).getPropertyValue('--mono'); c.fillStyle = col.hot; c.textBaseline = 'bottom'; c.fillText(txt, p.x + 9, p.y - 7);
@@ -5160,7 +5185,9 @@ function renderOverlay() {
     c.save(); c.fillStyle = color; c.globalAlpha = .08; c.fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(b.x - a.x), Math.abs(b.y - a.y)); c.globalAlpha = 1;
     c.strokeStyle = color; c.setLineDash(crossing ? [5, 4] : []); c.lineWidth = 1; c.strokeRect(Math.min(a.x, b.x) + .5, Math.min(a.y, b.y) + .5, Math.abs(b.x - a.x), Math.abs(b.y - a.y)); c.restore();
   }
+  { const ch = centerHandle(); if (ch) drawCenterMark(c, ch, S.centerHover); else { const sc = selCenterSnap(); if (sc && !(S.snap && S.snap.kind === 'scen')) drawCenterMark(c, sc, false); } }
   if (S.mouse && S.mouse.inside) {
+    if (S.lock && tool.wantsPoint && tool.wantsPoint()) drawLock(c, S.lock);
     if (S.snap) drawSnap(c, S.snap);
     const base = tool.base ? tool.base() : null;
     if (base && tool.wantsPoint && tool.wantsPoint()) {
@@ -5176,6 +5203,17 @@ function renderOverlay() {
 /* ---------- tools ---------- */
 let tool = null, boxDrag = null, pick = null;
 const NEED_SEL = new Set(['move', 'copy', 'rotate', 'scale', 'mirror']);
+// centre of the selection's outline box – the natural point to move or rotate a part about
+function selCenter() { if (!S.sel.size) return null; if (selCenter.rev === S.rev && selCenter.c) return selCenter.c; const bb = bboxOf(selEnts()); selCenter.rev = S.rev; selCenter.c = bb ? { x: (bb[0] + bb[2]) / 2, y: (bb[1] + bb[3]) / 2 } : null; return selCenter.c; }
+function selCenterSnap() { if (!tool || !NEED_SEL.has(tool.name) || !(tool.phase === 'base' || (tool.name === 'mirror' && tool.phase === 'p1'))) return null; return selCenter(); }
+// the move handle drawn at the centre of a selection in the Select tool (not for a lone circle: it has its own centre grip)
+function centerHandle() { if (!tool || tool.name !== 'select' || tool.hot || (tool.mv && tool.mv.moved) || !S.sel.size || S.sel.size > 2000) return null; if (S.sel.size === 1) { const e = selEnts()[0]; if (!e || e.type === 'circle' || e.type === 'arc' || e.type === 'text' || e.type === 'line') return null; } return selCenter(); }
+function drawCenterMark(c, p, strong) {
+  const q = w2s(p); c.save(); c.strokeStyle = col.win; c.fillStyle = col.panel; c.lineWidth = 1.5; c.globalAlpha = strong ? 1 : .55;
+  c.beginPath(); c.arc(q.x, q.y, 7, 0, TAU); c.fill(); c.stroke(); c.beginPath();
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { c.moveTo(q.x + dx * 3, q.y + dy * 3); c.lineTo(q.x + dx * 11, q.y + dy * 11); }
+  c.stroke(); c.restore();
+}
 // dimensions stay attached: every dimension point lying on (or at the centre of) a moved object moves with it
 function carryDims(list, m) {
   if (!S.dims || !S.dims.length || !list.length) return;
@@ -5319,29 +5357,47 @@ const TOOLS = {
     wantsPoint() { return !!this.hot || !!(this.mv && this.mv.moved); },
     get skipSnapId() { return this.hot ? this.hot.id : null; },
     get skipSnapSet() { return this.mv && this.mv.moved ? S.sel : null; },
+    noSnap() { return !!(this.mv && this.mv.moved && !this.mv.strong); },
     down(p, info) {
-      if (this.hot) { this.place(p); this.justPlaced = true; return; }
+      // an armed grip is placed by a click; pressing and dragging instead disarms it and works as usual (no accidental reshapes)
+      if (this.hot && !this.dragging) { this.pending = { p, info }; return; }
       const dm = hitDim(info.screen); if (dm) { this.dimDrag = dm; this.dimOff0 = dm.off; return; }
       const g = hitGrip(info.screen);
       if (g) { this.hot = g; this.dragging = true; S.hover = null; updatePrompt(); return; }
+      const ch = !info.shift && !info.ctrl ? centerHandle() : null;
+      if (ch && vdist(w2s(ch), info.screen) <= 11) { this.mv = { start: ch, moved: false, hit: null, strong: true }; return; } // drag the centre handle = move by the centre
       // press on an already selected object (or inside a selected closed outline) and drag = move the selection
       const mod = info.shift || info.ctrl, under = hitAll(info.world), e = under.find(x => S.sel.has(x.id)) || under[0] || null;
-      if (!mod && e && S.sel.has(e.id)) { this.mv = { start: p, moved: false, hit: e.id }; return; } // (pressing inside an outline starts a box, so holes can be picked)
+      if (!mod && e && S.sel.has(e.id)) {
+        // grabbing near a corner / midpoint / centre takes that exact point along (so it can be dropped onto another point);
+        // grabbing anywhere else on the line gives a free move: no snapping, only the 90° lock
+        const sn = computeSnap(info.world, null), strong = !!(sn && /^(end|mid|cen|int|qua)$/.test(sn.kind));
+        this.mv = { start: strong ? sn.p : p, moved: false, hit: e.id, strong }; return;
+      } // (pressing inside an outline starts a box, so holes can be picked)
       pick = { start: info.screen };
     },
     move() {
+      if (this.pending && downInfo && downInfo.moved) {
+        const pp = this.pending; this.pending = null; this.hot = null; updatePrompt();
+        const under = hitAll(pp.info.world), e = under.find(x => S.sel.has(x.id));
+        if (e) { const sn = computeSnap(pp.info.world, null), strong = !!(sn && /^(end|mid|cen|int|qua)$/.test(sn.kind)); this.mv = { start: strong ? sn.p : pp.p, moved: true, hit: e.id, strong }; }
+        else pick = { start: pp.info.screen };
+        return;
+      }
       if (this.dimDrag) this.dimDrag.off = dimOffsetFor(this.dimDrag, S.world);
       if (this.mv && !this.mv.moved && downInfo && downInfo.moved) { this.mv.moved = true; updatePrompt(); }
     },
     up(p, info) {
       if (this.dimDrag) { const m = this.dimDrag, o1 = m.off; this.dimDrag = null; if (Math.abs(o1 - this.dimOff0) > 1e-9) { m.off = this.dimOff0; pushUndo(); m.off = o1; updateInfo(); } saveDims(); return; }
-      if (this.justPlaced) { this.justPlaced = false; return; }
+      if (this.pending) { this.pending = null; this.place(p); return; }
       if (this.mv) {
         const mv = this.mv; this.mv = null; updatePrompt();
         if (mv.moved) { const d = vsub(p, mv.start); if (!S.snap) { d.x = Math.round(d.x * 100) / 100; d.y = Math.round(d.y * 100) / 100; } if (vlen(d) > 1e-9) { applyM(mTrans(d.x, d.y)); toast(t('movedBy', fmt(d.x, 2), fmt(d.y, 2))); } }
         else if (mv.hit != null && S.sel.size > 1) { S.sel.clear(); S.sel.add(mv.hit); selChanged(); }
         else if (mv.hit != null && S.sel.size === 1) { // clicking the selected object again picks the next one underneath
-          const all = hitAll(info.world); if (all.length > 1) { const i = all.findIndex(e => e.id === mv.hit), nx = all[(i + 1) % all.length]; S.sel.clear(); S.sel.add(nx.id); selChanged(); toast(t('cycleN', ((i + 1) % all.length) + 1, all.length)); }
+          // only objects lying on top of each other take part (not a neighbour that merely crosses nearby)
+          const me = getEnt(mv.hit), d0 = me ? distEnt(info.world, me) : 0, all = hitAll(info.world).filter(e => distEnt(info.world, e) <= d0 + 1.5 / S.view.s);
+          if (all.length > 1) { const i = all.findIndex(e => e.id === mv.hit), nx = all[(i + 1) % all.length]; S.sel.clear(); S.sel.add(nx.id); selChanged(); toast(t('cycleN', ((i + 1) % all.length) + 1, all.length)); }
         }
         return;
       }
@@ -5363,7 +5419,7 @@ const TOOLS = {
       if (!S.sel.size) { panBy(dir[0] * W * .15, -dir[1] * H * .15); return true; }
       const st = ev.shiftKey ? 10 : 1; applyM(mTrans(dir[0] * st, dir[1] * st)); toast(t('movedBy', fmt(dir[0] * st, 2), fmt(dir[1] * st, 2))); return true;
     },
-    cancel() { this.mv = null; if (this.hot) { this.hot = null; return true; } return false; },
+    cancel() { this.mv = null; this.pending = null; if (this.hot) { this.hot = null; return true; } return false; },
     esc() { if (this.mv) { this.mv = null; updatePrompt(); requestDraw(); return; } if (this.hot) { this.hot = null; return; } if (S.sel.size) { S.sel.clear(); selChanged(); } }
   }),
   line: () => ({
@@ -5544,6 +5600,7 @@ function escapeKey() {
   S.measure = null; updatePrompt(); requestDraw();
 }
 function confirmKey() {
+  if (NEED_SEL.has(tool.name) && (tool.phase === 'base' || (tool.name === 'mirror' && tool.phase === 'p1')) && tool.point && S.sel.size) { const c = selCenter(); if (c) { tool.point(c, {}); updatePrompt(); requestDraw(); return; } }
   if (tool.phase === 'pick') { if (S.sel.size) { tool.afterPick(); updatePrompt(); requestDraw(); } else toast(t('needSel'), true); return; }
   if (tool.enter) tool.enter(); else setTool('select');
 }
@@ -5976,6 +6033,7 @@ document.addEventListener('keydown', ev => {
   if ((ev.ctrlKey || ev.metaKey) && k === 's') { ev.preventDefault(); saveDXF(false); return; }
   if ((ev.ctrlKey || ev.metaKey) && k === 'o') { ev.preventDefault(); $('fOpen').click(); return; }
   if (ev.key === 'F8') { ev.preventDefault(); S.ortho = !S.ortho; LS.set('dxfed.ortho', S.ortho); syncToggles(); requestDraw(); return; }
+  if (ev.key === 'F10') { ev.preventDefault(); S.polar = !S.polar; LS.set('dxfed.polar', S.polar); syncToggles(); toast(t(S.polar ? 'polarOn' : 'polarOff')); requestDraw(); return; }
   if (ev.key === 'Shift') { S.shift = true; requestDraw(); }
   if (ev.key === 'Backspace' && tg !== cmd && !textField && !ev.ctrlKey && !ev.metaKey && !ev.altKey && stepBack()) { ev.preventDefault(); return; }
   if ((ev.key === 'Delete' || ev.key === 'Backspace') && tg !== cmd && !textField && !ev.ctrlKey && !ev.metaKey && !ev.altKey && S.sel.size) { ev.preventDefault(); runAction('del'); focusCmd(); return; }
@@ -6016,6 +6074,7 @@ function updateCursor() {
   if (n === 'select') {
     if (tool.hot || (tool.mv && tool.mv.moved)) return setCursor('crosshair');
     if (S.gripHover) return setCursor('pointer');
+    if (S.centerHover) return setCursor('move');
     if (S.mouse && hitDim(S.mouse)) return setCursor('move');
     if ((S.hover != null && S.sel.has(S.hover)) || (S.hover == null && S.insideSel)) return setCursor('move');
     return setCursor(S.hover != null ? 'pointer' : 'default');
@@ -6026,7 +6085,7 @@ function updateCursor() {
 }
 function updateSnapNow() {
   const wants = tool.phase !== 'pick' && tool.wantsPoint && tool.wantsPoint();
-  S.snap = wants ? computeSnap(S.world, tool.base ? tool.base() : null) : null;
+  S.snap = wants && !(tool.noSnap && tool.noSnap()) ? computeSnap(S.world, tool.base ? tool.base() : null) : null;
 }
 ov.addEventListener('pointerdown', ev => {
   ov.setPointerCapture(ev.pointerId);
@@ -6064,7 +6123,7 @@ ov.addEventListener('pointermove', ev => {
   if (pick && downInfo && downInfo.moved) boxDrag = { a: pick.start, b: sp };
   updateSnapNow(); updateHover();
   S.gripHover = tool.name === 'select' && !tool.hot && !downInfo ? hitGrip(sp) : null;
-  S.insideSel = false;
+  S.insideSel = false; { const ch = !downInfo ? centerHandle() : null; S.centerHover = !!(ch && vdist(w2s(ch), sp) <= 11); }
   S.hoverPart = tool.name === 'parts' && !(tool.drag && tool.drag.moved) ? (partAt(S.world) || null) : null;
   if (S.space && downInfo == null && pan) S.space.panning = true;
   const w = curPoint(); $('coords').textContent = `X ${fmt(w.x, 2)}   Y ${fmt(w.y, 2)}`;
@@ -6143,7 +6202,8 @@ document.querySelectorAll('.tg[data-snap]').forEach(b => b.onclick = () => { con
 S.wheelMode = LS.get('dxfed.wheel', 'auto');
 $('tWheel').onclick = () => { S.wheelMode = { auto: 'zoom', zoom: 'pan', pan: 'auto' }[S.wheelMode] || 'auto'; LS.set('dxfed.wheel', S.wheelMode); syncToggles(); focusCmd(); };
 $('tOrtho').onclick = () => { S.ortho = !S.ortho; LS.set('dxfed.ortho', S.ortho); syncToggles(); focusCmd(); };
-function syncToggles() { document.querySelectorAll('.tg[data-snap]').forEach(b => b.classList.toggle('on', !!S.snaps[b.dataset.snap])); $('tOrtho').classList.toggle('on', S.ortho); $('tWheel').textContent = t('wheel_' + (S.wheelMode || 'auto')); $('tWheel').title = t('wheelTip'); }
+$('tPolar').onclick = () => { S.polar = !S.polar; LS.set('dxfed.polar', S.polar); syncToggles(); focusCmd(); };
+function syncToggles() { document.querySelectorAll('.tg[data-snap]').forEach(b => b.classList.toggle('on', !!S.snaps[b.dataset.snap])); $('tOrtho').classList.toggle('on', S.ortho); $('tPolar').classList.toggle('on', S.polar); $('tWheel').textContent = t('wheel_' + (S.wheelMode || 'auto')); $('tWheel').title = t('wheelTip'); }
 function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i]').forEach(el => { el.textContent = t(el.dataset.i); });
@@ -7822,6 +7882,7 @@ function drawPartsOverlay(c, drag) {
     c.strokeStyle = col.win; c.lineWidth = 1; c.setLineDash([4, 4]);
     if (drag.gx != null) { const x = w2s({ x: drag.gx, y: 0 }).x; c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
     if (drag.gy != null) { const y = w2s({ x: 0, y: drag.gy }).y; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+    if (drag.lock) drawLock(c, { kind: drag.lock, base: { x: (drag.bb[0] + drag.bb[2]) / 2 + drag.d.x, y: (drag.bb[1] + drag.bb[3]) / 2 + drag.d.y } });
   }
   c.restore();
 }
@@ -7840,7 +7901,10 @@ TOOLS.parts = () => ({
   move() {
     const dr = this.drag; if (!dr || !downInfo || !downInfo.moved) return;
     let d = vsub(S.world, dr.start); dr.gx = dr.gy = null;
-    if (!S.alt) { const s = snapMove(dr.bb, d, dr.targets, 9 / S.view.s); d = { x: s.x, y: s.y }; dr.gx = s.gx; dr.gy = s.gy; }
+    // 90° lock: an almost horizontal / vertical drag stays exactly on that line (edge snapping only works along it)
+    const lock = axisLock(S.world, dr.start); dr.lock = lock;
+    if (lock === 'h') d.y = 0; if (lock === 'v') d.x = 0;
+    if (!S.alt) { const s = snapMove(dr.bb, d, dr.targets, 9 / S.view.s); d = { x: s.x, y: s.y }; dr.gx = s.gx; dr.gy = s.gy; if (lock === 'h') { d.y = 0; dr.gy = null; } if (lock === 'v') { d.x = 0; dr.gx = null; } }
     if (dr.gx == null) d.x = Math.round(d.x * 100) / 100; // free moves land on 0.01 mm
     if (dr.gy == null) d.y = Math.round(d.y * 100) / 100;
     if (S.ortho !== S.shift) { if (Math.abs(d.x) >= Math.abs(d.y)) d.y = 0; else d.x = 0; }
