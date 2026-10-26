@@ -29,7 +29,7 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--fg);font:13px/1.35 var(--ui);display:grid;grid-template-columns:50px minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font:13px/1.35 var(--ui);display:grid;grid-template-columns:80px minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
 button,input,select{font:inherit;color:inherit}
 .top{grid-column:1/-1;display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
 .brand{display:flex;align-items:baseline;gap:8px;margin-right:10px}
@@ -40,6 +40,7 @@ button,input,select{font:inherit;color:inherit}
 .btn:hover{border-color:var(--accent)}
 .btn:focus-visible,.tool:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.btn.icon{width:32px;padding:0;justify-content:center}
 .btn.small{height:26px;padding:0 8px;font-size:12px}
 .btn svg{width:16px;height:16px;flex:none}
 .btn[disabled]{opacity:.45;cursor:default}
@@ -47,19 +48,21 @@ button,input,select{font:inherit;color:inherit}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .seg button{border:0;background:var(--raise);height:28px;padding:0 9px;cursor:pointer;font-size:12px}
 .seg button.on{background:var(--accent);color:var(--accent-fg)}
-.tools{grid-row:2;display:flex;flex-direction:column;gap:2px;padding:6px 5px;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto}
-.tools .grp{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);text-align:center;margin:6px 0 2px}
-.tool{position:relative;width:38px;height:34px;display:grid;place-items:center;border:1px solid transparent;border-radius:4px;background:none;cursor:pointer;flex:none}
+.tools{grid-row:2;display:grid;grid-template-columns:repeat(2,34px);grid-auto-rows:min-content;justify-content:center;align-content:start;gap:2px;padding:6px 4px;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto}
+.tools .grp{grid-column:1/-1;font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);text-align:center;margin:6px 0 2px}
+.tool{position:relative;width:34px;height:32px;display:grid;place-items:center;border:1px solid transparent;border-radius:4px;background:none;cursor:pointer;flex:none}
 .tool svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .tool:hover{background:var(--raise);border-color:var(--line)}
 .tool.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .tool kbd{position:absolute;right:2px;bottom:0;font:9px var(--mono);color:var(--muted)}
+.tool.view-preset{grid-column:1/-1;width:auto;height:28px;border-color:var(--line);background:var(--raise);font:600 11px var(--ui)!important}
+.tool.view-preset:hover{border-color:var(--accent)}
 .stage{grid-row:2;position:relative;min-width:0;min-height:0;overflow:hidden;background:var(--canvas)}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-#ov{cursor:crosshair;touch-action:none}
+#ov{cursor:default;touch-action:none}
 .drop{position:absolute;inset:12px;border:2px dashed var(--accent);border-radius:8px;display:grid;place-items:center;background:color-mix(in srgb,var(--canvas) 80%,transparent);font-size:16px;pointer-events:none}
-.side{grid-row:2;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;min-width:0}
-.side section{padding:10px 12px;border-bottom:1px solid var(--line)}
+.side{grid-row:2;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;min-width:0}
+.side section{padding:10px 12px;border-bottom:1px solid var(--line);flex:none}
 .side h3{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;gap:8px}
 .side h3 em{font-style:normal;text-transform:none;letter-spacing:0;color:var(--fg);font-weight:500}
 .hint{color:var(--muted);font-size:12px;margin:0}
@@ -104,7 +107,7 @@ button,input,select{font:inherit;color:inherit}
 .tg.on{color:var(--fg);border-color:var(--line);background:var(--raise)}
 .tg.on::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:5px;vertical-align:1px}
 .status .info{margin-left:auto;color:var(--muted);font-family:var(--mono)}
-#toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:4px;font-size:13px;max-width:min(560px,90vw);box-shadow:0 4px 18px rgba(0,0,0,.25);z-index:20}
+#toast{position:fixed;left:50%;top:54px;transform:translateX(-50%);pointer-events:none;background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:4px;font-size:13px;max-width:min(560px,90vw);box-shadow:0 4px 18px rgba(0,0,0,.25);z-index:20}
 #toast.warn{background:var(--warn);color:#fff}
 .pbtn{display:none}
 
@@ -146,12 +149,43 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
 .spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .hint3{font-size:11px;color:var(--muted)}
+
+.zoomctl{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:4px;z-index:3}
+.zoomctl button{width:32px;height:32px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--fg);cursor:pointer;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.zoomctl button:hover{border-color:var(--accent)}
+.zoomctl svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.ctx{position:fixed;z-index:40;min-width:210px;background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:4px;display:flex;flex-direction:column}
+.ctx button{display:flex;justify-content:space-between;gap:16px;align-items:center;text-align:left;border:0;background:none;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:13px}
+.ctx button:hover:not([disabled]),.ctx button:focus-visible{background:var(--accent-soft);outline:none}
+.ctx button[disabled]{opacity:.4;cursor:default}
+.ctx kbd{font:11px var(--mono);color:var(--muted)}
+.ctx hr{border:0;border-top:1px solid var(--line);margin:3px 4px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13px}
+.keys kbd{font:12px var(--mono);background:var(--raise);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 6px;white-space:nowrap;justify-self:start}
+.keys h4{grid-column:1/-1;margin:8px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 @media (max-width:860px){
   body{grid-template-columns:46px minmax(0,1fr)}
+  .tools{grid-template-columns:34px}
+  .tool.view-preset{font-size:9px!important;padding:0}
+  .status .tg[data-snap=qua],.status .tg[data-snap=grid],.status .tg[data-snap=per],#tWheel,.zoomctl{display:none}
   .side{position:fixed;right:0;top:44px;bottom:70px;width:min(320px,92vw);z-index:15;box-shadow:-4px 0 18px rgba(0,0,0,.2);display:none}
-  body.panel-open .side{display:block}
+  body.panel-open .side{display:flex}
   .pbtn{display:inline-flex}
   .brand span,.hide-sm{display:none}
+  /* one scrollable row instead of three wrapped ones */
+  .top{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:6px 8px;gap:5px}
+  .top::-webkit-scrollbar{display:none}
+  .top>*{flex-shrink:0;order:2}
+  .top>.brand,#modeSeg,#bOpen{order:0}
+  #bPanel,#bSave{order:1}
+  .brand{margin-right:2px}
+  .top .spacer{display:none}
+  .tools .grp{font-size:0;height:1px;background:var(--line);margin:5px 2px}
+  .status{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .status::-webkit-scrollbar{display:none}
+  .status .co{min-width:auto}
+  .status>*{flex-shrink:0;white-space:nowrap}
+  .cmd #prompt{max-width:55%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -170,12 +204,13 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
   </select>
   <button class="btn only-2d" id="bNew"><span data-i="new"></span></button>
   <span class="sep"></span>
-  <button class="btn only-2d" id="bUndo" title="Ctrl+Z"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 5 3 9l4 4M3 9h9a5 5 0 0 1 0 10h-2"/></svg><span class="hide-sm" data-i="undo"></span></button>
-  <button class="btn only-2d" id="bRedo" title="Ctrl+Y"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m13 5 4 4-4 4m4-4H8a5 5 0 0 0 0 10h2"/></svg><span class="hide-sm" data-i="redo"></span></button>
-  <button class="btn" id="bFit" title="Z"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg><span class="hide-sm" data-i="fit"></span></button>
+  <button class="btn only-2d icon" id="bUndo" data-ti="undo" data-k="Ctrl+Z"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 5 3 9l4 4M3 9h9a5 5 0 0 1 0 10h-2"/></svg></button>
+  <button class="btn only-2d icon" id="bRedo" data-ti="redo" data-k="Ctrl+Y"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m13 5 4 4-4 4m4-4H8a5 5 0 0 0 0 10h2"/></svg></button>
+  <button class="btn icon" id="bFit" data-ti="fit" data-k="Z"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg></button>
   <span class="spacer"></span>
   <button class="btn pbtn" id="bPanel"><span data-i="props"></span></button>
   <div class="seg" id="langSeg"><button data-l="lt">LT</button><button data-l="en">EN</button></div>
+  <button class="btn icon" id="bHelp" data-ti="helpTitle" data-k="?" style="font-weight:700">?</button>
   <button class="btn" id="bTheme" aria-label="Theme"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="6"/><path d="M10 4a6 6 0 0 0 0 12z" fill="currentColor"/></svg></button>
 </header>
 <nav class="tools only-2d" id="tools"></nav>
@@ -196,6 +231,7 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
   <div id="canvas3d-wrap" hidden></div>
   <div class="loading" id="loading" hidden><div><span class="spin"></span><span id="loadingText"></span></div></div>
   <div class="drop" id="drop" hidden><span data-i="dropHere"></span></div>
+  <div class="zoomctl only-2d"><button id="zIn" type="button" title="+"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg></button><button id="zOut" type="button" title="−"><svg viewBox="0 0 16 16"><path d="M3 8h10"/></svg></button><button id="zFit" type="button" title="Z"><svg viewBox="0 0 16 16"><path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3"/></svg></button></div>
 </main>
 <aside class="side" id="side">
   <section id="selPanel" class="only-2d"></section>
@@ -231,6 +267,10 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
   </div>
 </footer>
 <div id="toast" hidden></div>
+<div class="ctx" id="ctx" hidden role="menu"></div>
+<div class="overlay" id="helpOverlay" hidden><div class="card" role="dialog" aria-labelledby="helpT" style="width:min(560px,100%)">
+  <header><span id="helpT" data-i="helpTitle"></span><button class="x" id="helpClose" aria-label="Close">✕</button></header>
+  <div class="body" id="helpBody"></div></div></div>
 <div class="overlay" id="exportOverlay" hidden><div class="card" role="dialog" aria-labelledby="expT">
   <header><span id="expT" data-i="exportTitle"></span><button class="x" id="exportClose" aria-label="Close">✕</button></header>
   <div class="body"><h3 class="hint" style="margin:0;text-transform:uppercase;letter-spacing:.08em;font-size:11px" data-i="projPlane"></h3>
@@ -868,7 +908,8 @@ function tokenize(text) {
   for (let i = 0; i + 1 < L.length;) {
     const code = L[i].trim();
     if (!/^-?\d+$/.test(code)) { i++; continue; }
-    G.push([parseInt(code, 10), L[i + 1].trim()]); i += 2;
+    let v = L[i + 1].trim(); if (v.includes('\\U+')) v = v.replace(/\\U\+([0-9A-Fa-f]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
+    G.push([parseInt(code, 10), v]); i += 2;
   }
   return G;
 }
@@ -1064,6 +1105,7 @@ function parseDXF(text) {
 /* ===================== DXF writing ===================== */
 function fnum(n) { if (!isFinite(n) || Math.abs(n) < 1e-10) return '0'; let s = (Math.round(n * 1e6) / 1e6).toString(); if (s.includes('e')) s = n.toFixed(6); return s; }
 function writeDXF(doc, fmt = 'r12') {
+  if (fmt === 'lw') return writeDXF2000(doc);
   const o = [], P = (c, v) => { o.push(String(c)); o.push(String(v)); };
   const ents = doc.ents, bb = bboxOf(ents) || [0, 0, 0, 0];
   P(0, 'SECTION'); P(2, 'HEADER');
@@ -1079,12 +1121,12 @@ function writeDXF(doc, fmt = 'r12') {
   P(0, 'ENDTAB');
   const names = Object.keys(doc.layers);
   P(0, 'TABLE'); P(2, 'LAYER'); P(70, names.length);
-  for (const n of names) { const l = doc.layers[n]; P(0, 'LAYER'); P(2, n); P(70, 0); P(62, (l.visible === false ? -1 : 1) * (l.color || 7)); P(6, 'CONTINUOUS'); }
+  for (const n of names) { const l = doc.layers[n]; P(0, 'LAYER'); P(2, dxfStr(n)); P(70, 0); P(62, (l.visible === false ? -1 : 1) * (l.color || 7)); P(6, 'CONTINUOUS'); }
   P(0, 'ENDTAB');
   P(0, 'ENDSEC');
   P(0, 'SECTION'); P(2, 'BLOCKS'); P(0, 'ENDSEC');
   P(0, 'SECTION'); P(2, 'ENTITIES');
-  const head = (type, e) => { P(0, type); P(8, e.layer || '0'); if (e.color != null && e.color > 0) P(62, e.color); };
+  const head = (type, e) => { P(0, type); P(8, dxfStr(e.layer || '0')); if (e.color != null && e.color > 0) P(62, e.color); };
   for (const e of ents) {
     if (e.type === 'line') { head('LINE', e); P(10, fnum(e.x1)); P(20, fnum(e.y1)); P(30, 0); P(11, fnum(e.x2)); P(21, fnum(e.y2)); P(31, 0); }
     else if (e.type === 'circle') { head('CIRCLE', e); P(10, fnum(e.cx)); P(20, fnum(e.cy)); P(30, 0); P(40, fnum(e.r)); }
@@ -1100,14 +1142,2761 @@ function writeDXF(doc, fmt = 'r12') {
         for (const p of e.pts) { P(10, fnum(p.x)); P(20, fnum(p.y)); if (Math.abs(p.b || 0) > 1e-12) P(42, fnum(p.b)); }
       } else {
         head('POLYLINE', e); P(66, 1); P(10, 0); P(20, 0); P(30, 0); P(70, e.closed ? 1 : 0);
-        for (const p of e.pts) { P(0, 'VERTEX'); P(8, e.layer || '0'); P(10, fnum(p.x)); P(20, fnum(p.y)); P(30, 0); if (Math.abs(p.b || 0) > 1e-12) P(42, fnum(p.b)); }
-        P(0, 'SEQEND'); P(8, e.layer || '0');
+        for (const p of e.pts) { P(0, 'VERTEX'); P(8, dxfStr(e.layer || '0')); P(10, fnum(p.x)); P(20, fnum(p.y)); P(30, 0); if (Math.abs(p.b || 0) > 1e-12) P(42, fnum(p.b)); }
+        P(0, 'SEQEND'); P(8, dxfStr(e.layer || '0'));
       }
     }
-    else if (e.type === 'text') { head('TEXT', e); P(10, fnum(e.x)); P(20, fnum(e.y)); P(30, 0); P(40, fnum(e.h)); P(1, e.text); if (Math.abs(e.rot || 0) > 1e-9) P(50, fnum(deg(normAng(e.rot)))); }
+    else if (e.type === 'text') { head('TEXT', e); P(10, fnum(e.x)); P(20, fnum(e.y)); P(30, 0); P(40, fnum(e.h)); P(1, dxfStr(e.text)); if (Math.abs(e.rot || 0) > 1e-9) P(50, fnum(deg(normAng(e.rot)))); }
   }
   P(0, 'ENDSEC'); P(0, 'EOF');
   return o.join('\r\n') + '\r\n';
+}
+
+// text and names: anything outside printable ASCII becomes \U+XXXX, which every AutoCAD-compatible reader decodes, whatever its code page
+function dxfStr(v) { return String(v).replace(/[^\x20-\x7e]/g, ch => { const c = ch.charCodeAt(0); return c < 32 ? ' ' : '\\U+' + c.toString(16).toUpperCase().padStart(4, '0'); }); }
+// DXF 2000 (AC1015) with LWPOLYLINE: a complete file (tables, block records, objects, handles, subclass markers) as AutoCAD expects it.
+// The skeleton is the standard empty R2000 drawing; layers and entities are filled in.
+const DXF2000_SKELETON = `0
+SECTION
+2
+HEADER
+9
+$ACADVER
+1
+AC1015
+9
+$ACADMAINTVER
+70
+6
+9
+$DWGCODEPAGE
+3
+ANSI_1252
+9
+$INSBASE
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$EXTMIN
+10
+{{MIN0}}
+20
+{{MIN1}}
+30
+0
+9
+$EXTMAX
+10
+{{MAX0}}
+20
+{{MAX1}}
+30
+0
+9
+$LIMMIN
+10
+0.0
+20
+0.0
+9
+$LIMMAX
+10
+420.0
+20
+297.0
+9
+$ORTHOMODE
+70
+0
+9
+$REGENMODE
+70
+1
+9
+$FILLMODE
+70
+1
+9
+$QTEXTMODE
+70
+0
+9
+$MIRRTEXT
+70
+1
+9
+$LTSCALE
+40
+1.0
+9
+$ATTMODE
+70
+1
+9
+$TEXTSIZE
+40
+2.5
+9
+$TRACEWID
+40
+1.0
+9
+$TEXTSTYLE
+7
+Standard
+9
+$CLAYER
+8
+0
+9
+$CELTYPE
+6
+ByLayer
+9
+$CECOLOR
+62
+256
+9
+$CELTSCALE
+40
+1.0
+9
+$DISPSILH
+70
+0
+9
+$DIMSCALE
+40
+1.0
+9
+$DIMASZ
+40
+2.5
+9
+$DIMEXO
+40
+0.625
+9
+$DIMDLI
+40
+3.75
+9
+$DIMRND
+40
+0.0
+9
+$DIMDLE
+40
+0.0
+9
+$DIMEXE
+40
+1.25
+9
+$DIMTP
+40
+0.0
+9
+$DIMTM
+40
+0.0
+9
+$DIMTXT
+40
+2.5
+9
+$DIMCEN
+40
+2.5
+9
+$DIMTSZ
+40
+0.0
+9
+$DIMTOL
+70
+0
+9
+$DIMLIM
+70
+0
+9
+$DIMTIH
+70
+0
+9
+$DIMTOH
+70
+0
+9
+$DIMSE1
+70
+0
+9
+$DIMSE2
+70
+0
+9
+$DIMTAD
+70
+1
+9
+$DIMZIN
+70
+8
+9
+$DIMBLK
+1
+
+9
+$DIMASO
+70
+1
+9
+$DIMSHO
+70
+1
+9
+$DIMPOST
+1
+
+9
+$DIMAPOST
+1
+
+9
+$DIMALT
+70
+0
+9
+$DIMALTD
+70
+3
+9
+$DIMALTF
+40
+0.03937007874
+9
+$DIMLFAC
+40
+1.0
+9
+$DIMTOFL
+70
+1
+9
+$DIMTVP
+40
+0.0
+9
+$DIMTIX
+70
+0
+9
+$DIMSOXD
+70
+0
+9
+$DIMSAH
+70
+0
+9
+$DIMBLK1
+1
+
+9
+$DIMBLK2
+1
+
+9
+$DIMSTYLE
+2
+ISO-25
+9
+$DIMCLRD
+70
+0
+9
+$DIMCLRE
+70
+0
+9
+$DIMCLRT
+70
+0
+9
+$DIMTFAC
+40
+1.0
+9
+$DIMGAP
+40
+0.625
+9
+$DIMJUST
+70
+0
+9
+$DIMSD1
+70
+0
+9
+$DIMSD2
+70
+0
+9
+$DIMTOLJ
+70
+0
+9
+$DIMTZIN
+70
+8
+9
+$DIMALTZ
+70
+0
+9
+$DIMALTTZ
+70
+0
+9
+$DIMUPT
+70
+0
+9
+$DIMDEC
+70
+2
+9
+$DIMTDEC
+70
+2
+9
+$DIMALTU
+70
+2
+9
+$DIMALTTD
+70
+3
+9
+$DIMTXSTY
+7
+Standard
+9
+$DIMAUNIT
+70
+0
+9
+$DIMADEC
+70
+0
+9
+$DIMALTRND
+40
+0.0
+9
+$DIMAZIN
+70
+0
+9
+$DIMDSEP
+70
+44
+9
+$DIMATFIT
+70
+3
+9
+$DIMFRAC
+70
+0
+9
+$DIMLDRBLK
+1
+
+9
+$DIMLUNIT
+70
+2
+9
+$DIMLWD
+70
+-2
+9
+$DIMLWE
+70
+-2
+9
+$DIMTMOVE
+70
+0
+9
+$LUNITS
+70
+2
+9
+$LUPREC
+70
+4
+9
+$SKETCHINC
+40
+1.0
+9
+$FILLETRAD
+40
+10.0
+9
+$AUNITS
+70
+0
+9
+$AUPREC
+70
+2
+9
+$MENU
+1
+.
+9
+$ELEVATION
+40
+0.0
+9
+$PELEVATION
+40
+0.0
+9
+$THICKNESS
+40
+0.0
+9
+$LIMCHECK
+70
+0
+9
+$CHAMFERA
+40
+0.0
+9
+$CHAMFERB
+40
+0.0
+9
+$CHAMFERC
+40
+0.0
+9
+$CHAMFERD
+40
+0.0
+9
+$SKPOLY
+70
+0
+9
+$TDINDWG
+40
+0.0
+9
+$TDUSRTIMER
+40
+0.0
+9
+$USRTIMER
+70
+1
+9
+$ANGBASE
+50
+0.0
+9
+$ANGDIR
+70
+0
+9
+$PDMODE
+70
+0
+9
+$PDSIZE
+40
+0.0
+9
+$PLINEWID
+40
+0.0
+9
+$SPLFRAME
+70
+0
+9
+$SPLINETYPE
+70
+6
+9
+$SPLINESEGS
+70
+8
+9
+$HANDSEED
+5
+{{HS}}
+9
+$SURFTAB1
+70
+6
+9
+$SURFTAB2
+70
+6
+9
+$SURFTYPE
+70
+6
+9
+$SURFU
+70
+6
+9
+$SURFV
+70
+6
+9
+$UCSBASE
+2
+
+9
+$UCSNAME
+2
+
+9
+$UCSORG
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$UCSXDIR
+10
+1.0
+20
+0.0
+30
+0.0
+9
+$UCSYDIR
+10
+0.0
+20
+1.0
+30
+0.0
+9
+$UCSORTHOREF
+2
+
+9
+$UCSORTHOVIEW
+70
+0
+9
+$UCSORGTOP
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$UCSORGBOTTOM
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$UCSORGLEFT
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$UCSORGRIGHT
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$UCSORGFRONT
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$UCSORGBACK
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSBASE
+2
+
+9
+$PUCSNAME
+2
+
+9
+$PUCSORG
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSXDIR
+10
+1.0
+20
+0.0
+30
+0.0
+9
+$PUCSYDIR
+10
+0.0
+20
+1.0
+30
+0.0
+9
+$PUCSORTHOREF
+2
+
+9
+$PUCSORTHOVIEW
+70
+0
+9
+$PUCSORGTOP
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSORGBOTTOM
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSORGLEFT
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSORGRIGHT
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSORGFRONT
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PUCSORGBACK
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$USERI1
+70
+0
+9
+$USERI2
+70
+0
+9
+$USERI3
+70
+0
+9
+$USERI4
+70
+0
+9
+$USERI5
+70
+0
+9
+$USERR1
+40
+0.0
+9
+$USERR2
+40
+0.0
+9
+$USERR3
+40
+0.0
+9
+$USERR4
+40
+0.0
+9
+$USERR5
+40
+0.0
+9
+$WORLDVIEW
+70
+1
+9
+$SHADEDGE
+70
+3
+9
+$SHADEDIF
+70
+70
+9
+$TILEMODE
+70
+1
+9
+$MAXACTVP
+70
+64
+9
+$PINSBASE
+10
+0.0
+20
+0.0
+30
+0.0
+9
+$PLIMCHECK
+70
+0
+9
+$PEXTMIN
+10
+1e+20
+20
+1e+20
+30
+1e+20
+9
+$PEXTMAX
+10
+-1e+20
+20
+-1e+20
+30
+-1e+20
+9
+$PLIMMIN
+10
+0.0
+20
+0.0
+9
+$PLIMMAX
+10
+420.0
+20
+297.0
+9
+$UNITMODE
+70
+0
+9
+$VISRETAIN
+70
+1
+9
+$PLINEGEN
+70
+0
+9
+$PSLTSCALE
+70
+1
+9
+$TREEDEPTH
+70
+3020
+9
+$CMLSTYLE
+2
+Standard
+9
+$CMLJUST
+70
+0
+9
+$CMLSCALE
+40
+20.0
+9
+$PROXYGRAPHICS
+70
+1
+9
+$MEASUREMENT
+70
+1
+9
+$CELWEIGHT
+370
+-1
+9
+$ENDCAPS
+280
+0
+9
+$JOINSTYLE
+280
+0
+9
+$LWDISPLAY
+290
+0
+9
+$INSUNITS
+70
+4
+9
+$HYPERLINKBASE
+1
+
+9
+$STYLESHEET
+1
+
+9
+$XEDIT
+290
+1
+9
+$CEPSNTYPE
+380
+0
+9
+$PSTYLEMODE
+290
+1
+9
+$EXTNAMES
+290
+1
+9
+$PSVPSCALE
+40
+0.0
+9
+$OLESTARTUP
+290
+0
+0
+ENDSEC
+0
+SECTION
+2
+CLASSES
+0
+CLASS
+1
+ACDBDICTIONARYWDFLT
+2
+AcDbDictionaryWithDefault
+3
+ObjectDBX Classes
+90
+0
+280
+0
+281
+0
+0
+CLASS
+1
+SUN
+2
+AcDbSun
+3
+SCENEOE
+90
+1153
+280
+0
+281
+0
+0
+CLASS
+1
+VISUALSTYLE
+2
+AcDbVisualStyle
+3
+ObjectDBX Classes
+90
+4095
+280
+0
+281
+0
+0
+CLASS
+1
+MATERIAL
+2
+AcDbMaterial
+3
+ObjectDBX Classes
+90
+1153
+280
+0
+281
+0
+0
+CLASS
+1
+SCALE
+2
+AcDbScale
+3
+ObjectDBX Classes
+90
+1153
+280
+0
+281
+0
+0
+CLASS
+1
+TABLESTYLE
+2
+AcDbTableStyle
+3
+ObjectDBX Classes
+90
+4095
+280
+0
+281
+0
+0
+CLASS
+1
+MLEADERSTYLE
+2
+AcDbMLeaderStyle
+3
+ACDB_MLEADERSTYLE_CLASS
+90
+4095
+280
+0
+281
+0
+0
+CLASS
+1
+DICTIONARYVAR
+2
+AcDbDictionaryVar
+3
+ObjectDBX Classes
+90
+0
+280
+0
+281
+0
+0
+CLASS
+1
+CELLSTYLEMAP
+2
+AcDbCellStyleMap
+3
+ObjectDBX Classes
+90
+1152
+280
+0
+281
+0
+0
+CLASS
+1
+MENTALRAYRENDERSETTINGS
+2
+AcDbMentalRayRenderSettings
+3
+SCENEOE
+90
+1024
+280
+0
+281
+0
+0
+CLASS
+1
+ACDBDETAILVIEWSTYLE
+2
+AcDbDetailViewStyle
+3
+ObjectDBX Classes
+90
+1025
+280
+0
+281
+0
+0
+CLASS
+1
+ACDBSECTIONVIEWSTYLE
+2
+AcDbSectionViewStyle
+3
+ObjectDBX Classes
+90
+1025
+280
+0
+281
+0
+0
+CLASS
+1
+RASTERVARIABLES
+2
+AcDbRasterVariables
+3
+ISM
+90
+0
+280
+0
+281
+0
+0
+CLASS
+1
+ACDBPLACEHOLDER
+2
+AcDbPlaceHolder
+3
+ObjectDBX Classes
+90
+0
+280
+0
+281
+0
+0
+CLASS
+1
+LAYOUT
+2
+AcDbLayout
+3
+ObjectDBX Classes
+90
+0
+280
+0
+281
+0
+0
+ENDSEC
+0
+SECTION
+2
+TABLES
+0
+TABLE
+2
+VPORT
+5
+8
+330
+0
+100
+AcDbSymbolTable
+70
+1
+0
+VPORT
+5
+23
+330
+8
+100
+AcDbSymbolTableRecord
+100
+AcDbViewportTableRecord
+2
+*Active
+70
+0
+10
+0.0
+20
+0.0
+11
+1.0
+21
+1.0
+12
+0.0
+22
+0.0
+13
+0.0
+23
+0.0
+14
+0.5
+24
+0.5
+15
+0.5
+25
+0.5
+16
+0.0
+26
+0.0
+36
+1.0
+17
+0.0
+27
+0.0
+37
+0.0
+40
+1000.0
+41
+1.34
+42
+50.0
+43
+0.0
+44
+0.0
+50
+0.0
+51
+0.0
+71
+0
+72
+1000
+73
+1
+74
+3
+75
+0
+76
+0
+77
+0
+78
+0
+281
+0
+65
+0
+146
+0.0
+0
+ENDTAB
+0
+TABLE
+2
+LTYPE
+5
+2
+330
+0
+100
+AcDbSymbolTable
+70
+3
+0
+LTYPE
+5
+24
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+2
+ByBlock
+70
+0
+3
+
+72
+65
+73
+0
+40
+0.0
+0
+LTYPE
+5
+25
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+2
+ByLayer
+70
+0
+3
+
+72
+65
+73
+0
+40
+0.0
+0
+LTYPE
+5
+26
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+2
+Continuous
+70
+0
+3
+
+72
+65
+73
+0
+40
+0.0
+0
+ENDTAB
+{{LAYERS}}
+0
+TABLE
+2
+STYLE
+5
+5
+330
+0
+100
+AcDbSymbolTable
+70
+1
+0
+STYLE
+5
+29
+330
+5
+100
+AcDbSymbolTableRecord
+100
+AcDbTextStyleTableRecord
+2
+Standard
+70
+0
+40
+0.0
+41
+1.0
+50
+0.0
+71
+0
+42
+2.5
+3
+txt
+4
+
+0
+ENDTAB
+0
+TABLE
+2
+VIEW
+5
+7
+330
+0
+100
+AcDbSymbolTable
+70
+0
+0
+ENDTAB
+0
+TABLE
+2
+UCS
+5
+6
+330
+0
+100
+AcDbSymbolTable
+70
+0
+0
+ENDTAB
+0
+TABLE
+2
+APPID
+5
+3
+330
+0
+100
+AcDbSymbolTable
+70
+3
+0
+APPID
+5
+2A
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+2
+ACAD
+70
+0
+0
+APPID
+5
+2F
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+2
+HATCHBACKGROUNDCOLOR
+70
+0
+0
+APPID
+5
+30
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+2
+EZDXF
+70
+0
+0
+ENDTAB
+0
+TABLE
+2
+DIMSTYLE
+5
+4
+330
+0
+100
+AcDbSymbolTable
+70
+1
+100
+AcDbDimStyleTable
+0
+DIMSTYLE
+105
+2B
+330
+4
+100
+AcDbSymbolTableRecord
+100
+AcDbDimStyleTableRecord
+2
+Standard
+70
+0
+3
+
+4
+
+40
+1.0
+41
+2.5
+42
+0.625
+43
+3.75
+44
+1.25
+45
+0.0
+46
+0.0
+47
+0.0
+48
+0.0
+140
+2.5
+141
+2.5
+142
+0.0
+143
+0.03937007874
+144
+1.0
+145
+0.0
+146
+1.0
+147
+0.625
+148
+0.0
+71
+0
+72
+0
+73
+0
+74
+0
+75
+0
+76
+0
+77
+1
+78
+8
+79
+3
+170
+0
+171
+3
+172
+1
+173
+0
+174
+0
+175
+0
+176
+0
+177
+0
+178
+0
+179
+2
+271
+2
+272
+2
+273
+2
+274
+3
+275
+0
+276
+0
+277
+2
+278
+44
+279
+0
+280
+0
+281
+0
+282
+0
+283
+0
+284
+8
+285
+0
+286
+0
+288
+0
+289
+3
+371
+-2
+372
+-2
+0
+ENDTAB
+0
+TABLE
+2
+BLOCK_RECORD
+5
+9
+330
+0
+100
+AcDbSymbolTable
+70
+2
+0
+BLOCK_RECORD
+5
+17
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+2
+*Model_Space
+340
+1A
+0
+BLOCK_RECORD
+5
+1B
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+2
+*Paper_Space
+340
+1E
+0
+ENDTAB
+0
+ENDSEC
+0
+SECTION
+2
+BLOCKS
+0
+BLOCK
+5
+18
+330
+17
+100
+AcDbEntity
+8
+0
+100
+AcDbBlockBegin
+2
+*Model_Space
+70
+0
+10
+0.0
+20
+0.0
+30
+0.0
+3
+*Model_Space
+1
+
+0
+ENDBLK
+5
+19
+330
+17
+100
+AcDbEntity
+8
+0
+100
+AcDbBlockEnd
+0
+BLOCK
+5
+1C
+330
+1B
+100
+AcDbEntity
+8
+0
+100
+AcDbBlockBegin
+2
+*Paper_Space
+70
+0
+10
+0.0
+20
+0.0
+30
+0.0
+3
+*Paper_Space
+1
+
+0
+ENDBLK
+5
+1D
+330
+1B
+100
+AcDbEntity
+8
+0
+100
+AcDbBlockEnd
+0
+ENDSEC
+0
+SECTION
+2
+ENTITIES
+{{ENTS}}
+0
+ENDSEC
+0
+SECTION
+2
+OBJECTS
+0
+DICTIONARY
+5
+A
+330
+0
+100
+AcDbDictionary
+281
+1
+3
+ACAD_COLOR
+350
+B
+3
+ACAD_GROUP
+350
+C
+3
+ACAD_LAYOUT
+350
+D
+3
+ACAD_MATERIAL
+350
+E
+3
+ACAD_MLEADERSTYLE
+350
+F
+3
+ACAD_MLINESTYLE
+350
+10
+3
+ACAD_PLOTSETTINGS
+350
+11
+3
+ACAD_PLOTSTYLENAME
+350
+12
+3
+ACAD_SCALELIST
+350
+14
+3
+ACAD_TABLESTYLE
+350
+15
+3
+ACAD_VISUALSTYLE
+350
+16
+3
+EZDXF_META
+350
+2D
+0
+DICTIONARY
+5
+B
+330
+A
+100
+AcDbDictionary
+281
+1
+0
+DICTIONARY
+5
+C
+330
+A
+100
+AcDbDictionary
+281
+1
+0
+DICTIONARY
+5
+D
+330
+A
+100
+AcDbDictionary
+281
+1
+3
+Model
+350
+1A
+3
+Layout1
+350
+1E
+0
+DICTIONARY
+5
+E
+330
+A
+100
+AcDbDictionary
+281
+1
+3
+ByBlock
+350
+1F
+3
+ByLayer
+350
+20
+3
+Global
+350
+21
+0
+DICTIONARY
+5
+F
+330
+A
+100
+AcDbDictionary
+281
+1
+3
+Standard
+350
+2C
+0
+DICTIONARY
+5
+10
+330
+A
+100
+AcDbDictionary
+281
+1
+3
+Standard
+350
+22
+0
+DICTIONARY
+5
+11
+330
+A
+100
+AcDbDictionary
+281
+1
+0
+ACDBDICTIONARYWDFLT
+5
+12
+330
+A
+100
+AcDbDictionary
+281
+1
+3
+Normal
+350
+13
+100
+AcDbDictionaryWithDefault
+340
+13
+0
+ACDBPLACEHOLDER
+5
+13
+330
+12
+0
+DICTIONARY
+5
+14
+330
+A
+100
+AcDbDictionary
+281
+1
+0
+DICTIONARY
+5
+15
+330
+A
+100
+AcDbDictionary
+281
+1
+0
+DICTIONARY
+5
+16
+330
+A
+100
+AcDbDictionary
+281
+1
+0
+LAYOUT
+5
+1A
+330
+D
+100
+AcDbPlotSettings
+1
+
+4
+A3
+6
+
+40
+7.5
+41
+20.0
+42
+7.5
+43
+20.0
+44
+420.0
+45
+297.0
+46
+0.0
+47
+0.0
+48
+0.0
+49
+0.0
+140
+0.0
+141
+0.0
+142
+1.0
+143
+1.0
+70
+1024
+72
+1
+73
+0
+74
+5
+7
+
+75
+16
+76
+0
+77
+2
+78
+300
+147
+1.0
+148
+0.0
+149
+0.0
+100
+AcDbLayout
+1
+Model
+70
+1
+71
+0
+10
+0.0
+20
+0.0
+11
+420.0
+21
+297.0
+12
+0.0
+22
+0.0
+32
+0.0
+14
+1e+20
+24
+1e+20
+34
+1e+20
+15
+-1e+20
+25
+-1e+20
+35
+-1e+20
+146
+0.0
+13
+0.0
+23
+0.0
+33
+0.0
+16
+1.0
+26
+0.0
+36
+0.0
+17
+0.0
+27
+1.0
+37
+0.0
+76
+1
+330
+17
+0
+LAYOUT
+5
+1E
+330
+D
+100
+AcDbPlotSettings
+1
+
+4
+A3
+6
+
+40
+7.5
+41
+20.0
+42
+7.5
+43
+20.0
+44
+420.0
+45
+297.0
+46
+0.0
+47
+0.0
+48
+0.0
+49
+0.0
+140
+0.0
+141
+0.0
+142
+1.0
+143
+1.0
+70
+0
+72
+1
+73
+0
+74
+5
+7
+
+75
+16
+76
+0
+77
+2
+78
+300
+147
+1.0
+148
+0.0
+149
+0.0
+100
+AcDbLayout
+1
+Layout1
+70
+1
+71
+1
+10
+0.0
+20
+0.0
+11
+420.0
+21
+297.0
+12
+0.0
+22
+0.0
+32
+0.0
+14
+1e+20
+24
+1e+20
+34
+1e+20
+15
+-1e+20
+25
+-1e+20
+35
+-1e+20
+146
+0.0
+13
+0.0
+23
+0.0
+33
+0.0
+16
+1.0
+26
+0.0
+36
+0.0
+17
+0.0
+27
+1.0
+37
+0.0
+76
+1
+330
+1B
+0
+MATERIAL
+5
+1F
+102
+{ACAD_REACTORS
+330
+E
+102
+}
+330
+E
+100
+AcDbMaterial
+1
+ByBlock
+2
+
+70
+0
+40
+1.0
+71
+1
+41
+1.0
+91
+-1023410177
+42
+1.0
+72
+1
+3
+
+73
+1
+74
+1
+75
+1
+44
+0.5
+73
+0
+45
+1.0
+46
+1.0
+77
+1
+4
+
+78
+1
+79
+1
+170
+1
+48
+1.0
+171
+1
+6
+
+172
+1
+173
+1
+174
+1
+140
+1.0
+141
+1.0
+175
+1
+7
+
+176
+1
+177
+1
+178
+1
+143
+1.0
+179
+1
+8
+
+270
+1
+271
+1
+272
+1
+145
+1.0
+146
+1.0
+273
+1
+9
+
+274
+1
+275
+1
+276
+1
+42
+1.0
+72
+1
+3
+
+73
+1
+74
+1
+75
+1
+94
+63
+0
+MATERIAL
+5
+20
+102
+{ACAD_REACTORS
+330
+E
+102
+}
+330
+E
+100
+AcDbMaterial
+1
+ByLayer
+2
+
+70
+0
+40
+1.0
+71
+1
+41
+1.0
+91
+-1023410177
+42
+1.0
+72
+1
+3
+
+73
+1
+74
+1
+75
+1
+44
+0.5
+73
+0
+45
+1.0
+46
+1.0
+77
+1
+4
+
+78
+1
+79
+1
+170
+1
+48
+1.0
+171
+1
+6
+
+172
+1
+173
+1
+174
+1
+140
+1.0
+141
+1.0
+175
+1
+7
+
+176
+1
+177
+1
+178
+1
+143
+1.0
+179
+1
+8
+
+270
+1
+271
+1
+272
+1
+145
+1.0
+146
+1.0
+273
+1
+9
+
+274
+1
+275
+1
+276
+1
+42
+1.0
+72
+1
+3
+
+73
+1
+74
+1
+75
+1
+94
+63
+0
+MATERIAL
+5
+21
+102
+{ACAD_REACTORS
+330
+E
+102
+}
+330
+E
+100
+AcDbMaterial
+1
+Global
+2
+
+70
+0
+40
+1.0
+71
+1
+41
+1.0
+91
+-1023410177
+42
+1.0
+72
+1
+3
+
+73
+1
+74
+1
+75
+1
+44
+0.5
+73
+0
+45
+1.0
+46
+1.0
+77
+1
+4
+
+78
+1
+79
+1
+170
+1
+48
+1.0
+171
+1
+6
+
+172
+1
+173
+1
+174
+1
+140
+1.0
+141
+1.0
+175
+1
+7
+
+176
+1
+177
+1
+178
+1
+143
+1.0
+179
+1
+8
+
+270
+1
+271
+1
+272
+1
+145
+1.0
+146
+1.0
+273
+1
+9
+
+274
+1
+275
+1
+276
+1
+42
+1.0
+72
+1
+3
+
+73
+1
+74
+1
+75
+1
+94
+63
+0
+MLINESTYLE
+5
+22
+102
+{ACAD_REACTORS
+330
+10
+102
+}
+330
+10
+100
+AcDbMlineStyle
+2
+Standard
+70
+0
+3
+
+62
+256
+51
+90.0
+52
+90.0
+71
+2
+49
+0.5
+62
+256
+6
+BYLAYER
+49
+-0.5
+62
+256
+6
+BYLAYER
+0
+MLEADERSTYLE
+5
+2C
+102
+{ACAD_REACTORS
+330
+F
+102
+}
+330
+F
+100
+AcDbMLeaderStyle
+179
+2
+170
+2
+171
+1
+172
+0
+90
+2
+40
+0.0
+41
+0.0
+173
+1
+91
+-1056964608
+92
+-2
+290
+1
+42
+2.0
+291
+1
+43
+8.0
+3
+Standard
+44
+4.0
+300
+
+342
+29
+174
+1
+175
+1
+176
+0
+178
+1
+93
+-1056964608
+45
+4.0
+292
+0
+297
+0
+46
+4.0
+94
+-1056964608
+47
+1.0
+49
+1.0
+140
+1.0
+294
+1
+141
+0.0
+177
+0
+142
+1.0
+295
+0
+296
+0
+143
+3.75
+271
+0
+272
+9
+273
+9
+0
+DICTIONARY
+5
+2D
+330
+A
+100
+AcDbDictionary
+280
+1
+281
+1
+3
+CREATED_BY_EZDXF
+350
+2E
+3
+WRITTEN_BY_EZDXF
+350
+31
+0
+DICTIONARYVAR
+5
+2E
+330
+2D
+100
+DictionaryVariables
+280
+0
+1
+1.4.5 @ 2026-10-26T11:03:23.202410+00:00
+0
+DICTIONARYVAR
+5
+31
+330
+2D
+100
+DictionaryVariables
+280
+0
+1
+1.4.5 @ 2026-10-26T11:03:23.203101+00:00
+0
+ENDSEC
+0
+EOF`;
+function writeDXF2000(doc) {
+  let hn = 0x100; const hd = () => (hn++).toString(16).toUpperCase();
+  const MS = '17', LAYTAB = '1', PSTYLE = '13';
+  const o = [], P = (c, v) => { o.push(String(c), String(v)); };
+  const ents = doc.ents, bb = bboxOf(ents) || [0, 0, 0, 0];
+  const names = ['0', ...Object.keys(doc.layers || {}).filter(n => n !== '0')]; if (!names.includes('Defpoints')) names.push('Defpoints');
+  P(0, 'TABLE'); P(2, 'LAYER'); P(5, LAYTAB); P(330, 0); P(100, 'AcDbSymbolTable'); P(70, names.length);
+  for (const n of names) {
+    const l = (doc.layers || {})[n] || { color: 7 }, c = Math.min(255, Math.max(1, Math.abs(l.color || 7)));
+    P(0, 'LAYER'); P(5, hd()); P(330, LAYTAB); P(100, 'AcDbSymbolTableRecord'); P(100, 'AcDbLayerTableRecord'); P(2, dxfStr(n)); P(70, 0); P(62, l.visible === false ? -c : c); P(6, 'Continuous');
+    if (n === 'Defpoints') P(290, 0); P(370, -3); P(390, PSTYLE);
+  }
+  P(0, 'ENDTAB');
+  const layers = o.splice(0).join('\r\n');
+  const head = (type, e, sub) => { P(0, type); P(5, hd()); P(330, MS); P(100, 'AcDbEntity'); P(8, dxfStr(e.layer || '0')); if (e.color != null && e.color > 0) P(62, e.color); P(100, sub); };
+  const circle = e => { head('CIRCLE', e, 'AcDbCircle'); P(10, fnum(e.cx)); P(20, fnum(e.cy)); P(30, 0); P(40, fnum(e.r)); };
+  for (const e of ents) {
+    if (e.type === 'line') { head('LINE', e, 'AcDbLine'); P(10, fnum(e.x1)); P(20, fnum(e.y1)); P(30, 0); P(11, fnum(e.x2)); P(21, fnum(e.y2)); P(31, 0); }
+    else if (e.type === 'circle') circle(e);
+    else if (e.type === 'arc') {
+      if (arcSweep(e.a0, e.a1) >= TAU - 1e-9) { circle(e); continue; }
+      head('ARC', e, 'AcDbCircle'); P(10, fnum(e.cx)); P(20, fnum(e.cy)); P(30, 0); P(40, fnum(e.r)); P(100, 'AcDbArc'); P(50, fnum(deg(normAng(e.a0)))); P(51, fnum(deg(normAng(e.a1))));
+    }
+    else if (e.type === 'poly') {
+      if (e.pts.length < 2) continue;
+      head('LWPOLYLINE', e, 'AcDbPolyline'); P(90, e.pts.length); P(70, e.closed ? 1 : 0); P(43, 0);
+      for (const p of e.pts) { P(10, fnum(p.x)); P(20, fnum(p.y)); if (Math.abs(p.b || 0) > 1e-12) P(42, fnum(p.b)); }
+    }
+    else if (e.type === 'text') { head('TEXT', e, 'AcDbText'); P(10, fnum(e.x)); P(20, fnum(e.y)); P(30, 0); P(40, fnum(e.h)); P(1, dxfStr(e.text)); if (Math.abs(e.rot || 0) > 1e-9) P(50, fnum(deg(normAng(e.rot)))); P(100, 'AcDbText'); }
+  }
+  const body = o.join('\r\n');
+  const fill = { HS: hd(), MIN0: fnum(bb[0]), MIN1: fnum(bb[1]), MAX0: fnum(bb[2]), MAX1: fnum(bb[3]), LAYERS: layers, ENTS: body };
+  return DXF2000_SKELETON.split('\n').map(l => { const m = /^\{\{(\w+)\}\}$/.exec(l); return m ? fill[m[1]] : l; }).join('\r\n') + '\r\n';
 }
 
 /* ---------- input parsing ---------- */
@@ -1137,12 +3926,14 @@ const SHEET_RX = /(^|[^a-z])(sheet|lapas|board|plok[sš]t|stock|ruo[sš]in|mater
 const CUT_RX = /(cut|profil|kont[uū]r|outline|pjov|frez|contour|through|perim)/i;
 const NONLOOP_RX = /(engrav|label|text|tekst|dim|anno|grav|mark|drill|hole|pilot|skyl|gr[eę][žz]|pock|kiš|kis)/i;
 
+// segments for an arc so the chord never strays more than 0.05 mm from the curve (small holes: few points, big arcs: accurate gaps)
+const arcSegs = (r, sw) => Math.ceil(Math.abs(sw) / (2 * Math.acos(Math.max(-1, 1 - 0.05 / Math.max(r, 1e-9)))));
 function loopPoly(ent) { // closed entity -> polygon points (no repeat of first)
-  if (ent.type === 'circle') { const pts = []; const n = 72; for (let i = 0; i < n; i++) pts.push(polar({ x: ent.cx, y: ent.cy }, ent.r, TAU * i / n)); return pts; }
+  if (ent.type === 'circle') { const pts = []; const n = clamp(arcSegs(ent.r, TAU), 12, 256); for (let i = 0; i < n; i++) pts.push(polar({ x: ent.cx, y: ent.cy }, ent.r, TAU * i / n)); return pts; }
   const pts = [];
   for (const P of prims(ent)) {
     if (P.k === 'L') pts.push(P.a);
-    else { const n = clamp(Math.ceil(Math.abs(P.sw) / (PI / 18)), 2, 72); for (let i = 0; i < n; i++) pts.push(ptOn(P, i / n)); }
+    else { const n = clamp(arcSegs(P.r, P.sw), 2, 256); for (let i = 0; i < n; i++) pts.push(ptOn(P, i / n)); }
   }
   return pts;
 }
@@ -1200,6 +3991,17 @@ function isRectPoly(L) {
   return w > 0 && h > 0 && Math.abs(L.area - w * h) <= 1e-4 * w * h;
 }
 
+// uniform grid over the loops' boxes: at(p) lists every loop whose box covers the cell holding p
+function bbGrid(items) {
+  let X0 = Infinity, Y0 = Infinity, X1 = -Infinity, Y1 = -Infinity;
+  for (const it of items) { const b = it.bb; if (b[0] < X0) X0 = b[0]; if (b[1] < Y0) Y0 = b[1]; if (b[2] > X1) X1 = b[2]; if (b[3] > Y1) Y1 = b[3]; }
+  const n = Math.max(1, Math.min(512, Math.ceil(Math.sqrt(items.length)))), cw = Math.max((X1 - X0) / n, 1e-9), chh = Math.max((Y1 - Y0) / n, 1e-9);
+  const ix = x => Math.min(n - 1, Math.max(0, Math.floor((x - X0) / cw))), iy = y => Math.min(n - 1, Math.max(0, Math.floor((y - Y0) / chh)));
+  const cells = new Map();
+  for (const it of items) { const b = it.bb; for (let i = ix(b[0]); i <= ix(b[2]); i++) for (let j = iy(b[1]); j <= iy(b[3]); j++) { const k = i * n + j; let a = cells.get(k); if (!a) cells.set(k, a = []); a.push(it); } }
+  return { at: p => (p.x < X0 || p.x > X1 || p.y < Y0 || p.y > Y1) ? [] : (cells.get(ix(p.x) * n + iy(p.y)) || []) };
+}
+
 /* analyzeSheet(ents, layers, opts) -> { sheet, parts, free, loopsUsed } */
 function analyzeSheet(ents, opts = {}) {
   const tol = opts.tol || 0.05;
@@ -1220,15 +4022,19 @@ function analyzeSheet(ents, opts = {}) {
   const ch = chainLoops(openEnts, tol);
   for (const l of ch.loops) loops.push(mkLoop(l.ids, l.ent));
   loops.sort((a, b) => b.area - a.area);
-  // containment tree: parent = smallest loop that contains it
-  for (let i = 0; i < loops.length; i++) {
-    const L = loops[i]; L.parent = null;
-    const probe = L.poly[0];
-    for (let j = i - 1; j >= 0; j--) { // larger loops come first; walk back to find the smallest container
-      const M = loops[j];
-      if (M.area <= L.area + 1e-9) continue;
-      if (bbIn(L.bb, M.bb) && pointInPoly(probe, M.poly)) { L.parent = M; break; }
+  // containment tree: parent = smallest larger loop that contains it (candidates come from a grid, so big sheets stay fast)
+  // `prev` (the last analysis) keeps memberships stable: a part dragged over another does not steal its holes or labels
+  const prev = opts.prev || null, keyOf = L => L.key != null ? L.key : (L.key = Math.min(...L.ids));
+  const grid = bbGrid(loops);
+  for (const L of loops) {
+    const probe = L.poly[0], was = prev && prev.parent.get(keyOf(L)); let best = null, stuck = false;
+    for (const M of grid.at(probe)) {
+      if (M === L || M.area <= L.area + 1e-9) continue;
+      const sticky = was != null && keyOf(M) === was;
+      if (stuck || (!sticky && best && M.area >= best.area)) continue;
+      if (bbIn(L.bb, M.bb) && pointInPoly(probe, M.poly)) { best = M; stuck = sticky; }
     }
+    L.parent = best;
   }
   const depthOf = L => { let d = 0, p = L.parent; while (p) { d++; p = p.parent; } return d; };
   loops.forEach(L => L.depth = depthOf(L));
@@ -1237,7 +4043,7 @@ function analyzeSheet(ents, opts = {}) {
     const tops = loops.filter(L => L.depth === 0);
     if (tops.length === 1 && isRectPoly(tops[0]) && loops.filter(L => L.parent === tops[0] && L.ids.length).length >= 2 && !opts.noAutoSheet) {
       const S0 = tops[0]; sheet = { bb: S0.bb.slice(), ids: S0.ids.slice() }; S0.ids.forEach(id => sheetIds.add(id));
-      loops.splice(loops.indexOf(S0), 1); loops.forEach(L => { if (L.parent === S0) L.parent = null; L.depth = depthOf(L); });
+      S0.removed = true; loops.splice(loops.indexOf(S0), 1); loops.forEach(L => { if (L.parent === S0) L.parent = null; L.depth = depthOf(L); });
     }
   }
   const parts = [];
@@ -1247,8 +4053,13 @@ function analyzeSheet(ents, opts = {}) {
   const free = [];
   for (const e of ents) {
     if (inLoop.has(e.id) || sheetIds.has(e.id)) continue;
-    const p = repPoint(e); let best = null;
-    for (let i = loops.length - 1; i >= 0; i--) { const L = loops[i]; if (p.x < L.bb[0] || p.x > L.bb[2] || p.y < L.bb[1] || p.y > L.bb[3]) continue; if (pointInPoly(p, L.poly)) { if (!best || L.area < best.area) best = L; } }
+    const p = repPoint(e), was = prev && prev.owner.get(e.id); let best = null, stuck = false;
+    for (const L of grid.at(p)) {
+      if (L.removed || !L.part || p.x < L.bb[0] || p.x > L.bb[2] || p.y < L.bb[1] || p.y > L.bb[3]) continue;
+      const sticky = was != null && keyOf(L.part.outer) === was;
+      if (stuck || (!sticky && best && L.area >= best.area)) continue;
+      if (pointInPoly(p, L.poly)) { best = L; stuck = sticky; }
+    }
     if (best && best.part) best.part.ids.add(e.id); else free.push(e.id);
   }
   // part bounding boxes include all their entities
@@ -1260,7 +4071,11 @@ function analyzeSheet(ents, opts = {}) {
   parts.forEach((P, i) => { P.n = i + 1; });
   // nesting relation: part inside another part's hole
   for (const P of parts) { P.host = null; let L = P.outer.parent; if (L && L.part && L.part !== P) P.host = L.part; }
-  return { sheet, parts, free, open: ch.open };
+  // memory for the next analysis
+  const memo = { parent: new Map(), owner: new Map() };
+  for (const L of loops) if (L.parent) memo.parent.set(keyOf(L), keyOf(L.parent));
+  for (const P of parts) { const k = keyOf(P.outer); P.key = k; for (const id of P.ids) memo.owner.set(id, k); }
+  return { sheet, parts, free, open: ch.open, memo };
 }
 
 /* ---------- geometric checks ---------- */
@@ -1291,7 +4106,7 @@ function polyMinDist(A, B, limit) {
 const movePoly = (p, d) => d ? p.map(q => ({ x: q.x + d.x, y: q.y + d.y })) : p;
 // relation of part geometry G={outer, holes} to H: 'ok' | 'overlap' | {dist}
 function pairCheck(G, H, gap) {
-  const gb = polyBB(G.outer), hb = polyBB(H.outer);
+  const gb = G.bb || polyBB(G.outer), hb = H.bb || polyBB(H.outer);
   if (!bbHit(gb, hb, gap)) return { overlap: false, dist: Infinity };
   if (polysCross(G.outer, H.outer)) return { overlap: true, dist: 0 };
   const gInH = pointInPoly(G.outer[0], H.outer), hInG = !gInH && pointInPoly(H.outer[0], G.outer);
@@ -1303,23 +4118,34 @@ function pairCheck(G, H, gap) {
   }
   return { overlap: false, dist: polyMinDist(G.outer, H.outer, gap) };
 }
-function partGeom(P, d) { return { outer: movePoly(P.outer.poly, d), holes: P.holes.map(h => movePoly(h.poly, d)) }; }
-function checkParts(an, gap, margin = 0, moved) { // moved: {set of part indices, d}
-  const res = an.parts.map(() => ({ overlap: false, outside: false, close: false }));
-  const G = an.parts.map((P, i) => partGeom(P, moved && moved.set.has(i) ? moved.d : null));
+function partGeom(P, d) { const b = P.outer.bb || polyBB(P.outer.poly); return { outer: movePoly(P.outer.poly, d), holes: P.holes.map(h => movePoly(h.poly, d)), bb: d ? [b[0] + d.x, b[1] + d.y, b[2] + d.x, b[3] + d.y] : b }; }
+// moved: {set of part indices, d}; base: an earlier result for the unmoved layout, whose pairs are reused for parts that did not move
+function checkParts(an, gap, margin = 0, moved, base) {
+  const n = an.parts.length, res = an.parts.map(() => ({ overlap: false, outside: false, close: false }));
+  const mv = i => !!(moved && moved.set.has(i));
+  const G = an.parts.map((P, i) => partGeom(P, mv(i) ? moved.d : null));
   const sb = an.sheet ? [an.sheet.bb[0] + margin, an.sheet.bb[1] + margin, an.sheet.bb[2] - margin, an.sheet.bb[3] - margin] : null;
-  an.parts.forEach((P, i) => {
-    if (!sb) return;
-    const d = moved && moved.set.has(i) ? moved.d : { x: 0, y: 0 };
-    const bb = [P.bb[0] + d.x, P.bb[1] + d.y, P.bb[2] + d.x, P.bb[3] + d.y];
-    if (!bbIn(bb, sb, 1e-6)) res[i].outside = true;
+  if (sb) an.parts.forEach((P, i) => {
+    const d = mv(i) ? moved.d : { x: 0, y: 0 };
+    if (!bbIn([P.bb[0] + d.x, P.bb[1] + d.y, P.bb[2] + d.x, P.bb[3] + d.y], sb, 1e-6)) res[i].outside = true;
   });
-  for (let i = 0; i < G.length; i++) for (let j = i + 1; j < G.length; j++) {
-    if (moved && !moved.set.has(i) && !moved.set.has(j) && moved.only) continue;
-    const r = pairCheck(G[i], G[j], gap);
-    if (r.overlap) { res[i].overlap = res[j].overlap = true; }
-    else if (r.dist < gap - 1e-6) { res[i].close = res[j].close = true; }
+  const pairs = [], flag = (i, j, k) => { pairs.push([i, j, k]); res[i][k] = res[j][k] = true; };
+  const reuse = !!(moved && base && base.pairs);
+  if (reuse) for (const [i, j, k] of base.pairs) if (!mv(i) && !mv(j)) flag(i, j, k);
+  // sweep and prune along x: only parts whose boxes come within the gap are compared
+  const order = [...Array(n).keys()].sort((a, b) => G[a].bb[0] - G[b].bb[0]);
+  for (let a = 0; a < n; a++) {
+    const i = order[a], bi = G[i].bb;
+    for (let b = a + 1; b < n; b++) {
+      const j = order[b], bj = G[j].bb;
+      if (bj[0] > bi[2] + gap) break;
+      if (reuse && !mv(i) && !mv(j)) continue;
+      if (bj[1] > bi[3] + gap || bj[3] < bi[1] - gap) continue;
+      const r = pairCheck(G[i], G[j], gap);
+      if (r.overlap) flag(i, j, 'overlap'); else if (r.dist < gap - 1e-6) flag(i, j, 'close');
+    }
   }
+  res.pairs = pairs;
   return res;
 }
 
@@ -1423,7 +4249,7 @@ const I18N = {
     select: 'Žymėti', line: 'Linija', poly: 'Polilinija', rect: 'Stačiakampis', circle: 'Apskritimas', arc: 'Lankas per 3 taškus',
     move: 'Perkelti', copy: 'Kopijuoti', rotate: 'Pasukti', scale: 'Mastelis', mirror: 'Veidrodis', stretch: 'Ištempti',
     offset: 'Lygiagreti kopija', trim: 'Nukirpti', chamfer: 'Nuožula', fillet: 'Apvalinimas', explode: 'Išskaidyti', join: 'Sujungti', measure: 'Matuoti', del: 'Ištrinti',
-    selPrompt: 'Žymėkite: spustelėkite arba tempkite rėmelį (į kairę – kertantis). Shift – atžymėti.',
+    selPrompt: 'Spustelėkite objektą arba tempkite rėmelį · Shift/Ctrl – pridėti · dukart – visas kontūras · dešinys – meniu · ? – klavišai',
     gripPrompt: 'Nurodykite naują tašką arba įveskite: 50 (pele nurodyta kryptimi) arba 50,0',
     pickObj: 'Pažymėkite objektus ir spauskite Enter (arba dešinį pelės mygtuką)',
     firstPoint: 'Pirmas taškas', nextPoint: 'Kitas taškas (Enter – baigti)',
@@ -1439,7 +4265,7 @@ const I18N = {
     pTrim: 'Spustelėkite dalį, kurią norite pašalinti (iki artimiausių sankirtų)',
     pCham: 'Spustelėkite kampą arba pirmą liniją · atstumai {0} / {1} mm (įveskite 5 arba 5,8)',
     pFil: 'Spustelėkite kampą arba pirmą liniją · spindulys {0} mm (įveskite skaičių)', pSecond: 'Antra linija',
-    pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga',
+    pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Spustelėkite, kur padėti matmens liniją (arba įveskite atstumą)',
     selection: 'Pasirinkta', nothingSel: 'Nieko nepažymėta.',
     tips: '<li><b>Ratukas</b> – priartinti, <b>vidurinis</b> arba <b>dešinys</b> mygtukas tempiant – slinkti, <b>Z</b> – visas vaizdas</li><li>Pažymėtą figūrą keiskite tempdami <b>rankenėles</b>. Kraštinės vidurio rankenėlė stumia visą kraštinę.</li><li>Apačioje įveskite: <code>50</code> – atstumas pelės kryptimi, <code>600,400</code> – poslinkis X,Y, <code>#0,0</code> – absoliuti vieta, <code>100&lt;45</code> – atstumas ir kampas</li><li>Galima skaičiuoti: <code>720-18*2</code></li><li>Dydį keiskite skiltyje <b>Dydis</b>: „Ištempti“ nekeičia skylių, nuožulų ir apvalinimų</li><li>Atidaro DXF, DWG ir 3D (STEP, IGES, STL, OBJ). Failą galima tiesiog nutempti į langą</li><li>Lapas su detalėmis: įrankis <b>Detalės lape</b> (G) – tempkite detales, R – pasukti</li>',
     W: 'Plotis', H: 'Aukštis', layer: 'Sluoksnis', layers: 'Sluoksniai', addLayer: 'Naujas sluoksnis', current: 'dabartinis',
@@ -1461,7 +4287,7 @@ const I18N = {
     help_measure: 'Du taškai – atstumas, ΔX, ΔY ir kampas.',
     saved: 'Įrašyta: {0}', opened: 'Atidaryta: {0} – {1} obj.', inserted: 'Įterpta {0} obj. – nurodykite, kur padėti', skipped: 'Praleista: {0}',
     units: 'Failo vienetai: {0}. Redaktorius skaičiuoja mm.', unitIn: 'coliai', unitCm: 'cm', unitM: 'm',
-    readErr: 'Nepavyko perskaityti failo', emptyFile: 'Faile nerasta braižinio objektų',
+    readErr: 'Nepavyko perskaityti failo', emptyFile: 'Faile nerasta brėžinio objektų',
     errTooLong: 'Per didelis atstumas – kraštinė per trumpa', errParallel: 'Linijos lygiagrečios', errArcSeg: 'Kampas šalia lanko – nuožulos/apvalinimo čia padaryti negalima', errEnd: 'Atviros linijos galas – kampo nėra', errStraight: 'Kampo nėra (linijos vienoje tiesėje)', errNoCorner: 'Kampas nerastas – spustelėkite arčiau kampo arba pirmą liniją',
     errOffset: 'Lygiagrečios kopijos padaryti nepavyko (per didelis atstumas?)', badInput: 'Neatpažinta įvestis', needSel: 'Pirmiausia pažymėkite objektus',
     nonUniform: 'Lankai iškraipyti mastelio – paversti tiesiomis atkarpomis. Kad jie liktų lankais, naudokite „Ištempti“.',
@@ -1470,9 +4296,16 @@ const I18N = {
     copyMade: 'Kopija padėta', rotated: 'Pasukta', layerName: 'Pavadinimas', closed: 'Uždara', vertices: 'Viršūnės', bulge: 'Išgaub.',
     length: 'Ilgis', angle: 'Kampas °', text: 'Tekstas', textH: 'Aukštis', start: 'Pradžia °', end: 'Pabaiga °', diameter: 'Skersmuo',
 
+    copiedN: 'Nukopijuota: {0} obj. (Ctrl+V – įklijuoti)', cutN: 'Iškirpta: {0} obj. (Ctrl+V – įklijuoti)', pastedN: '{0} obj. – spustelėkite, kur padėti', clipEmpty: 'Nieko nenukopijuota – pirmiausia Ctrl+C', pPlace: 'Spustelėkite, kur padėti (arba įveskite poslinkį) · Esc – atšaukti', pasteCancel: 'Atšaukta', copyClip: 'Kopijuoti', paste: 'Įklijuoti',
+    chainSel: 'Pažymėtas visas kontūras: {0} obj.', openShort: 'atviras', repeat: 'Kartoti: {0}', rot90: 'Pasukti 90°', selAll: 'Pažymėti viską', zoomSel: 'Priartinti pažymėtus',
+    helpTitle: 'Klavišai ir pelė', dropWarn: 'Dėmesio: {0}', pOverlaps: '#{0} persidengia su #{1}', pOutside: '#{0} išlenda už lapo', pClose: '#{0} per arti #{1}',
+    helpHtml: '<div class="keys"><h4>Vaizdas</h4><kbd>Ratukas</kbd><span>Priartinti / nutolinti</span><kbd>2 pirštai</kbd><span>Slinkti (kilimėlis), suspaudus – mastelis</span><kbd>Tarpas + tempti</kbd><span>Slinkti vaizdą</span><kbd>Vidurinis / dešinys + tempti</kbd><span>Slinkti vaizdą</span><kbd>Z</kbd><span>Visas vaizdas</span>'
+      + '<h4>Žymėjimas</h4><kbd>Spustelėti</kbd><span>Pažymėti objektą</span><kbd>Shift / Ctrl + spustelėti</kbd><span>Pridėti / atžymėti</span><kbd>Dukart spustelėti</kbd><span>Visas sujungtas kontūras</span><kbd>Tempti rėmelį →</kbd><span>Tik visiškai rėmelyje</span><kbd>Tempti rėmelį ←</kbd><span>Viskas, ką rėmelis kerta</span><kbd>Tempti pažymėtą</kbd><span>Perkelti</span><kbd>Dešinys spustelėjimas</kbd><span>Veiksmų meniu</span><kbd>Ctrl+A</kbd><span>Pažymėti viską</span><kbd>Del / Backspace</kbd><span>Ištrinti</span><kbd>Rodyklės</kbd><span>Pastumti pažymėtus 1 mm (Shift – 10 mm)</span><kbd>Ctrl+C / X / V</kbd><span>Kopijuoti / iškirpti / įklijuoti (veikia ir tarp skirtukų)</span><kbd>Ctrl+D</kbd><span>Dubliuoti ir padėti pele</span>'
+      + '<h4>Įvedimas</h4><kbd>50</kbd><span>Atstumas pelės kryptimi</span><kbd>600,400</kbd><span>Poslinkis X,Y nuo paskutinio taško</span><kbd>#0,0</kbd><span>Absoliuti koordinatė</span><kbd>100&lt;45</kbd><span>Atstumas ir kampas</span><kbd>Tab</kbd><span>Kitas pritraukimo taškas</span><kbd>Shift / F8</kbd><span>Tik horizontaliai / vertikaliai</span><kbd>Enter / tarpas</kbd><span>Patvirtinti, baigti</span><kbd>Esc</kbd><span>Atšaukti</span>'
+      + '<h4>Įrankiai</h4><kbd>V</kbd><span>Žymėti</span><kbd>G</kbd><span>Detalės lape (R pasukti, F apversti, rodyklės stumti, Ctrl+D kopija)</span><kbd>L P R C A</kbd><span>Linija, polilinija, stačiakampis, apskritimas, lankas</span><kbd>M K Q S I H</kbd><span>Perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti</span><kbd>O T N F</kbd><span>Lygiagreti kopija, nukirpti, nuožula, apvalinimas</span><kbd>J X D U</kbd><span>Sujungti, išskaidyti, matmuo, kampas</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Atšaukti / grąžinti</span><kbd>Ctrl+S</kbd><span>Įrašyti DXF</span></div>',
     gSel: '', gSheet: 'Lapas', parts: 'Detalės lape', dim: 'Matmuo', angle: 'Kampas',
     joinedForEdit: 'Kontūrai sujungti redagavimui: {0}', refilleted: 'Kampas pakeistas', notfillet: 'Tai ne apvalinimas tarp dviejų tiesių', movedBy: 'Perkelta: {0}, {1}', pMoveDrag: 'Paleiskite, kur padėti · prisitraukia prie taškų · Shift – tiesiai', help_parts: 'Spustelėkite detalę ir tempkite. R – pasukti 90°, F – apversti, rodyklės – po 1 mm (Shift – 10 mm), Ctrl+D – kopija, Alt – be pritraukimo. Detalė nusidažo raudonai, jei persidengia ar išlenda už lapo.',
-    help_dim: 'Du taškai – matmuo lieka brėžinyje. Jį galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
+    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją. Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
     pParts: 'Spustelėkite detalę ir tempkite · R pasukti · F apversti · rodyklės – stumti', pPartDrag: 'Paleiskite, kur padėti · Alt – be pritraukimo · Shift – tik horizontaliai/vertikaliai',
     pAng1: 'Pirmo spindulio taškas', pAng2: 'Kampo viršūnė', pAng3: 'Antro spindulio taškas',
     measurements: 'Matavimai', hideDims: 'Slėpti', clearAll: 'Išvalyti', noMeas: 'Matavimų nėra',
@@ -1508,7 +4341,7 @@ const I18N = {
     select: 'Select', line: 'Line', poly: 'Polyline', rect: 'Rectangle', circle: 'Circle', arc: 'Arc through 3 points',
     move: 'Move', copy: 'Copy', rotate: 'Rotate', scale: 'Scale', mirror: 'Mirror', stretch: 'Stretch',
     offset: 'Offset', trim: 'Trim', chamfer: 'Chamfer', fillet: 'Fillet', explode: 'Explode', join: 'Join', measure: 'Measure', del: 'Delete',
-    selPrompt: 'Select: click or drag a box (right-to-left = crossing). Shift removes.',
+    selPrompt: 'Click an object or drag a box · Shift/Ctrl adds · double-click selects the outline · right-click for actions · ? for keys',
     gripPrompt: 'Pick the new point or type: 50 (in the mouse direction) or 50,0',
     pickObj: 'Select objects, then press Enter (or right-click)',
     firstPoint: 'First point', nextPoint: 'Next point (Enter to finish)',
@@ -1524,7 +4357,7 @@ const I18N = {
     pTrim: 'Click the part to remove (up to the nearest intersections)',
     pCham: 'Click a corner or the first line · distances {0} / {1} mm (type 5 or 5,8)',
     pFil: 'Click a corner or the first line · radius {0} mm (type a number)', pSecond: 'Second line',
-    pM1: 'Measure from', pM2: 'Measure to',
+    pM1: 'Measure from', pM2: 'Measure to', pM3: 'Click where the dimension line goes (or type the distance)',
     selection: 'Selection', nothingSel: 'Nothing selected.',
     tips: '<li><b>Wheel</b> zooms, drag with the <b>middle</b> or <b>right</b> button to pan, <b>Z</b> zooms to everything</li><li>Drag the <b>grips</b> of a selected shape. The midpoint grip of an edge moves the whole edge.</li><li>Type at the bottom: <code>50</code> – distance in the mouse direction, <code>600,400</code> – offset X,Y, <code>#0,0</code> – absolute, <code>100&lt;45</code> – distance and angle</li><li>Math works: <code>720-18*2</code></li><li>Change sizes in <b>Size</b>: “Stretch” keeps holes, chamfers and fillets unchanged</li><li>Opens DXF, DWG and 3D (STEP, IGES, STL, OBJ). Just drop a file on the window</li><li>Sheets with parts: the <b>Parts on sheet</b> tool (G) – drag parts, R rotates</li>',
     W: 'Width', H: 'Height', layer: 'Layer', layers: 'Layers', addLayer: 'New layer', current: 'current',
@@ -1555,9 +4388,16 @@ const I18N = {
     copyMade: 'Copy placed', rotated: 'Rotated', layerName: 'Name', closed: 'Closed', vertices: 'Vertices', bulge: 'Bulge',
     length: 'Length', angle: 'Angle °', text: 'Text', textH: 'Height', start: 'Start °', end: 'End °', diameter: 'Diameter',
 
+    copiedN: 'Copied {0} objects (Ctrl+V to paste)', cutN: 'Cut {0} objects (Ctrl+V to paste)', pastedN: '{0} objects – click where to place them', clipEmpty: 'Nothing copied yet – press Ctrl+C first', pPlace: 'Click where to place (or type an offset) · Esc – cancel', pasteCancel: 'Cancelled', copyClip: 'Copy', paste: 'Paste',
+    chainSel: 'Whole outline selected: {0} objects', openShort: 'open', repeat: 'Repeat: {0}', rot90: 'Rotate 90°', selAll: 'Select all', zoomSel: 'Zoom to selection',
+    helpTitle: 'Keys and mouse', dropWarn: 'Check: {0}', pOverlaps: '#{0} overlaps #{1}', pOutside: '#{0} is off the sheet', pClose: '#{0} is too close to #{1}',
+    helpHtml: '<div class="keys"><h4>View</h4><kbd>Wheel</kbd><span>Zoom in / out</span><kbd>2 fingers</kbd><span>Pan (touchpad), pinch to zoom</span><kbd>Space + drag</kbd><span>Pan</span><kbd>Middle / right + drag</kbd><span>Pan</span><kbd>Z</kbd><span>Zoom to everything</span>'
+      + '<h4>Selecting</h4><kbd>Click</kbd><span>Select an object</span><kbd>Shift / Ctrl + click</kbd><span>Add / remove</span><kbd>Double-click</kbd><span>Whole connected outline</span><kbd>Drag box →</kbd><span>Only what is fully inside</span><kbd>Drag box ←</kbd><span>Everything the box touches</span><kbd>Drag selection</kbd><span>Move it</span><kbd>Right-click</kbd><span>Action menu</span><kbd>Ctrl+A</kbd><span>Select all</span><kbd>Del / Backspace</kbd><span>Delete</span><kbd>Arrows</kbd><span>Nudge the selection 1 mm (Shift – 10 mm)</span><kbd>Ctrl+C / X / V</kbd><span>Copy / cut / paste (also between tabs)</span><kbd>Ctrl+D</kbd><span>Duplicate and place with the mouse</span>'
+      + '<h4>Typing values</h4><kbd>50</kbd><span>Distance in the mouse direction</span><kbd>600,400</kbd><span>Offset X,Y from the last point</span><kbd>#0,0</kbd><span>Absolute coordinate</span><kbd>100&lt;45</kbd><span>Distance and angle</span><kbd>Tab</kbd><span>Next snap point</span><kbd>Shift / F8</kbd><span>Horizontal / vertical only</span><kbd>Enter / Space</kbd><span>Confirm, finish</span><kbd>Esc</kbd><span>Cancel</span>'
+      + '<h4>Tools</h4><kbd>V</kbd><span>Select</span><kbd>G</kbd><span>Parts on sheet (R rotate, F flip, arrows nudge, Ctrl+D copy)</span><kbd>L P R C A</kbd><span>Line, polyline, rectangle, circle, arc</span><kbd>M K Q S I H</kbd><span>Move, copy, rotate, scale, mirror, stretch</span><kbd>O T N F</kbd><span>Offset, trim, chamfer, fillet</span><kbd>J X D U</kbd><span>Join, explode, dimension, angle</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Undo / redo</span><kbd>Ctrl+S</kbd><span>Save DXF</span></div>',
     gSel: '', gSheet: 'Sheet', parts: 'Parts on sheet', dim: 'Dimension', angle: 'Angle',
     joinedForEdit: 'Contours joined for editing: {0}', refilleted: 'Corner changed', notfillet: 'This is not a fillet between two straight edges', movedBy: 'Moved by {0}, {1}', pMoveDrag: 'Release to place · snaps to points · Shift keeps it straight', help_parts: 'Click a part and drag it. R rotates 90°, F flips, arrows nudge 1 mm (Shift 10 mm), Ctrl+D copies, hold Alt to drag without snapping. A part turns red when it overlaps another or leaves the sheet.',
-    help_dim: 'Two points – the dimension stays on the drawing. Drag it with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
+    help_dim: 'Two points, then a third click places the dimension line. Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
     pParts: 'Click a part and drag · R rotate · F flip · arrows nudge', pPartDrag: 'Release to place · Alt disables snapping · Shift keeps it straight',
     pAng1: 'Point on the first ray', pAng2: 'Vertex', pAng3: 'Point on the second ray',
     measurements: 'Measurements', hideDims: 'Hide', clearAll: 'Clear all', noMeas: 'No measurements yet',
@@ -1599,24 +4439,32 @@ const S = {
   fmt: LS.get('dxfed.fmt', 'r12'), lastTool: null, hover: null, snap: null, shift: false, mouse: null, world: { x: 0, y: 0 }, measure: null,
   dims: LS.get('dxfed.dims', []), dimsHidden: false, an: null, partChk: null, sheetRect: null, alt: false
 };
-let byId = new Map();
+let byId = new Map(), idxOf = new Map();
 const saveOpts = () => LS.set('dxfed.opts', S.opts);
-function reindex() { byId = new Map(S.doc.ents.map(e => [e.id, e])); for (const id of [...S.sel]) if (!byId.has(id)) S.sel.delete(id); }
+function reindex() { byId = new Map(); idxOf = new Map(); S.doc.ents.forEach((e, i) => { byId.set(e.id, e); idxOf.set(e.id, i); }); for (const id of [...S.sel]) if (!byId.has(id)) S.sel.delete(id); }
+// position of an entity in the drawing; the map is a hint, verified against the array (and repaired) so it can never go stale
+function entIndex(id) { const i = idxOf.get(id); if (i != null && S.doc.ents[i] && S.doc.ents[i].id === id) return i; const j = S.doc.ents.findIndex(e => e.id === id); if (j >= 0) idxOf.set(id, j); return j; }
 const getEnt = id => byId.get(id);
 const layerVis = n => { const l = S.doc.layers[n]; return !l || l.visible !== false; };
 const visEnts = () => S.doc.ents.filter(e => layerVis(e.layer));
-const selEnts = () => S.doc.ents.filter(e => S.sel.has(e.id));
+const selEnts = () => {
+  if (S.sel.size * 8 > S.doc.ents.length) return S.doc.ents.filter(e => S.sel.has(e.id));
+  const out = []; for (const id of S.sel) { const e = byId.get(id); if (e) out.push(e); }
+  return out.sort((a, b) => entIndex(a.id) - entIndex(b.id)); // drawing order, as before
+};
 function ensureLayer(n) { if (!S.doc.layers[n]) S.doc.layers[n] = { color: 7, visible: true }; }
-function addEnt(e) { if (e.id == null) e.id = nid(); if (!e.layer) e.layer = S.curLayer; ensureLayer(e.layer); S.doc.ents.push(e); byId.set(e.id, e); return e; }
-function removeIds(ids) { const set = new Set(ids); S.doc.ents = S.doc.ents.filter(e => !set.has(e.id)); for (const id of set) { byId.delete(id); S.sel.delete(id); } }
-function replaceEnt(id, ne) { const i = S.doc.ents.findIndex(e => e.id === id); if (i < 0) return; ne.id = id; if (!ne.layer) ne.layer = S.doc.ents[i].layer; S.doc.ents[i] = ne; byId.set(id, ne); }
-function pushUndo() { S.undo.push(JSON.stringify(S.doc)); if (S.undo.length > 150) S.undo.shift(); S.redo = []; }
-function restore(json) { S.doc = JSON.parse(json); bumpIds(S.doc.ents); reindex(); if (!S.doc.layers[S.curLayer]) S.curLayer = Object.keys(S.doc.layers)[0] || '0'; }
-function undo() { if (!S.undo.length) return; S.redo.push(JSON.stringify(S.doc)); restore(S.undo.pop()); resetTool(); commit(); }
-function redo() { if (!S.redo.length) return; S.undo.push(JSON.stringify(S.doc)); restore(S.redo.pop()); resetTool(); commit(); }
+function addEnt(e) { if (e.id == null) e.id = nid(); if (!e.layer) e.layer = S.curLayer; ensureLayer(e.layer); idxOf.set(e.id, S.doc.ents.length); S.doc.ents.push(e); byId.set(e.id, e); return e; }
+function removeIds(ids) { const set = new Set(ids); S.doc.ents = S.doc.ents.filter(e => !set.has(e.id)); for (const id of set) { byId.delete(id); S.sel.delete(id); } idxOf = new Map(); S.doc.ents.forEach((e, i) => idxOf.set(e.id, i)); }
+function replaceEnt(id, ne) { const i = entIndex(id); if (i < 0) return; ne.id = id; if (!ne.layer) ne.layer = S.doc.ents[i].layer; S.doc.ents[i] = ne; byId.set(id, ne); }
+// entities are never changed in place (edits replace the object), so an undo step only needs a copy of the list, not of the geometry
+const snapDoc = d => ({ ...d, ents: d.ents.slice(), layers: JSON.parse(JSON.stringify(d.layers || {})) });
+function pushUndo() { S.undo.push(snapDoc(S.doc)); if (S.undo.length > 200) S.undo.shift(); S.redo = []; }
+function restore(sn) { const vis = {}; for (const [n, l] of Object.entries(S.doc.layers || {})) vis[n] = l.visible; S.doc = snapDoc(sn); for (const [n, l] of Object.entries(S.doc.layers)) if (n in vis) l.visible = vis[n]; /* layer visibility is a view setting: undo keeps it */ bumpIds(S.doc.ents); reindex(); if (!S.doc.layers[S.curLayer]) S.curLayer = Object.keys(S.doc.layers)[0] || '0'; }
+function undo() { if (!S.undo.length) return; S.redo.push(snapDoc(S.doc)); restore(S.undo.pop()); resetTool(); commit(); }
+function redo() { if (!S.redo.length) return; S.undo.push(snapDoc(S.doc)); restore(S.redo.pop()); resetTool(); commit(); }
 let saveTimer = 0;
 function commit() {
-  S.an = null; S.partChk = null;
+  S.an = null; S.partChk = null; S.rev = (S.rev || 0) + 1;
   reindex(); dirtyBase = true; renderPanel(); updateInfo(); requestDraw();
   clearTimeout(saveTimer); saveTimer = setTimeout(() => { try { const js = JSON.stringify({ doc: S.doc, fname: S.fname, sample: S.sample, sheetRect: S.sheetRect }); if (js.length < 4.5e6) localStorage.setItem('dxfed.doc', js); } catch (e) { } }, 500);
 }
@@ -1649,17 +4497,20 @@ function requestDraw() { if (raf) return; raf = requestAnimationFrame(() => { ra
 const w2s = p => ({ x: W / 2 + (p.x - S.view.cx) * S.view.s, y: H / 2 - (p.y - S.view.cy) * S.view.s });
 const s2w = (x, y) => ({ x: S.view.cx + (x - W / 2) / S.view.s, y: S.view.cy - (y - H / 2) / S.view.s });
 function pathEnt(c, e) {
-  let first = true;
-  for (const P of prims(e)) {
-    if (P.k === 'L') { const a = w2s(P.a), b = w2s(P.b); if (first) c.moveTo(a.x, a.y); else c.lineTo(a.x, a.y); c.lineTo(b.x, b.y); }
+  const bb = entBBox(e), s = S.view.s;
+  if ((bb[2] - bb[0]) * s < 1.2 && (bb[3] - bb[1]) * s < 1.2) { const p = w2s({ x: (bb[0] + bb[2]) / 2, y: (bb[1] + bb[3]) / 2 }); c.moveTo(p.x - .5, p.y); c.lineTo(p.x + .5, p.y); return; } // sub-pixel: a dot
+  let first = true, fx = 0, fy = 0; const pr = prims(e);
+  for (const P of pr) {
+    if (P.k === 'L') { const a = w2s(P.a), b = w2s(P.b); if (first) { c.moveTo(a.x, a.y); fx = a.x; fy = a.y; } else c.lineTo(a.x, a.y); c.lineTo(b.x, b.y); }
     else {
-      const cc = w2s(P.c), r = P.r * S.view.s;
+      const cc = w2s(P.c), r = P.r * s;
       if (P.full) { c.moveTo(cc.x + r, cc.y); c.arc(cc.x, cc.y, r, 0, TAU); }
-      else { const s0 = w2s(ptOn(P, 0)); if (first) c.moveTo(s0.x, s0.y); else c.lineTo(s0.x, s0.y); c.arc(cc.x, cc.y, r, -P.a0, -(P.a0 + P.sw), P.sw > 0); }
+      else { const s0 = w2s(ptOn(P, 0)); if (first) { c.moveTo(s0.x, s0.y); fx = s0.x; fy = s0.y; } else c.lineTo(s0.x, s0.y); c.arc(cc.x, cc.y, r, -P.a0, -(P.a0 + P.sw), P.sw > 0); }
     }
     first = false;
   }
-  if (e.type === 'poly' && e.closed && prims(e).length && prims(e)[prims(e).length - 1].k === 'L') c.closePath();
+  // closing segment drawn explicitly: closePath() gets very slow on paths holding thousands of shapes
+  if (e.type === 'poly' && e.closed && pr.length && pr[pr.length - 1].k === 'L') c.lineTo(fx, fy);
 }
 function drawText(c, e) {
   const p = w2s({ x: e.x, y: e.y }), px = e.h * S.view.s;
@@ -1785,18 +4636,57 @@ function entsInBox(r, crossing) {
   }
   return out;
 }
-function boxSelect(a, b, remove) {
+// mode: 'replace' (plain click/box), 'add', 'toggle' (Shift/Ctrl click), 'remove'
+function boxSelect(a, b, mode) {
   const wa = s2w(a.x, a.y), wb = s2w(b.x, b.y), r = [Math.min(wa.x, wb.x), Math.min(wa.y, wb.y), Math.max(wa.x, wb.x), Math.max(wa.y, wb.y)];
-  for (const e of entsInBox(r, b.x < a.x)) { if (remove) S.sel.delete(e.id); else S.sel.add(e.id); }
+  if (mode === 'replace') S.sel.clear();
+  for (const e of entsInBox(r, b.x < a.x)) { if (mode === 'remove') S.sel.delete(e.id); else S.sel.add(e.id); }
   selChanged();
 }
-function clickSelect(w, remove, clearOnEmpty) {
+function clickSelect(w, mode) {
   const e = hitEnt(w);
-  if (e) { if (remove) S.sel.delete(e.id); else S.sel.add(e.id); }
-  else if (clearOnEmpty && !remove) S.sel.clear();
+  if (mode === 'toggle') { if (e) { if (S.sel.has(e.id)) S.sel.delete(e.id); else S.sel.add(e.id); } }
+  else if (mode === 'add') { if (e) S.sel.add(e.id); }
+  else if (mode === 'remove') { if (e) S.sel.delete(e.id); }
+  else { S.sel.clear(); if (e) S.sel.add(e.id); }
   selChanged();
 }
-function selChanged() { dirtyBase = true; renderPanel(); requestDraw(); }
+// connected chain of open lines / arcs / polylines (double-click selects the whole outline)
+function chainIds(e0) {
+  const open = e => e.type === 'line' || e.type === 'arc' || (e.type === 'poly' && !e.closed);
+  if (!open(e0)) return [e0.id];
+  const tol = Math.max(0.05, 0.5 / S.view.s), key = p => Math.round(p.x / tol) + ',' + Math.round(p.y / tol), map = new Map();
+  const ends = e => { const c = chainOf(e); return c ? [c[0], c[c.length - 1]] : []; };
+  for (const e of visEnts()) if (open(e)) for (const p of ends(e)) { const k = key(p); let a = map.get(k); if (!a) map.set(k, a = []); a.push(e); }
+  const seen = new Set([e0.id]), stack = [e0];
+  while (stack.length) {
+    const e = stack.pop();
+    for (const p of ends(e)) { const kx = Math.round(p.x / tol), ky = Math.round(p.y / tol);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (const o of map.get((kx + dx) + ',' + (ky + dy)) || []) {
+        if (seen.has(o.id)) continue; if (!ends(o).some(q => vdist(q, p) <= tol)) continue; seen.add(o.id); stack.push(o); } }
+  }
+  return [...seen];
+}
+function insideSelected(w) {
+  if (!S.sel.size || S.sel.size > 60) return false;
+  for (const e of selEnts()) {
+    if (!((e.type === 'poly' && e.closed) || e.type === 'circle')) continue;
+    const b = entBBox(e); if (w.x < b[0] || w.x > b[2] || w.y < b[1] || w.y > b[3]) continue;
+    if (pointInPoly(w, loopPoly(e))) return true;
+  }
+  return false;
+}
+function describeEnt(e) {
+  const T = t('types')[e.type] || e.type, L = S.doc.layers[e.layer] ? e.layer : '';
+  let m = '';
+  if (e.type === 'line') m = 'L ' + fmt(vdist({ x: e.x1, y: e.y1 }, { x: e.x2, y: e.y2 }), 2);
+  else if (e.type === 'circle') m = '⌀ ' + fmt(2 * e.r, 2);
+  else if (e.type === 'arc') m = 'R ' + fmt(e.r, 2) + ' · ' + fmt(deg(arcSweep(e.a0, e.a1)), 1) + '°';
+  else if (e.type === 'poly') { const b = entBBox(e); m = fmt(b[2] - b[0], 1) + ' × ' + fmt(b[3] - b[1], 1) + (e.closed ? '' : ' · ' + t('openShort')); }
+  else if (e.type === 'text') m = '«' + (e.text.length > 24 ? e.text.slice(0, 22) + '…' : e.text) + '»';
+  return T + ' · ' + m + (L ? ' · ' + L : '');
+}
+function selChanged() { S.rev = (S.rev || 0) + 1; dirtyBase = true; renderPanel(); requestDraw(); }
 
 /* ---------- snapping ---------- */
 function computeSnap(w, base) {
@@ -1841,10 +4731,16 @@ function computeSnap(w, base) {
   if (S.snapPick && uniq.length > 1) { const i = S.snapPick % uniq.length; best = uniq[i]; best.cycled = true; }
   return best;
 }
+// free (unsnapped) points are rounded to a clean value finer than one screen pixel: no 812.36363636 coordinates, never sticky
+function roundPt(w) {
+  const step = Math.pow(10, Math.floor(Math.log10(1 / S.view.s))), dec = Math.max(0, -Math.round(Math.log10(step)));
+  const r = v => +(Math.round(v / step) * step).toFixed(Math.min(dec, 8));
+  return { x: r(w.x), y: r(w.y) };
+}
 function curPoint() {
   const w = S.world, base = tool && tool.base ? tool.base() : null;
   if (S.snap && S.snap.kind !== 'grid') return S.snap.p;
-  let p = S.snap ? S.snap.p : w;
+  let p = S.snap ? S.snap.p : roundPt(w);
   if (base && (S.ortho !== S.shift)) { const d = vsub(w, base); p = Math.abs(d.x) >= Math.abs(d.y) ? { x: p.x, y: base.y } : { x: base.x, y: p.y }; }
   return p;
 }
@@ -1907,15 +4803,18 @@ function drawSelDims(c) {
 }
 function renderOverlay() {
   const c = octx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
-  if (S.hover != null) { const e = getEnt(S.hover); if (e) { c.save(); c.strokeStyle = col.hot; c.fillStyle = col.hot; c.lineWidth = 3.5; c.globalAlpha = .45; c.beginPath(); if (e.type === 'text') drawText(c, e); else pathEnt(c, e); c.stroke(); c.restore(); } }
+  if (S.hover != null) { const e = getEnt(S.hover); if (e) {
+    c.save(); c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = col.accent; c.fillStyle = col.accent;
+    c.globalAlpha = .25; c.lineWidth = 8; c.beginPath(); if (e.type !== 'text') pathEnt(c, e); c.stroke();
+    c.globalAlpha = 1; c.lineWidth = 1.8; c.beginPath(); if (e.type === 'text') drawText(c, e); else pathEnt(c, e); c.stroke(); c.restore(); } }
   drawSelDims(c);
   drawDims(c);
   gripCache = [];
   if (tool.name === 'select' && S.sel.size && S.sel.size <= 120) {
     c.save(); c.lineWidth = 1;
     for (const e of selEnts()) for (const g of gripsOf(e)) {
-      gripCache.push(g); const p = w2s(g.p); const r = 4;
-      c.fillStyle = g.kind === 'mid' || g.kind === 'arcmid' ? col.panel : col.win; c.strokeStyle = col.win;
+      gripCache.push(g); const p = w2s(g.p); const hov = S.gripHover && S.gripHover.id === g.id && vdist(S.gripHover.p, g.p) < 1e-9, r = hov ? 6 : 4;
+      c.fillStyle = hov ? col.hot : g.kind === 'mid' || g.kind === 'arcmid' ? col.panel : col.win; c.strokeStyle = hov ? col.hot : col.win;
       if (g.kind === 'cen') { c.beginPath(); c.arc(p.x, p.y, r, 0, TAU); c.fill(); c.stroke(); }
       else { c.fillRect(p.x - r, p.y - r, 2 * r, 2 * r); c.strokeRect(p.x - r + .5, p.y - r + .5, 2 * r - 1, 2 * r - 1); }
     }
@@ -1937,6 +4836,7 @@ function renderOverlay() {
       const txt = tool.tipText ? tool.tipText(cur) : `${fmt(L, 2)}  ∠${fmt(a, 1)}°  (${fmt(d.x, 2)}, ${fmt(d.y, 2)})`;
       label(c, S.mouse.x + 16, S.mouse.y + 16, txt);
     } else if (tool.tipText) { const tt = tool.tipText(cur); if (tt) label(c, S.mouse.x + 16, S.mouse.y + 16, tt); }
+    if (S.hover != null && !boxDrag && (tool.name === 'select' && !tool.hot && !(tool.mv && tool.mv.moved) || tool.phase === 'pick')) { const e = getEnt(S.hover); if (e) label(c, S.mouse.x + 16, S.mouse.y + 18, describeEnt(e)); }
     if (cmd.value) dynBox(c, S.mouse.x + 16, S.mouse.y + 40);
   }
 }
@@ -1956,6 +4856,25 @@ function applyM(m, copy, opt = {}) {
   if (warped && !opt.keepCircles) toast(t('nonUniform'));
 }
 function selGhost(m) { return selEnts().flatMap(e => transformEnt(e, m)); }
+// preview of the selection under transform m. Big selections are drawn once into a bitmap and then only re-projected, so dragging stays smooth
+let ghostCache = null;
+function ghostSel(c, m, color, dash = [6, 4]) {
+  const list = selEnts();
+  if (list.length < 1200) return ghost(c, selGhost(m), color, dash);
+  color = color || col.accent;
+  const key = [S.view.cx, S.view.cy, S.view.s, W, H, dpr, S.rev, S.sel.size, color, dash.join()].join('|');
+  if (!ghostCache || ghostCache.key !== key) {
+    const cv = ghostCache ? ghostCache.cv : document.createElement('canvas'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    g.strokeStyle = color; g.fillStyle = color; g.lineWidth = 1.6; g.setLineDash(dash); g.lineJoin = 'round'; g.beginPath();
+    const vb = viewBox(); for (const e of list) if (e.type !== 'text' && inView(entBBox(e), vb)) pathEnt(g, e);
+    g.stroke(); for (const e of list) if (e.type === 'text' && inView(entBBox(e), vb)) drawText(g, e);
+    ghostCache = { key, cv };
+  }
+  const s = S.view.s, Sm = [s, 0, 0, -s, W / 2 - S.view.cx * s, H / 2 + S.view.cy * s], Si = [1 / s, 0, 0, -1 / s, S.view.cx - W / (2 * s), S.view.cy + H / (2 * s)];
+  const G = mMul(Sm, mMul(m, Si));
+  c.save(); c.setTransform(dpr * G[0], dpr * G[1], dpr * G[2], dpr * G[3], dpr * G[4], dpr * G[5]); c.drawImage(ghostCache.cv, 0, 0, W, H); c.restore();
+}
 function refDist(b) { const bb = bboxOf(selEnts()); if (!bb) return 1; return Math.max(1e-6, ...[[bb[0], bb[1]], [bb[2], bb[1]], [bb[2], bb[3]], [bb[0], bb[3]]].map(([x, y]) => vdist(b, { x, y }))); }
 function cornerErr(r) { const m = { notfillet: 'notfillet', toolong: 'errTooLong', parallel: 'errParallel', arcseg: 'errArcSeg', end: 'errEnd', straight: 'errStraight', zero: 'errStraight' }; toast(t(m[r.err] || 'badInput'), true); }
 function findCorner(w) {
@@ -1971,6 +4890,18 @@ function findCorner(w) {
   for (let i = 0; i < ends.length; i++) for (let j = i + 1; j < ends.length; j++) {
     if (ends[i].e === ends[j].e || vdist(ends[i].p, ends[j].p) > ctol) continue;
     const d = vdist(w, ends[i].p); if (d <= bd) { bd = d; best = { kind: 'lines', a: ends[i], b: ends[j] }; }
+  }
+  return best;
+}
+function findFillet(w) {
+  const tol = 16 / S.view.s; let best = null, bd = tol;
+  for (const e of S.doc.ents) {
+    if (e.type !== 'poly' || !layerVis(e.layer)) continue;
+    const bb = entBBox(e); if (w.x < bb[0] - tol || w.x > bb[2] + tol || w.y < bb[1] - tol || w.y > bb[3] + tol) continue;
+    for (const P of prims(e)) {
+      if (P.k !== 'A') continue; const fi = filletInfo(e, P.seg); if (!fi) continue;
+      const d = Math.min(distPrim(w, P), vdist(w, fi.V)); if (d < bd) { bd = d; best = { e, seg: P.seg }; }
+    }
   }
   return best;
 }
@@ -2008,6 +4939,8 @@ function cornerTool(mode) {
           commit(); toast(t('refilleted')); return;
         }
       }
+      // a filleted corner: clicking the arc or where the sharp corner used to be replaces it
+      const fz = findFillet(w); if (fz) return this.redo(fz.e, fz.seg, d1, d2);
       const c = findCorner(w);
       if (c && c.kind === 'poly') {
         const n = c.e.pts.length, prev = (c.i - 1 + n) % n;
@@ -2049,9 +4982,9 @@ const TOOLS = {
       const dm = hitDim(info.screen); if (dm) { this.dimDrag = dm; return; }
       const g = hitGrip(info.screen);
       if (g) { this.hot = g; this.dragging = true; S.hover = null; updatePrompt(); return; }
-      // press on an already selected object and drag = move the whole selection
-      const e = !info.shift && hitEnt(info.world);
-      if (e && S.sel.has(e.id)) { this.mv = { start: p, moved: false }; return; }
+      // press on an already selected object (or inside a selected closed outline) and drag = move the selection
+      const mod = info.shift || info.ctrl, e = hitEnt(info.world);
+      if (!mod && ((e && S.sel.has(e.id)) || (!e && insideSelected(info.world)))) { this.mv = { start: p, moved: false, hit: e ? e.id : null }; return; }
       pick = { start: info.screen };
     },
     move() {
@@ -2063,21 +4996,28 @@ const TOOLS = {
       if (this.justPlaced) { this.justPlaced = false; return; }
       if (this.mv) {
         const mv = this.mv; this.mv = null; updatePrompt();
-        if (mv.moved) { const d = vsub(p, mv.start); if (vlen(d) > 1e-9) { applyM(mTrans(d.x, d.y)); toast(t('movedBy', fmt(d.x, 2), fmt(d.y, 2))); } }
-        else clickSelect(info.world, false, true);
+        if (mv.moved) { const d = vsub(p, mv.start); if (!S.snap) { d.x = Math.round(d.x * 100) / 100; d.y = Math.round(d.y * 100) / 100; } if (vlen(d) > 1e-9) { applyM(mTrans(d.x, d.y)); toast(t('movedBy', fmt(d.x, 2), fmt(d.y, 2))); } }
+        else if (mv.hit != null && S.sel.size > 1) { S.sel.clear(); S.sel.add(mv.hit); selChanged(); }
         return;
       }
       if (this.hot) { if (info.moved) this.place(p); this.dragging = false; return; }
       if (!pick) return;
-      if (boxDrag) boxSelect(pick.start, info.screen, info.shift); else clickSelect(info.world, info.shift, true);
+      const mod = info.shift || info.ctrl;
+      if (boxDrag) boxSelect(pick.start, info.screen, mod ? 'add' : 'replace'); else clickSelect(info.world, mod ? 'toggle' : 'replace');
       pick = null; boxDrag = null;
     },
     point(p) { if (this.hot) this.place(p); },
     place(p) { const h = this.hot; this.hot = null; updatePrompt(); const e = getEnt(h.id); if (!e) return; const ne = h.apply(p); if (ne) { pushUndo(); replaceEnt(e.id, ne); commit(); } else requestDraw(); },
     draw(c, cur) {
-      if (this.mv && this.mv.moved) { const d = vsub(cur, this.mv.start); ghost(c, selGhost(mTrans(d.x, d.y))); rubber(c, this.mv.start, cur); return; }
+      if (this.mv && this.mv.moved) { const d = vsub(cur, this.mv.start); ghostSel(c, mTrans(d.x, d.y)); rubber(c, this.mv.start, cur); return; }
       if (!this.hot) return; const e = getEnt(this.hot.id); if (!e) return; const ne = this.hot.apply(cur); if (ne) ghost(c, [ne]); rubber(c, this.hot.p, cur); },
     enter() { if (this.hot) { this.hot = null; updatePrompt(); requestDraw(); return; } if (S.lastTool) setTool(S.lastTool); },
+    onKey(ev) { // arrows: nudge the selection 1 mm (Shift 10 mm); with nothing selected they scroll the view
+      const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[ev.key];
+      if (!dir || ev.ctrlKey || ev.metaKey || ev.altKey || this.hot || this.mv) return false;
+      if (!S.sel.size) { panBy(dir[0] * W * .15, -dir[1] * H * .15); return true; }
+      const st = ev.shiftKey ? 10 : 1; applyM(mTrans(dir[0] * st, dir[1] * st)); toast(t('movedBy', fmt(dir[0] * st, 2), fmt(dir[1] * st, 2))); return true;
+    },
     cancel() { this.mv = null; if (this.hot) { this.hot = null; return true; } return false; },
     esc() { if (this.mv) { this.mv = null; updatePrompt(); requestDraw(); return; } if (this.hot) { this.hot = null; return; } if (S.sel.size) { S.sel.clear(); selChanged(); } }
   }),
@@ -2140,7 +5080,7 @@ const TOOLS = {
     point(p) { if (this.phase === 'base') { this.b = p; this.phase = 'ang'; return; } this.go(vang(vsub(p, this.b))); },
     value(v) { this.go(rad(v)); },
     go(a) { applyM(mRot(a, this.b)); setTool('select'); toast(t('rotated') + ' ' + fmt(deg(a), 2) + '°'); },
-    draw(c, cur) { if (this.phase === 'ang' && vdist(cur, this.b) > 1e-9) { ghost(c, selGhost(mRot(vang(vsub(cur, this.b)), this.b))); rubber(c, this.b, cur); } }
+    draw(c, cur) { if (this.phase === 'ang' && vdist(cur, this.b) > 1e-9) { ghostSel(c, mRot(vang(vsub(cur, this.b)), this.b)); rubber(c, this.b, cur); } }
   }),
   scale: () => ({
     name: 'scale', phase: 'base', b: null,
@@ -2150,7 +5090,7 @@ const TOOLS = {
     point(p) { if (this.phase === 'base') { this.b = p; this.ref = refDist(p); this.phase = 'f'; return; } this.go(vdist(p, this.b) / this.ref); },
     value(v) { if (v > 0) this.go(v); },
     go(k) { if (!(k > 0)) return; applyM(mScale(k, k, this.b)); setTool('select'); },
-    draw(c, cur) { if (this.phase === 'f') { const k = vdist(cur, this.b) / this.ref; if (k > 0) ghost(c, selGhost(mScale(k, k, this.b))); rubber(c, this.b, cur); } },
+    draw(c, cur) { if (this.phase === 'f') { const k = vdist(cur, this.b) / this.ref; if (k > 0) ghostSel(c, mScale(k, k, this.b)); rubber(c, this.b, cur); } },
     tipText(cur) { return this.phase === 'f' ? '× ' + fmt(vdist(cur, this.b) / this.ref, 4) : ''; }
   }),
   mirror: () => ({
@@ -2159,7 +5099,7 @@ const TOOLS = {
     prompt() { return this.phase === 'p1' ? t('pMir1') : t('pMir2'); },
     base() { return this.phase === 'p2' ? this.a : null; }, wantsPoint() { return true; },
     point(p) { if (this.phase === 'p1') { this.a = p; this.phase = 'p2'; return; } if (vdist(p, this.a) < 1e-9) return; applyM(mMirror(this.a, p), S.opts.mirrorKeep); setTool('select'); },
-    draw(c, cur) { if (this.phase === 'p2' && vdist(cur, this.a) > 1e-9) { ghost(c, selGhost(mMirror(this.a, cur))); rubber(c, this.a, cur); } }
+    draw(c, cur) { if (this.phase === 'p2' && vdist(cur, this.a) > 1e-9) { ghostSel(c, mMirror(this.a, cur)); rubber(c, this.a, cur); } }
   }),
   stretch: () => ({
     name: 'stretch', phase: 'w1', c1: null, r: null, b: null,
@@ -2219,7 +5159,7 @@ function moveTool(copy) {
       applyM(mTrans(d.x, d.y), copy);
       if (!copy) setTool('select'); else toast(t('copyMade'));
     },
-    draw(c, cur) { if (this.phase === 'dest') { const d = vsub(cur, this.b); ghost(c, selGhost(mTrans(d.x, d.y))); rubber(c, this.b, cur); } }
+    draw(c, cur) { if (this.phase === 'dest') { const d = vsub(cur, this.b); ghostSel(c, mTrans(d.x, d.y)); rubber(c, this.b, cur); } }
   };
 }
 function setTool(name) {
@@ -2230,7 +5170,7 @@ function setTool(name) {
   tool = TOOLS[name]();
   if (NEED_SEL.has(name)) { if (!S.sel.size) tool.phase = 'pick'; else tool.afterPick(); }
   document.querySelectorAll('.tool[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === name));
-  updatePrompt(); renderPanel(); dirtyBase = true; requestDraw();
+  updatePrompt(); renderPanel(); dirtyBase = true; requestDraw(); if (typeof updateCursor === 'function') updateCursor();
 }
 function resetTool() { if (tool) setTool(tool.name === 'select' ? 'select' : tool.name); }
 function updatePrompt() {
@@ -2436,7 +5376,13 @@ function renderLayers() {
   h += `</div><div class="row"><input id="newLayer" placeholder="${t('addLayer')}" style="flex:1;height:27px;border:1px solid var(--line);border-radius:3px;background:var(--raise);padding:0 6px;min-width:0"><button class="btn small" data-act="addLayer">+</button></div>`;
   el.innerHTML = h;
 }
-function renderPanel() { renderSel(); renderPartsPanel(); renderOpts(); renderDims(); renderLayers(); }
+function renderPanel() {
+  // keep the caret where the user is typing: re-rendering replaces the inputs, so focus is restored on the matching new one
+  const side = $('side'), ae = document.activeElement;
+  const key = ae && ae !== document.body && side.contains(ae) && /^(INPUT|SELECT)$/.test(ae.tagName) ? (ae.dataset.f ? `[data-f="${ae.dataset.f}"]` : ae.dataset.o ? `[data-o="${ae.dataset.o}"]` : ae.id ? '#' + CSS.escape(ae.id) : null) : null;
+  renderSel(); renderPartsPanel(); renderOpts(); renderDims(); renderLayers(); $('partsPanel').style.order = tool && tool.name === 'parts' ? -1 : 0;
+  if (key && !side.contains(ae)) { const n = side.querySelector(key); if (n) { n.focus({ preventScroll: true }); if (n.select && n.type !== 'checkbox' && n.type !== 'radio') try { n.select(); } catch (e) { } } }
+}
 function bindPanels() {
   const side = $('side');
   side.addEventListener('change', ev => {
@@ -2446,13 +5392,14 @@ function bindPanels() {
       if (f === 'rsW' || f === 'rsH') return;
       if (f === 'qdx' || f === 'qdy' || f === 'qang') return;
       const list = selEnts();
-      if (f === 'layer') { if (!el.value) return; pushUndo(); for (const e of list) replaceEnt(e.id, { ...e, layer: el.value }); commit(); return; }
+      // the panel is re-rendered on the next tick so Tab can move focus to the next field first
+      if (f === 'layer') { if (!el.value) return; pushUndo(); for (const e of list) replaceEnt(e.id, { ...e, layer: el.value }); setTimeout(commit, 0); return; }
       if (list.length !== 1) return;
       const e = list[0], ne = applyProp(e, f, el.type === 'checkbox' ? el.checked : el.value);
-      if (ne) { pushUndo(); replaceEnt(e.id, ne); commit(); } else renderPanel();
+      if (ne) { pushUndo(); replaceEnt(e.id, ne); setTimeout(commit, 0); } else setTimeout(renderPanel, 0);
       return;
     }
-    if (el.dataset.o) { const k = el.dataset.o; if (el.type === 'checkbox') S.opts[k] = el.checked; else { const v = evalNum(el.value); if (v === null || v < 0) return toast(t('badInput'), true); S.opts[k] = v; } saveOpts(); S.partChk = null; if (k === 'gap' || k === 'margin' || k === 'withNested' || k === 'allowRot') renderPartsPanel(); updatePrompt(); requestDraw(); return; }
+    if (el.dataset.o) { const k = el.dataset.o; if (el.type === 'checkbox') S.opts[k] = el.checked; else { const v = evalNum(el.value); if (v === null || v < 0) return toast(t('badInput'), true); S.opts[k] = v; } saveOpts(); S.partChk = null; if (k === 'gap' || k === 'margin' || k === 'withNested' || k === 'allowRot') setTimeout(renderPanel, 0); updatePrompt(); requestDraw(); return; }
     if (el.id === 'dimsHide') { S.dimsHidden = el.checked; requestDraw(); return; }
     if (el.id === 'rsLock') { S.opts.lock = el.checked; saveOpts(); return; }
     if (el.id === 'rsHoles') { S.opts.keepHoles = el.checked; saveOpts(); return; }
@@ -2499,7 +5446,7 @@ function addLayer() { const inp = $('newLayer'), n = inp.value.trim(); if (!n) r
 
 /* ---------- file I/O ---------- */
 function toast(msg, warn) { const el = $('toast'); el.textContent = msg; el.className = warn ? 'warn' : ''; el.hidden = false; clearTimeout(toast.tm); toast.tm = setTimeout(() => { el.hidden = true; }, warn ? 4200 : 2800); }
-function updateInfo() { if (S3.mode === '3d') { $('fname').textContent = S3.model3d ? S3.model3d.filename : ''; return; } $('info').textContent = `${S.doc.ents.length} ${t('objs')} · mm${S.sample ? ' · ' + t('sample') : ''}`; $('fname').textContent = S.fname || ''; $('bUndo').disabled = !S.undo.length; $('bRedo').disabled = !S.redo.length; }
+function updateInfo() { if (S3.mode === '3d') { const m = S3.model3d; $('fname').textContent = m ? m.filename : ''; $('info').textContent = m ? `${m.triangleCount.toLocaleString()} ${t('tris').toLowerCase()} · mm` : ''; return; } $('info').textContent = `${S.doc.ents.length} ${t('objs')} · mm${S.sample ? ' · ' + t('sample') : ''}`; $('fname').textContent = S.fname || ''; $('bUndo').disabled = !S.undo.length; $('bRedo').disabled = !S.redo.length; }
 function readFile(file, insert) {
   const ext = (file.name.split('.').pop() || '').toLowerCase();
   if (['stl', 'obj', 'step', 'stp', 'iges', 'igs', 'brep'].includes(ext)) return handle3DFile(file, ext);
@@ -2518,11 +5465,11 @@ function loadParsed(res, file, insert) {
   if (insert) {
     pushUndo();
     for (const [k, v] of Object.entries(res.layers)) if (!S.doc.layers[k]) S.doc.layers[k] = v;
-    S.sel.clear(); for (const e of res.ents) { addEnt(e); S.sel.add(e.id); }
-    commit(); setTool('move'); toast(t('inserted', res.ents.length));
+    const ids = res.ents.map(e => addEnt(e).id);
+    commit(); startPlacing(ids, t('inserted', res.ents.length), true);
   } else {
     if (S.doc.ents.length) pushUndo();
-    S.doc = { ents: res.ents, layers: res.layers }; S.sel.clear(); S.fname = file.name; S.sample = false; S.sheetRect = null; S.dims = []; saveDims();
+    S.doc = { ents: res.ents, layers: res.layers }; S.anMemo = null; S.sel.clear(); S.fname = file.name; S.sample = false; S.sheetRect = null; S.dims = []; saveDims();
     S.curLayer = S.doc.layers['0'] ? '0' : Object.keys(S.doc.layers)[0];
     reindex(); fit(); commit();
     const an = getAn(); setTool(an.parts.length >= 2 ? 'parts' : 'select');
@@ -2584,8 +5531,10 @@ cmd.addEventListener('input', () => requestDraw());
 cmd.addEventListener('keydown', ev => {
   if (S3.mode === '3d') return;
   if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
-  if (ev.key === 'Enter' || (ev.key === ' ' && !cmd.value)) { ev.preventDefault(); onCmd(); return; }
-  if (ev.key === 'Escape') { ev.preventDefault(); cmd.value = ''; escapeKey(); return; }
+  if (ev.key === ' ' && !cmd.value) { ev.preventDefault(); if (!ev.repeat && !S.space) { S.space = { panned: false, panning: false }; updateCursor(); } return; }
+  if (ev.key === '?' && !cmd.value) { ev.preventDefault(); openHelp(); return; }
+  if (ev.key === 'Enter') { ev.preventDefault(); onCmd(); return; }
+  if (ev.key === 'Escape') { ev.preventDefault(); if (!$('helpOverlay').hidden) { closeHelp(); return; } if (!$('ctx').hidden) { closeCtx(); return; } if (cmd.value) { cmd.value = ''; requestDraw(); return; } escapeKey(); return; }
   if (!cmd.value && tool.onKey && tool.onKey(ev)) { ev.preventDefault(); ev.stopPropagation(); return; }
   if (cmd.value) return;
   if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
@@ -2600,6 +5549,10 @@ document.addEventListener('keydown', ev => {
     if (k === 'z' && !ev.shiftKey) { ev.preventDefault(); undo(); return; }
     if (k === 'y' || (k === 'z' && ev.shiftKey)) { ev.preventDefault(); redo(); return; }
     if (k === 'a') { ev.preventDefault(); for (const e of visEnts()) S.sel.add(e.id); selChanged(); return; }
+    if (k === 'c' && !ev.shiftKey) { ev.preventDefault(); copySel(false); return; }
+    if (k === 'x') { ev.preventDefault(); copySel(true); return; }
+    if (k === 'v') { ev.preventDefault(); pasteClip(); return; }
+    if (k === 'd' && tool.name !== 'parts') { ev.preventDefault(); duplicateToCursor(); return; }
   }
   if ((ev.ctrlKey || ev.metaKey) && k === 's') { ev.preventDefault(); saveDXF(false); return; }
   if ((ev.ctrlKey || ev.metaKey) && k === 'o') { ev.preventDefault(); $('fOpen').click(); return; }
@@ -2609,15 +5562,22 @@ document.addEventListener('keydown', ev => {
   if (inField) return;
   if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1 && S.mouse && S.mouse.inside) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
   if (tool.onKey && tool.onKey(ev)) { ev.preventDefault(); return; }
-  if (ev.key === 'Escape') { escapeKey(); return; }
-  if (ev.key === 'Enter') { ev.preventDefault(); confirmKey(); return; }
+  const onButton = /^(BUTTON|SUMMARY|A)$/.test(tg.tagName);
+  if (ev.key === 'Escape') { if (!$('helpOverlay').hidden) { closeHelp(); return; } if (!$('ctx').hidden) { closeCtx(); return; } escapeKey(); return; }
+  if (ev.key === 'Enter') { if (onButton) return; ev.preventDefault(); confirmKey(); return; }
+  if (ev.key === ' ') { if (onButton) return; ev.preventDefault(); if (!ev.repeat && !S.space) { S.space = { panned: false, panning: false }; updateCursor(); } return; }
+  if (ev.key === '?' || ev.key === 'F1') { ev.preventDefault(); openHelp(); return; }
   if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); runAction('del'); return; }
   if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && ev.key.length === 1) {
     if (/[a-zA-Z]/.test(ev.key)) { ev.preventDefault(); const tn = SHORT[k]; if (tn) runShortcut(tn); return; }
     cmd.focus(); // digits, @, #, -, ( go to the command line
   }
 });
-document.addEventListener('keyup', ev => { if (ev.key === 'Shift') { S.shift = false; requestDraw(); } });
+document.addEventListener('keyup', ev => {
+  if (ev.key === 'Shift') { S.shift = false; requestDraw(); }
+  if (ev.key === ' ' && S.space) { const used = S.space.panned; S.space = null; updateCursor(); if (!used && !cmd.value && (document.activeElement === cmd || document.activeElement === document.body)) onCmd(); }
+});
+window.addEventListener('blur', () => { S.shift = false; S.alt = false; S.space = null; pan = null; updateCursor(); requestDraw(); });
 
 const ptrs = new Map(); let pan = null, rdown = null, pinch = null, downInfo = null;
 function screenOf(ev) { const r = ov.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
@@ -2625,6 +5585,24 @@ function updateHover() {
   const pickPhase = tool.phase === 'pick' || (tool.picking && !(tool.wantsPoint && tool.wantsPoint()));
   if (!pickPhase || pan || boxDrag) { S.hover = null; return; }
   const e = hitEnt(S.world, tool.hoverFilter); S.hover = e ? e.id : null;
+}
+let curCursor = '';
+function setCursor(c) { if (c !== curCursor) { ov.style.cursor = c; curCursor = c; } }
+function updateCursor() {
+  if (pan || (rdown && rdown.moved) || (S.space && S.space.panning)) return setCursor('grabbing');
+  if (S.space) return setCursor('grab');
+  const n = tool.name;
+  if (n === 'parts') return setCursor(tool.drag && tool.drag.moved ? 'grabbing' : S.hoverPart != null ? 'grab' : 'default');
+  if (n === 'select') {
+    if (tool.hot || (tool.mv && tool.mv.moved)) return setCursor('crosshair');
+    if (S.gripHover) return setCursor('pointer');
+    if (S.mouse && hitDim(S.mouse)) return setCursor('move');
+    if ((S.hover != null && S.sel.has(S.hover)) || (S.hover == null && S.insideSel)) return setCursor('move');
+    return setCursor(S.hover != null ? 'pointer' : 'default');
+  }
+  if (tool.phase === 'pick') return setCursor(S.hover != null ? 'pointer' : 'default');
+  if (tool.wantsPoint && tool.wantsPoint()) return setCursor('crosshair');
+  setCursor(tool.picking && S.hover != null ? 'pointer' : 'crosshair');
 }
 function updateSnapNow() {
   const wants = tool.phase !== 'pick' && tool.wantsPoint && tool.wantsPoint();
@@ -2634,12 +5612,13 @@ ov.addEventListener('pointerdown', ev => {
   ov.setPointerCapture(ev.pointerId);
   const sp = screenOf(ev); ptrs.set(ev.pointerId, sp);
   if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: vdist(a, b), m: vlerp(a, b, .5) }; downInfo = null; pick = null; boxDrag = null; return; }
-  if (ev.button === 1) { ev.preventDefault(); pan = { x: sp.x, y: sp.y, cx: S.view.cx, cy: S.view.cy }; return; }
+  closeCtx();
+  if (ev.button === 1 || (ev.button === 0 && S.space)) { ev.preventDefault(); pan = { x: sp.x, y: sp.y, cx: S.view.cx, cy: S.view.cy }; if (S.space) S.space.panning = S.space.panned = true; updateCursor(); return; }
   if (ev.button === 2) { rdown = { x: sp.x, y: sp.y, cx: S.view.cx, cy: S.view.cy, moved: false }; return; }
   if (ev.button !== 0) return;
   if (ev.pointerType === 'mouse') focusCmd();
   S.shift = ev.shiftKey; S.world = s2w(sp.x, sp.y); updateSnapNow();
-  const info = { screen: sp, world: S.world, shift: ev.shiftKey, moved: false };
+  const info = { screen: sp, world: S.world, shift: ev.shiftKey, ctrl: ev.ctrlKey || ev.metaKey, moved: false };
   downInfo = info;
   const p = curPoint();
   if (tool.phase === 'pick') { pick = { start: sp }; return; }
@@ -2664,25 +5643,30 @@ ov.addEventListener('pointermove', ev => {
   if (downInfo && !downInfo.moved && Math.hypot(sp.x - downInfo.screen.x, sp.y - downInfo.screen.y) > 4) downInfo.moved = true;
   if (pick && downInfo && downInfo.moved) boxDrag = { a: pick.start, b: sp };
   updateSnapNow(); updateHover();
+  S.gripHover = tool.name === 'select' && !tool.hot && !downInfo ? hitGrip(sp) : null;
+  S.insideSel = tool.name === 'select' && !downInfo && S.hover == null ? insideSelected(S.world) : false;
+  S.hoverPart = tool.name === 'parts' && !(tool.drag && tool.drag.moved) ? (partAt(S.world) || null) : null;
+  if (S.space && downInfo == null && pan) S.space.panning = true;
   const w = curPoint(); $('coords').textContent = `X ${fmt(w.x, 2)}   Y ${fmt(w.y, 2)}`;
   if (tool.move) tool.move(w);
-  requestDraw();
+  updateCursor(); requestDraw();
 });
 ov.addEventListener('pointerup', ev => {
   const sp = screenOf(ev); ptrs.delete(ev.pointerId);
   if (pinch) { if (ptrs.size < 2) pinch = null; return; }
-  if (pan) { pan = null; return; }
-  if (rdown) { const r = rdown; rdown = null; if (!r.moved) confirmKey(); return; }
+  if (pan) { pan = null; if (S.space) S.space.panning = false; updateCursor(); return; }
+  if (rdown) { const r = rdown; rdown = null; updateCursor(); if (!r.moved) { if ((tool.name === 'select' && !tool.hot) || (tool.name === 'parts' && !tool.drag)) openCtx(ev.clientX, ev.clientY); else confirmKey(); } return; }
   if (!downInfo) return;
-  const info = { ...downInfo, screen: sp, world: s2w(sp.x, sp.y), shift: ev.shiftKey, moved: downInfo.moved };
+  const info = { ...downInfo, screen: sp, world: s2w(sp.x, sp.y), shift: ev.shiftKey, ctrl: ev.ctrlKey || ev.metaKey, moved: downInfo.moved };
   downInfo = null;
-  if (tool.phase === 'pick') { if (pick) { if (boxDrag) boxSelect(pick.start, sp, info.shift); else clickSelect(info.world, info.shift, false); } pick = null; boxDrag = null; updatePrompt(); requestDraw(); return; }
+  if (tool.phase === 'pick') { if (pick) { if (boxDrag) boxSelect(pick.start, sp, info.shift ? 'remove' : 'add'); else clickSelect(info.world, info.shift ? 'toggle' : 'add'); } pick = null; boxDrag = null; updatePrompt(); requestDraw(); return; }
   if (tool.up) tool.up(curPoint(), info);
   boxDrag = null; updatePrompt(); requestDraw();
 });
 ov.addEventListener('pointercancel', ev => { ptrs.delete(ev.pointerId); pan = rdown = pinch = downInfo = pick = boxDrag = null; });
 ov.addEventListener('pointerleave', () => { if (S.mouse) S.mouse.inside = false; S.snap = null; requestDraw(); });
 ov.addEventListener('contextmenu', ev => ev.preventDefault());
+ov.addEventListener('mousedown', ev => ev.preventDefault()); // keep keyboard focus in the command line
 let padUntil = 0;
 function isTouchpad(ev) {
   if (ev.deltaMode !== 0) return false;                       // line/page steps = mouse wheel
@@ -2704,7 +5688,11 @@ let gest = null; // Safari pinch
 ov.addEventListener('gesturestart', ev => { ev.preventDefault(); gest = ev.scale || 1; });
 ov.addEventListener('gesturechange', ev => { ev.preventDefault(); if (!gest || !S.mouse) return; zoomAt(S.mouse.x, S.mouse.y, (ev.scale || 1) / gest); gest = ev.scale || 1; });
 ov.addEventListener('gestureend', ev => { ev.preventDefault(); gest = null; });
-ov.addEventListener('dblclick', ev => { if (ev.button === 1) return fit(); if (tool.name === 'parts' && selParts().length) setTool('select'); });
+ov.addEventListener('dblclick', ev => {
+  if (ev.button === 1) return fit();
+  if (tool.name === 'parts' && selParts().length) { partsAction('pEdit'); return; }
+  if (tool.name === 'select' && !tool.hot) { const e = hitEnt(S.world); if (e) { const ids = chainIds(e); if (!(ev.shiftKey || ev.ctrlKey || ev.metaKey)) S.sel.clear(); ids.forEach(id => S.sel.add(id)); selChanged(); if (ids.length > 1) toast(t('chainSel', ids.length)); } }
+});
 ov.addEventListener('auxclick', ev => { if (ev.button === 1) ev.preventDefault(); });
 
 // drag & drop
@@ -2720,7 +5708,7 @@ $('bIns').onclick = () => $('fIns').click();
 $('fOpen').onchange = ev => { const f = ev.target.files[0]; if (f) readFile(f, false); ev.target.value = ''; };
 $('fIns').onchange = ev => { const f = ev.target.files[0]; if (f) readFile(f, true); ev.target.value = ''; };
 $('bSave').onclick = () => saveDXF(false);
-$('bNew').onclick = () => { pushUndo(); S.doc = { ents: [], layers: { '0': { color: 7, visible: true } } }; S.sel.clear(); S.fname = ''; S.sample = false; S.curLayer = '0'; S.sheetRect = null; S.dims = []; saveDims(); switchMode('2d'); setTool('select'); commit(); toast(t('newDoc')); };
+$('bNew').onclick = () => { pushUndo(); S.anMemo = null; S.doc = { ents: [], layers: { '0': { color: 7, visible: true } } }; S.sel.clear(); S.fname = ''; S.sample = false; S.curLayer = '0'; S.sheetRect = null; S.dims = []; saveDims(); switchMode('2d'); setTool('select'); commit(); toast(t('newDoc')); };
 $('bUndo').onclick = undo; $('bRedo').onclick = redo; $('bFit').onclick = () => S3.mode === '3d' ? fitView3D() : fit();
 $('bMode2').onclick = () => switchMode('2d'); $('bMode3').onclick = () => { if (S3.model3d) switchMode('3d'); else $('fOpen').click(); };
 $('fmt').value = S.fmt; $('fmt').onchange = ev => { S.fmt = ev.target.value; LS.set('dxfed.fmt', S.fmt); };
@@ -2738,6 +5726,7 @@ function syncToggles() { document.querySelectorAll('.tg[data-snap]').forEach(b =
 function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i]').forEach(el => { el.textContent = t(el.dataset.i); });
+  document.querySelectorAll('[data-ti]').forEach(el => { const tt = t(el.dataset.ti) + (el.dataset.k ? ' (' + el.dataset.k + ')' : ''); el.title = tt; el.setAttribute('aria-label', tt); });
   document.querySelectorAll('#langSeg button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
   buildRail(); updatePrompt(); renderPanel(); updateInfo(); syncToggles();
   if ($('meas3dHint')) $('meas3dHint').innerHTML = (typeof meas3d !== 'undefined' && meas3d.active) ? t('m3dOn') : t('m3dOff');
@@ -4121,14 +7110,25 @@ function hitDim(sp) {
 function dimOffsetFor(m, w) { const g = dimScreen(m), s = w2s(w); return ((s.x - g.a.x) * g.nx + (s.y - g.a.y) * g.ny) / S.view.s; }
 function drawDims(c) { if (S.dimsHidden) return; for (const m of S.dims) drawDim(c, m); }
 TOOLS.dim = () => ({
-  name: 'dim', pts: [],
-  prompt() { return this.pts.length ? t('pM2') : t('pM1'); }, base() { return this.pts[0] || null; }, wantsPoint: () => true,
+  // 1st click, 2nd click, then the dimension line follows the mouse until the 3rd click (or a typed distance / Enter) places it
+  name: 'dim', pts: [], lastOff: null,
+  prompt() { return this.pts.length === 2 ? t('pM3') : this.pts.length ? t('pM2') : t('pM1'); },
+  base() { return this.pts.length === 1 ? this.pts[0] : null; }, wantsPoint: () => true,
+  acceptsValue() { return this.pts.length === 2; },
+  value(v) { const side = Math.sign(this.lastOff || 1) || 1; this.place(Math.abs(v) * side); },
+  cand() { return { k: 'd', a: this.pts[0], b: this.pts[1], off: 0 }; },
   point(p) {
+    if (this.pts.length === 2) { this.place(dimOffsetFor(this.cand(), p)); return; }
     if (!this.pts.length) { this.pts = [p]; return; }
     if (vdist(p, this.pts[0]) < 1e-9) return;
-    S.dims.push({ k: 'd', a: this.pts[0], b: p, off: 18 / S.view.s }); saveDims(); this.pts = []; renderPanel();
+    this.pts.push(p); this.lastOff = 18 / S.view.s;
   },
-  draw(c, cur) { if (this.pts.length) drawDim(c, { k: 'd', a: this.pts[0], b: cur, off: 18 / S.view.s }); }
+  place(off) { S.dims.push({ k: 'd', a: this.pts[0], b: this.pts[1], off }); saveDims(); this.pts = []; this.lastOff = null; renderPanel(); },
+  enter() { if (this.pts.length === 2) this.place(this.lastOff); else setTool('select'); },
+  draw(c, cur) {
+    if (this.pts.length === 1) drawDim(c, { k: 'd', a: this.pts[0], b: cur, off: 18 / S.view.s });
+    if (this.pts.length === 2) { const off = S.mouse && S.mouse.inside ? dimOffsetFor(this.cand(), S.world) : this.lastOff; this.lastOff = off; drawDim(c, { ...this.cand(), off }); }
+  }
 });
 TOOLS.angle = () => ({
   name: 'angle', pts: [],
@@ -4170,7 +7170,7 @@ function infoHtml() {
 }
 
 /* ---------- sheet & parts ---------- */
-function getAn() { if (!S.an) S.an = analyzeSheet(visEnts(), { sheetRect: S.sheetRect || null }); return S.an; }
+function getAn() { if (!S.an) { S.an = analyzeSheet(visEnts(), { sheetRect: S.sheetRect || null, prev: S.anMemo || null }); S.anMemo = S.an.memo; } return S.an; }
 function getChk() { if (!S.partChk) S.partChk = checkParts(getAn(), S.opts.gap, S.opts.margin); return S.partChk; }
 function partAt(w) {
   const an = getAn(); let best = null;
@@ -4213,8 +7213,9 @@ function partsAction(a) {
   if (a === 'pAutoSheet') { S.sheetRect = null; S.an = null; S.partChk = null; commit(); return; }
   const L = selParts(); if (!L.length) return toast(t('needPart'), true);
   const bb = selPartsBB(), c = { x: (bb[0] + bb[2]) / 2, y: (bb[1] + bb[3]) / 2 };
-  if (a === 'pRot') applyM(mRot(PI / 2, c));
-  else if (a === 'pRotCW') applyM(mRot(-PI / 2, c));
+  const ids = new Set(S.sel);
+  if (a === 'pRot') { applyM(mRot(PI / 2, c)); warnParts(ids); }
+  else if (a === 'pRotCW') { applyM(mRot(-PI / 2, c)); warnParts(ids); }
   else if (a === 'pFlipH') applyM(mMirror(c, { x: c.x, y: c.y + 1 }));
   else if (a === 'pFlipV') applyM(mMirror(c, { x: c.x + 1, y: c.y }));
   else if (a === 'pDup') duplicateSel(bb[2] - bb[0] + o.gap, 0);
@@ -4230,11 +7231,54 @@ function partsAction(a) {
     setTool('select');
   }
 }
+// after a part move/rotate: tell what it now clashes with
+function warnParts(ids) {
+  const an = getAn(), moved = an.parts.filter(P => P.outer.ids.some(id => ids.has(id))); if (!moved.length) return;
+  const G = an.parts.map(P => partGeom(P)), msgs = [], o = S.opts;
+  const sb = an.sheet ? [an.sheet.bb[0] + o.margin, an.sheet.bb[1] + o.margin, an.sheet.bb[2] - o.margin, an.sheet.bb[3] - o.margin] : null;
+  for (const P of moved) {
+    const i = an.parts.indexOf(P);
+    if (sb && !bbIn(P.bb, sb, 1e-6)) msgs.push(t('pOutside', P.n));
+    an.parts.forEach((Q, j) => { if (j === i || (moved.includes(Q) && j < i)) return; const r = pairCheck(G[i], G[j], o.gap); if (r.overlap) msgs.push(t('pOverlaps', P.n, Q.n)); else if (r.dist < o.gap - 1e-6) msgs.push(t('pClose', P.n, Q.n)); });
+  }
+  if (msgs.length) toast(t('dropWarn', msgs.slice(0, 3).join(' · ') + (msgs.length > 3 ? ' …' : '')), true);
+}
 function duplicateSel(dx, dy) {
   const list = selEnts(); if (!list.length) return;
   pushUndo(); S.sel.clear();
   for (const e of list) for (const ne of transformEnt(e, mTrans(dx, dy))) { delete ne.id; S.sel.add(addEnt(ne).id); }
   commit(); toast(t('dupDone'));
+}
+/* ---------- clipboard (works across tabs through localStorage) and cursor placement ---------- */
+function copySel(cut) {
+  const list = selEnts(); if (!list.length) return toast(t('needSel'), true);
+  const layers = {}; for (const e of list) if (S.doc.layers[e.layer]) layers[e.layer] = { ...S.doc.layers[e.layer], visible: true };
+  S.clip = { ents: list.map(e => { const c = JSON.parse(JSON.stringify(e)); delete c.id; return c; }), layers };
+  try { const js = JSON.stringify(S.clip); if (js.length < 3e6) localStorage.setItem('dxfed.clip', js); else localStorage.removeItem('dxfed.clip'); } catch (e) { try { localStorage.removeItem('dxfed.clip'); } catch (e2) { } }
+  if (cut) { pushUndo(); removeIds(list.map(e => e.id)); commit(); toast(t('cutN', list.length)); } else toast(t('copiedN', list.length));
+}
+function pasteClip() {
+  let clip = null; try { clip = JSON.parse(localStorage.getItem('dxfed.clip') || 'null'); } catch (e) { }
+  clip = clip || S.clip; if (!clip || !clip.ents || !clip.ents.length) return toast(t('clipEmpty'), true);
+  if (S3.mode === '3d') switchMode('2d');
+  pushUndo(); for (const [k, v] of Object.entries(clip.layers || {})) if (!S.doc.layers[k]) S.doc.layers[k] = v;
+  const ids = clip.ents.map(e => { const c = JSON.parse(JSON.stringify(e)); delete c.id; return addEnt(c).id; });
+  commit(); startPlacing(ids, t('pastedN', ids.length), true);
+}
+function duplicateToCursor() {
+  const list = selEnts(); if (!list.length) return toast(t('needSel'), true);
+  pushUndo(); const ids = list.map(e => { const c = JSON.parse(JSON.stringify(e)); delete c.id; return addEnt(c).id; });
+  commit(); startPlacing(ids, t('pastedN', ids.length), true);
+}
+// the given objects follow the cursor (centred on it) until a click places them; Esc drops them again when `fresh`
+function startPlacing(ids, msg, fresh) {
+  S.sel.clear(); for (const id of ids) S.sel.add(id);
+  setTool('move'); const bb = bboxOf(selEnts()); if (!bb) return;
+  const T = tool, undoAt = S.undo.length; let done = false;
+  T.b = { x: (bb[0] + bb[2]) / 2, y: (bb[1] + bb[3]) / 2 }; T.phase = 'dest'; T.prompt = () => t('pPlace');
+  const pt = T.point.bind(T); T.point = (p, info) => { const before = S.undo.length; pt(p, info); if (S.undo.length !== before) { done = true; if (fresh) S.undo.splice(undoAt, 1); } }; // paste + place = one undo step
+  T.cancel = () => { if (done || !fresh) return false; done = true; if (S.undo.length === undoAt) { removeIds(ids); S.undo.pop(); commit(); toast(t('pasteCancel')); } return false; };
+  selChanged(); updatePrompt(); if (msg) toast(msg);
 }
 function packSheet() {
   const an = getAn(), o = S.opts;
@@ -4255,31 +7299,83 @@ function packSheet() {
   commit();
   toast(miss ? t('packMiss', miss) : t('packDone', res.length), !!miss);
 }
+// draws the status fill/outline/label of the parts accepted by `want`; offset(i) shifts parts being dragged
+function drawPartSet(c, an, chk, want, offset) {
+  const colOf = st => st === 'overlap' || st === 'outside' ? col.hot : st === 'close' ? col.amber : col.ok;
+  // culled to the view, simplified to screen pixels and batched: thousands of parts stay smooth
+  const vb = viewBox(), s = S.view.s, labels = [];
+  const okPath = new Path2D(), okSelPath = new Path2D();
+  const ox = W / 2 - S.view.cx * s, oy = H / 2 + S.view.cy * s;
+  const tracePoly = (path, poly, d) => {
+    let lx = 0, ly = 0, fx = 0, fy = 0, first = true; const ax = ox + d.x * s, ay = oy - d.y * s;
+    for (let k = 0; k < poly.length; k++) {
+      const px = ax + poly[k].x * s, py = ay - poly[k].y * s;
+      if (first) { path.moveTo(px, py); fx = px; fy = py; first = false; lx = px; ly = py; continue; }
+      if (Math.abs(px - lx) < .8 && Math.abs(py - ly) < .8) continue;
+      path.lineTo(px, py); lx = px; ly = py;
+    }
+    if (!first) path.lineTo(fx, fy); // (closePath is very slow on big Path2D objects in Chrome)
+  };
+  an.parts.forEach((P, i) => {
+    if (!want(i)) return;
+    const d = offset(i), bb = P.bb;
+    if (!inView([bb[0] + d.x, bb[1] + d.y, bb[2] + d.x, bb[3] + d.y], vb)) return;
+    const st = statusOf(chk[i] || {}), k = colOf(st);
+    const path = st === 'ok' ? (partSelected(P) ? okSelPath : okPath) : new Path2D();
+    partOutline(path, P, d, tracePoly);
+    if (st !== 'ok') { c.fillStyle = k; c.globalAlpha = .2; c.fill(path, 'evenodd'); c.globalAlpha = 1; c.strokeStyle = k; c.lineWidth = 2; c.stroke(path); }
+    if ((bb[2] - bb[0]) * s > 26) labels.push([P, k, d]);
+  });
+  c.fillStyle = col.ok; c.globalAlpha = .06; c.fill(okPath, 'evenodd'); c.globalAlpha = .16; c.fill(okSelPath, 'evenodd'); c.globalAlpha = 1;
+  if (labels.length) {
+    c.font = '600 12px ' + getComputedStyle(document.body).getPropertyValue('--mono'); c.textAlign = 'center'; c.textBaseline = 'middle';
+    for (const [P, k, d] of labels) {
+      const cc = w2s({ x: (P.bb[0] + P.bb[2]) / 2 + d.x, y: (P.bb[1] + P.bb[3]) / 2 + d.y }), txt = '#' + P.n, tw = c.measureText(txt).width + 10;
+      c.fillStyle = col.panel; c.globalAlpha = .9; c.fillRect(cc.x - tw / 2, cc.y - 10, tw, 20); c.globalAlpha = 1;
+      c.strokeStyle = k; c.lineWidth = 1; c.strokeRect(cc.x - tw / 2 + .5, cc.y - 9.5, tw - 1, 19); c.fillStyle = col.fg; c.fillText(txt, cc.x, cc.y + .5);
+    }
+  }
+}
+function partOutline(path, P, d, tracePoly) {
+  const s = S.view.s, w = (P.bb[2] - P.bb[0]) * s, h = (P.bb[3] - P.bb[1]) * s;
+  if (w < 5 && h < 5) { const a = w2s({ x: P.bb[0] + d.x, y: P.bb[3] + d.y }); path.rect(a.x, a.y, Math.max(w, 1), Math.max(h, 1)); return; }
+  tracePoly(path, P.outer.poly, d); if (w > 10 || h > 10) for (const hh of P.holes) tracePoly(path, hh.poly, d);
+}
+let partsCache = null;
 function drawPartsOverlay(c, drag) {
-  const an = getAn(), chk = drag && drag.chk ? drag.chk : getChk();
+  const an = getAn(), chk = drag && drag.chk ? drag.chk : getChk(), Z = { x: 0, y: 0 };
   c.save();
   if (an.sheet) {
     const s = an.sheet.bb, a = w2s({ x: s[0], y: s[3] }), b = w2s({ x: s[2], y: s[1] }), m = S.opts.margin * S.view.s;
     c.strokeStyle = col.muted; c.setLineDash([6, 5]); c.lineWidth = 1; if (m > 2) c.strokeRect(a.x + m, a.y + m, b.x - a.x - 2 * m, b.y - a.y - 2 * m);
   }
   c.setLineDash([]);
-  const colOf = st => st === 'overlap' || st === 'outside' ? col.hot : st === 'close' ? col.amber : col.ok;
-  an.parts.forEach((P, i) => {
-    const st = statusOf(chk[i] || {}), moving = drag && drag.set.has(i), d = moving ? drag.d : { x: 0, y: 0 };
-    const k = colOf(st);
-    c.beginPath(); P.outer.poly.forEach((q, j) => { const s = w2s({ x: q.x + d.x, y: q.y + d.y }); if (j) c.lineTo(s.x, s.y); else c.moveTo(s.x, s.y); }); c.closePath();
-    for (const hh of P.holes) { hh.poly.forEach((q, j) => { const s = w2s({ x: q.x + d.x, y: q.y + d.y }); if (j) c.lineTo(s.x, s.y); else c.moveTo(s.x, s.y); }); c.closePath(); }
-    c.fillStyle = k; c.globalAlpha = st === 'ok' ? (partSelected(P) ? .16 : .06) : .2; c.fill('evenodd'); c.globalAlpha = 1;
-    if (st !== 'ok') { c.strokeStyle = k; c.lineWidth = 2; c.stroke(); }
-    const cc = w2s({ x: (P.bb[0] + P.bb[2]) / 2 + d.x, y: (P.bb[1] + P.bb[3]) / 2 + d.y });
-    if ((P.bb[2] - P.bb[0]) * S.view.s > 26) {
-      c.font = '600 12px ' + getComputedStyle(document.body).getPropertyValue('--mono'); c.textAlign = 'center'; c.textBaseline = 'middle';
-      const txt = '#' + P.n, tw = c.measureText(txt).width + 10; c.fillStyle = col.panel; c.globalAlpha = .9; c.fillRect(cc.x - tw / 2, cc.y - 10, tw, 20); c.globalAlpha = 1;
-      c.strokeStyle = k; c.lineWidth = 1; c.strokeRect(cc.x - tw / 2 + .5, cc.y - 9.5, tw - 1, 19); c.fillStyle = col.fg; c.fillText(txt, cc.x, cc.y + .5);
-    }
-  });
+  // parts that are not being dragged are drawn into a bitmap that is reused until the view, the drawing or a status changes
+  // while dragging, the bitmap holds the other parts with the statuses they have among themselves (constant for the whole drag);
+  // parts touched by the dragged ones are painted live on top
+  const live = drag ? drag.set : null, still = i => !(live && live.has(i));
+  let cacheChk = chk, touched = null;
   if (drag) {
-    ghost(c, selGhost(mTrans(drag.d.x, drag.d.y)), col.sel, []);
+    if (!drag.stillChk) { const b = getChk(); drag.stillChk = b.map(r => ({ overlap: false, close: false, outside: r.outside })); for (const [i, j, k] of b.pairs || []) if (!live.has(i) && !live.has(j)) drag.stillChk[i][k] = drag.stillChk[j][k] = true; }
+    cacheChk = drag.stillChk; touched = new Set();
+    for (const [i, j] of chk.pairs || []) { if (live.has(i) && !live.has(j)) touched.add(j); else if (live.has(j) && !live.has(i)) touched.add(i); }
+  }
+  let sig = ''; for (let i = 0; i < an.parts.length; i++) if (still(i)) { const st = statusOf(cacheChk[i] || {}); if (st !== 'ok') sig += i + st[0] + ','; }
+  const key = [S.view.cx, S.view.cy, S.view.s, W, H, dpr, S.rev, an.parts.length, col.ok, col.hot, col.panel, live ? [...live].join('.') : '', sig].join('|');
+  if (!partsCache || partsCache.key !== key) {
+    const cv = partsCache ? partsCache.cv : document.createElement('canvas'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    drawPartSet(g, an, cacheChk, still, () => Z); partsCache = { key, cv };
+  }
+  c.drawImage(partsCache.cv, 0, 0, W, H);
+  if (touched && touched.size) drawPartSet(c, an, chk, i => touched.has(i), () => Z);
+  if (live) drawPartSet(c, an, chk, i => live.has(i), () => drag.d);
+  const hp = !drag && S.hoverPart; if (hp) {
+    const path = new Path2D(); partOutline(path, hp, Z, (pa, poly) => { poly.forEach((q, j) => { const p = w2s(q); if (j) pa.lineTo(p.x, p.y); else pa.moveTo(p.x, p.y); }); pa.closePath(); });
+    c.strokeStyle = col.accent; c.lineWidth = 2.5; c.stroke(path);
+  }
+  if (drag) {
+    ghostSel(c, mTrans(drag.d.x, drag.d.y), col.sel, []);
     c.strokeStyle = col.win; c.lineWidth = 1; c.setLineDash([4, 4]);
     if (drag.gx != null) { const x = w2s({ x: drag.gx, y: 0 }).x; c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
     if (drag.gy != null) { const y = w2s({ x: 0, y: drag.gy }).y; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
@@ -4305,8 +7401,7 @@ TOOLS.parts = () => ({
     if (dr.gx == null) d.x = Math.round(d.x * 100) / 100; // free moves land on 0.01 mm
     if (dr.gy == null) d.y = Math.round(d.y * 100) / 100;
     if (S.ortho !== S.shift) { if (Math.abs(d.x) >= Math.abs(d.y)) d.y = 0; else d.x = 0; }
-    dr.d = d; dr.moved = true; dr.chk = checkParts(getAn(), S.opts.gap, S.opts.margin, { set: dr.set, d, only: true });
-    const base = getChk(); dr.chk.forEach((r, i) => { if (!dr.set.has(i)) { const b = base[i]; r.outside = b.outside; } });
+    dr.d = d; dr.moved = true; dr.chk = checkParts(getAn(), S.opts.gap, S.opts.margin, { set: dr.set, d }, getChk());
   },
   up(p, info) {
     if (this.boxing) {
@@ -4316,7 +7411,7 @@ TOOLS.parts = () => ({
       pick = null; boxDrag = null; return;
     }
     const dr = this.drag; this.drag = null; if (!dr) return;
-    if (dr.moved && vlen(dr.d) > 1e-9) applyM(mTrans(dr.d.x, dr.d.y)); else requestDraw();
+    if (dr.moved && vlen(dr.d) > 1e-9) { const ids = new Set(S.sel); applyM(mTrans(dr.d.x, dr.d.y)); warnParts(ids); } else requestDraw();
     renderPanel();
   },
   onKey(ev) {
@@ -4326,7 +7421,7 @@ TOOLS.parts = () => ({
     if (k === 'r' || k === 'R') { partsAction(ev.shiftKey ? 'pRotCW' : 'pRot'); return true; }
     if (k === 'f' || k === 'F') { partsAction(ev.shiftKey ? 'pFlipV' : 'pFlipH'); return true; }
     const st = ev.shiftKey ? 10 : 1, mv = { ArrowLeft: [-st, 0], ArrowRight: [st, 0], ArrowUp: [0, st], ArrowDown: [0, -st] }[k];
-    if (mv) { applyM(mTrans(mv[0], mv[1])); return true; }
+    if (mv) { const ids = new Set(S.sel); applyM(mTrans(mv[0], mv[1])); warnParts(ids); return true; }
     return false;
   },
   draw(c) { drawPartsOverlay(c, this.drag && this.drag.moved ? this.drag : null); },
@@ -4335,7 +7430,7 @@ TOOLS.parts = () => ({
 });
 function renderPartsPanel() {
   const el = $('partsPanel'); if (!el) return;
-  const an = getAn(), o = S.opts, show = tool && tool.name === 'parts' || an.parts.length >= 2;
+  const an = getAn(), o = S.opts, show = (tool && tool.name === 'parts') || (an.sheet && an.parts.length >= 1);
   if (!show) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
   const chk = getChk(), sel = new Set(selParts());
@@ -4416,6 +7511,48 @@ async function readDWG(file) {
 /* ---------- loading overlay ---------- */
 function showLoading(msg) { const el = $('loading'); $('loadingText').textContent = msg; el.hidden = false; }
 function hideLoading() { $('loading').hidden = true; }
+
+/* ---------- context menu (right-click) ---------- */
+function zoomToBB(bb) {
+  if (!bb) return; const w = Math.max(bb[2] - bb[0], 1e-3), h = Math.max(bb[3] - bb[1], 1e-3);
+  S.view = { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2, s: clamp(Math.min((W - 120) / w, (H - 120) / h), 1e-6, 1e6) }; dirtyBase = true; requestDraw();
+}
+function closeCtx() { const m = $('ctx'); if (m && !m.hidden) { m.hidden = true; m.innerHTML = ''; } }
+function openCtx(x, y) {
+  const has = S.sel.size > 0, items = [];
+  const it = (label, key, fn, off) => items.push({ label, key, fn, off });
+  if (S.lastTool && TOOLS[S.lastTool]) it(t('repeat', t(S.lastTool)), 'Enter', () => setTool(S.lastTool));
+  it(t('undo'), 'Ctrl+Z', undo, !S.undo.length); it(t('redo'), 'Ctrl+Y', redo, !S.redo.length);
+  items.push('-');
+  it(t('move'), 'M', () => setTool('move'), !has); it(t('copy'), 'K', () => setTool('copy'), !has);
+  it(t('rot90'), tool.name === 'parts' ? 'R' : '', () => { const bb = bboxOf(selEnts()); applyM(mRot(PI / 2, { x: (bb[0] + bb[2]) / 2, y: (bb[1] + bb[3]) / 2 })); }, !has);
+  it(t('flipH'), tool.name === 'parts' ? 'F' : '', () => quick('flipH'), !has);
+  it(t('copyClip'), 'Ctrl+C', () => copySel(false), !has); it(t('paste'), 'Ctrl+V', pasteClip, !(S.clip || (() => { try { return localStorage.getItem('dxfed.clip'); } catch (e) { return null; } })()));
+  it(t('join'), 'J', () => runAction('join'), !has); it(t('explode'), 'X', () => runAction('explode'), !has);
+  it(t('del'), 'Del', () => runAction('del'), !has);
+  items.push('-');
+  it(t('selAll'), 'Ctrl+A', () => { for (const e of visEnts()) S.sel.add(e.id); selChanged(); });
+  if (has) it(t('zoomSel'), '', () => zoomToBB(bboxOf(selEnts())));
+  it(t('fit'), 'Z', fit);
+  const m = $('ctx');
+  m.innerHTML = items.map((o, i) => o === '-' ? '<hr>' : `<button type="button" role="menuitem" data-ci="${i}" ${o.off ? 'disabled' : ''}><span>${esc(o.label)}</span><kbd>${o.key}</kbd></button>`).join('');
+  m.hidden = false;
+  const r = m.getBoundingClientRect(); m.style.left = Math.min(x, innerWidth - r.width - 6) + 'px'; m.style.top = Math.min(y, innerHeight - r.height - 6) + 'px';
+  m.onclick = ev => { const b = ev.target.closest('[data-ci]'); if (!b || b.disabled) return; const o = items[+b.dataset.ci]; closeCtx(); o.fn(); focusCmd(); };
+}
+document.addEventListener('pointerdown', ev => { if (!ev.target.closest('#ctx')) closeCtx(); }, true);
+window.addEventListener('resize', closeCtx);
+
+/* ---------- keyboard shortcut overlay ---------- */
+function openHelp() { $('helpBody').innerHTML = t('helpHtml'); $('helpOverlay').hidden = false; }
+function closeHelp() { $('helpOverlay').hidden = true; focusCmd(); }
+$('bHelp').onclick = openHelp; $('helpClose').onclick = closeHelp;
+$('helpOverlay').addEventListener('click', ev => { if (ev.target.id === 'helpOverlay') closeHelp(); });
+
+/* ---------- zoom buttons ---------- */
+$('zIn').onclick = () => { zoomAt(W / 2, H / 2, 1.4); focusCmd(); };
+$('zOut').onclick = () => { zoomAt(W / 2, H / 2, 1 / 1.4); focusCmd(); };
+$('zFit').onclick = () => { fit(); focusCmd(); };
 
 /* ---------- boot ---------- */
 const th = LS.get('dxfed.theme', null); if (th) document.documentElement.dataset.theme = th;
