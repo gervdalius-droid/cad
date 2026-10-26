@@ -223,8 +223,10 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
     <button class="tg only-2d" data-snap="int" data-i="sInt"></button>
     <button class="tg only-2d" data-snap="qua" data-i="sQua"></button>
     <button class="tg only-2d" data-snap="per" data-i="sPer"></button>
+    <button class="tg only-2d" data-snap="nea" data-i="sNea"></button>
     <button class="tg only-2d" data-snap="grid" data-i="sGrid"></button>
     <button class="tg only-2d" id="tOrtho" data-i="ortho"></button>
+    <button class="tg only-2d" id="tWheel"></button>
     <span class="info" id="info"></span>
   </div>
 </footer>
@@ -1416,7 +1418,7 @@ const I18N = {
   lt: {
     open: 'Atidaryti', insert: 'Įterpti', save: 'Įrašyti DXF', new: 'Naujas', undo: 'Atšaukti', redo: 'Grąžinti', fit: 'Visas vaizdas', props: 'Savybės',
     dropHere: 'Paleiskite DXF failą čia',
-    sEnd: 'Galas', sMid: 'Vidurys', sCen: 'Centras', sInt: 'Sankirta', sQua: 'Kvadrantas', sPer: 'Statmuo', sGrid: 'Tinklelis', ortho: 'Orto (F8)',
+    wheel_auto: 'Ratukas: auto', wheel_zoom: 'Ratukas: mastelis', wheel_pan: 'Ratukas: slinkti', wheelTip: 'Auto: pelės ratukas keičia mastelį, jutiklinio kilimėlio dviem pirštais – slenka, suspaudus – keičia mastelį', sNea: 'Ant linijos', sEnd: 'Galas', sMid: 'Vidurys', sCen: 'Centras', sInt: 'Sankirta', sQua: 'Kvadrantas', sPer: 'Statmuo', sGrid: 'Tinklelis', ortho: 'Orto (F8)',
     gDraw: 'Braižyti', gEdit: 'Keisti', gMore: 'Kita',
     select: 'Žymėti', line: 'Linija', poly: 'Polilinija', rect: 'Stačiakampis', circle: 'Apskritimas', arc: 'Lankas per 3 taškus',
     move: 'Perkelti', copy: 'Kopijuoti', rotate: 'Pasukti', scale: 'Mastelis', mirror: 'Veidrodis', stretch: 'Ištempti',
@@ -1501,7 +1503,7 @@ const I18N = {
   en: {
     open: 'Open', insert: 'Insert', save: 'Save DXF', new: 'New', undo: 'Undo', redo: 'Redo', fit: 'Zoom extents', props: 'Properties',
     dropHere: 'Drop the DXF file here',
-    sEnd: 'End', sMid: 'Mid', sCen: 'Center', sInt: 'Intersect', sQua: 'Quadrant', sPer: 'Perp.', sGrid: 'Grid', ortho: 'Ortho (F8)',
+    wheel_auto: 'Wheel: auto', wheel_zoom: 'Wheel: zoom', wheel_pan: 'Wheel: pan', wheelTip: 'Auto: the mouse wheel zooms; on a touchpad two fingers pan and a pinch zooms', sNea: 'Nearest', sEnd: 'End', sMid: 'Mid', sCen: 'Center', sInt: 'Intersect', sQua: 'Quadrant', sPer: 'Perp.', sGrid: 'Grid', ortho: 'Ortho (F8)',
     gDraw: 'Draw', gEdit: 'Modify', gMore: 'More',
     select: 'Select', line: 'Line', poly: 'Polyline', rect: 'Rectangle', circle: 'Circle', arc: 'Arc through 3 points',
     move: 'Move', copy: 'Copy', rotate: 'Rotate', scale: 'Scale', mirror: 'Mirror', stretch: 'Stretch',
@@ -1591,7 +1593,7 @@ function t(k, ...a) { let s = I18N[lang][k]; if (s == null) s = I18N.en[k]; if (
 const S = {
   doc: { ents: [], layers: { '0': { color: 7, visible: true } } },
   sel: new Set(), view: { cx: 0, cy: 0, s: 1 }, fname: '', sample: false,
-  snaps: Object.assign({ end: true, mid: true, cen: true, int: true, qua: false, per: false, grid: false }, LS.get('dxfed.snaps', {})),
+  snaps: Object.assign({ end: true, mid: true, cen: true, int: true, qua: false, per: true, nea: true, grid: false }, LS.get('dxfed.snaps', {})),
   ortho: LS.get('dxfed.ortho', false), curLayer: '0', undo: [], redo: [],
   opts: Object.assign({ chD1: 5, chD2: 5, fR: 5, offD: 16, mirrorKeep: false, rectR: 0, circDia: false, anchor: 'bl', rsMode: 'stretch', keepHoles: true, lock: false, gap: 8, margin: 4, withNested: true, allowRot: true }, LS.get('dxfed.opts', {})),
   fmt: LS.get('dxfed.fmt', 'r12'), lastTool: null, hover: null, snap: null, shift: false, mouse: null, world: { x: 0, y: 0 }, measure: null,
@@ -1798,8 +1800,8 @@ function selChanged() { dirtyBase = true; renderPanel(); requestDraw(); }
 
 /* ---------- snapping ---------- */
 function computeSnap(w, base) {
-  const tol = 11 / S.view.s; let best = null;
-  const consider = (p, kind, bias = 0) => { const d0 = vdist(p, w); if (d0 > tol) return; const d = d0 - bias * tol; if (!best || d < best.d) best = { p, kind, d }; };
+  const tol = 11 / S.view.s; let best = null; const cands = [];
+  const consider = (p, kind, bias = 0) => { const d0 = vdist(p, w); if (d0 > tol) return; const d = d0 - bias * tol; const c = { p, kind, d }; cands.push(c); if (!best || d < best.d) best = c; };
   const near = [], nearPrims = [];
   for (const e of S.doc.ents) {
     if (!layerVis(e.layer)) continue;
@@ -1814,7 +1816,12 @@ function computeSnap(w, base) {
       const dp = distPrim(w, P);
       if (S.snaps.end && !P.full) { consider(ptOn(P, 0), 'end', .35); consider(ptOn(P, 1), 'end', .35); }
       if (S.snaps.mid && !P.full) consider(primMid(P), 'mid', .2);
-      if (S.snaps.cen && P.k === 'A') { consider(P.c, 'cen', .3); if (dp <= tol && (!best || best.d > tol * .45)) best = { p: P.c, kind: 'cen', d: tol * .45 }; }
+      if (S.snaps.cen && P.k === 'A') {
+        consider(P.c, 'cen', .3);
+        // hovering the rim of a small hole grabs its centre; large arcs only snap to the centre when the cursor is near it
+        if (P.full && P.r * S.view.s < 30 && dp <= tol) { const c = { p: P.c, kind: 'cen', d: tol * .45 }; cands.push(c); if (!best || best.d > c.d) best = c; }
+      }
+      if (S.snaps.nea && dp <= tol * .8) { let q; if (P.k === 'L') q = ptOn(P, primParam(P, w)); else { const t = angParam(vang(vsub(w, P.c)), P); if (t >= 0) q = polar(P.c, P.r, vang(vsub(w, P.c))); } if (q) consider(q, 'nea', -.5); }
       if (S.snaps.qua && P.k === 'A') for (let q = 0; q < 4; q++) { const a = q * PI / 2; if (P.full || angParam(a, P) >= 0) consider(polar(P.c, P.r, a), 'qua', .25); }
       if (dp <= tol && nearPrims.length < 80) nearPrims.push(P);
     }
@@ -1828,6 +1835,10 @@ function computeSnap(w, base) {
   }
   if (tool && tool.extraSnaps) for (const p of tool.extraSnaps()) consider(p, 'end', .4);
   if (!best && S.snaps.grid) { const st = gridStep(); best = { p: { x: Math.round(w.x / st) * st, y: Math.round(w.y / st) * st }, kind: 'grid', d: 0 }; }
+  // Tab cycles through the distinct candidates under the cursor
+  const uniq = []; cands.sort((a, b) => a.d - b.d).forEach(c => { if (!uniq.some(u => vdist(u.p, c.p) < 1e-9)) uniq.push(c); });
+  S.snapCands = uniq;
+  if (S.snapPick && uniq.length > 1) { const i = S.snapPick % uniq.length; best = uniq[i]; best.cycled = true; }
   return best;
 }
 function curPoint() {
@@ -1851,6 +1862,17 @@ function label(c, x, y, text, color) {
   c.fillStyle = col.panel; c.globalAlpha = .94; c.fillRect(x, y, w, 20); c.globalAlpha = 1; c.strokeStyle = color || col.line; c.lineWidth = 1; c.strokeRect(x + .5, y + .5, w - 1, 19);
   c.fillStyle = col.fg; c.textBaseline = 'middle'; c.fillText(text, x + 5, y + 10.5); c.restore();
 }
+function dynBox(c, x, y) {
+  const mono = getComputedStyle(document.body).getPropertyValue('--mono');
+  const hint = ($('prompt').textContent || '').replace(/^[^:]*:\s*/, '');
+  c.save(); c.font = '600 14px ' + mono; const tv = cmd.value + '▏', tw = c.measureText(tv).width;
+  c.font = '11px ' + mono; const hw = Math.min(c.measureText(hint).width, 360);
+  const w = Math.max(tw + 16, hw + 12, 90), h = 42; x = clamp(x, 2, W - w - 2); y = clamp(y, 2, H - h - 2);
+  c.fillStyle = col.panel; c.fillRect(x, y, w, h); c.strokeStyle = col.accent; c.lineWidth = 1.5; c.strokeRect(x + .75, y + .75, w - 1.5, h - 1.5);
+  c.fillStyle = col.muted; c.textBaseline = 'top'; c.font = '11px ' + mono; c.fillText(hint.length > 60 ? hint.slice(0, 58) + '…' : hint, x + 6, y + 4, w - 12);
+  c.fillStyle = col.fg; c.font = '600 14px ' + mono; c.fillText(tv, x + 8, y + 20);
+  c.restore();
+}
 function drawSnap(c, s) {
   const p = w2s(s.p), r = 6; c.save(); c.strokeStyle = col.hot; c.lineWidth = 2; c.beginPath();
   switch (s.kind) {
@@ -1860,9 +1882,16 @@ function drawSnap(c, s) {
     case 'int': c.moveTo(p.x - r, p.y - r); c.lineTo(p.x + r, p.y + r); c.moveTo(p.x + r, p.y - r); c.lineTo(p.x - r, p.y + r); break;
     case 'qua': c.moveTo(p.x, p.y - r); c.lineTo(p.x + r, p.y); c.lineTo(p.x, p.y + r); c.lineTo(p.x - r, p.y); c.closePath(); break;
     case 'per': c.moveTo(p.x - r, p.y + r); c.lineTo(p.x + r, p.y + r); c.moveTo(p.x - r, p.y + r); c.lineTo(p.x - r, p.y - r); c.moveTo(p.x - r, p.y); c.lineTo(p.x, p.y); c.lineTo(p.x, p.y + r); break;
+    case 'nea': c.moveTo(p.x - r, p.y - r); c.lineTo(p.x + r, p.y + r); c.lineTo(p.x - r, p.y + r); c.lineTo(p.x + r, p.y - r); c.closePath(); break;
     default: c.moveTo(p.x - 4, p.y); c.lineTo(p.x + 4, p.y); c.moveTo(p.x, p.y - 4); c.lineTo(p.x, p.y + 4);
   }
-  c.stroke(); c.restore();
+  c.stroke();
+  const names = { end: 'sEnd', mid: 'sMid', cen: 'sCen', int: 'sInt', qua: 'sQua', per: 'sPer', nea: 'sNea', grid: 'sGrid' };
+  if (names[s.kind]) {
+    let txt = t(names[s.kind]).toUpperCase(); if (S.snapCands && S.snapCands.length > 1) txt += '  ⇥ ' + ((S.snapPick || 0) % S.snapCands.length + 1) + '/' + S.snapCands.length;
+    c.font = '600 10px ' + getComputedStyle(document.body).getPropertyValue('--mono'); c.fillStyle = col.hot; c.textBaseline = 'bottom'; c.fillText(txt, p.x + 9, p.y - 7);
+  }
+  c.restore();
 }
 function drawSelDims(c) {
   if (!S.sel.size || tool.name !== 'select' || tool.hot) return;
@@ -1908,6 +1937,7 @@ function renderOverlay() {
       const txt = tool.tipText ? tool.tipText(cur) : `${fmt(L, 2)}  ∠${fmt(a, 1)}°  (${fmt(d.x, 2)}, ${fmt(d.y, 2)})`;
       label(c, S.mouse.x + 16, S.mouse.y + 16, txt);
     } else if (tool.tipText) { const tt = tool.tipText(cur); if (tt) label(c, S.mouse.x + 16, S.mouse.y + 16, tt); }
+    if (cmd.value) dynBox(c, S.mouse.x + 16, S.mouse.y + 40);
   }
 }
 
@@ -2550,8 +2580,10 @@ function onCmd() {
   }
   toast(t('badInput') + ': ' + s, true);
 }
+cmd.addEventListener('input', () => requestDraw());
 cmd.addEventListener('keydown', ev => {
   if (S3.mode === '3d') return;
+  if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
   if (ev.key === 'Enter' || (ev.key === ' ' && !cmd.value)) { ev.preventDefault(); onCmd(); return; }
   if (ev.key === 'Escape') { ev.preventDefault(); cmd.value = ''; escapeKey(); return; }
   if (!cmd.value && tool.onKey && tool.onKey(ev)) { ev.preventDefault(); ev.stopPropagation(); return; }
@@ -2575,6 +2607,7 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'Shift') { S.shift = true; requestDraw(); }
   if ((ev.key === 'Delete' || ev.key === 'Backspace') && tg !== cmd && !textField && !ev.ctrlKey && !ev.metaKey && !ev.altKey && S.sel.size) { ev.preventDefault(); runAction('del'); focusCmd(); return; }
   if (inField) return;
+  if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1 && S.mouse && S.mouse.inside) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
   if (tool.onKey && tool.onKey(ev)) { ev.preventDefault(); return; }
   if (ev.key === 'Escape') { escapeKey(); return; }
   if (ev.key === 'Enter') { ev.preventDefault(); confirmKey(); return; }
@@ -2623,6 +2656,7 @@ ov.addEventListener('pointermove', ev => {
     if (pinch.d > 0) zoomAt(m.x, m.y, d / pinch.d);
     S.view.cx -= (m.x - pinch.m.x) / S.view.s; S.view.cy += (m.y - pinch.m.y) / S.view.s; pinch = { d, m }; dirtyBase = true; requestDraw(); return;
   }
+  if (S.snapPick && S.mouse && Math.hypot(sp.x - S.mouse.x, sp.y - S.mouse.y) > 3) S.snapPick = 0;
   S.mouse = { x: sp.x, y: sp.y, inside: true }; S.shift = ev.shiftKey; S.alt = ev.altKey;
   if (pan) { S.view.cx = pan.cx - (sp.x - pan.x) / S.view.s; S.view.cy = pan.cy + (sp.y - pan.y) / S.view.s; dirtyBase = true; }
   if (rdown) { if (!rdown.moved && Math.hypot(sp.x - rdown.x, sp.y - rdown.y) > 4) rdown.moved = true; if (rdown.moved) { S.view.cx = rdown.cx - (sp.x - rdown.x) / S.view.s; S.view.cy = rdown.cy + (sp.y - rdown.y) / S.view.s; dirtyBase = true; } }
@@ -2649,7 +2683,27 @@ ov.addEventListener('pointerup', ev => {
 ov.addEventListener('pointercancel', ev => { ptrs.delete(ev.pointerId); pan = rdown = pinch = downInfo = pick = boxDrag = null; });
 ov.addEventListener('pointerleave', () => { if (S.mouse) S.mouse.inside = false; S.snap = null; requestDraw(); });
 ov.addEventListener('contextmenu', ev => ev.preventDefault());
-ov.addEventListener('wheel', ev => { ev.preventDefault(); const sp = screenOf(ev); const dy = ev.deltaY * (ev.deltaMode === 1 ? 33 : ev.deltaMode === 2 ? 400 : 1); zoomAt(sp.x, sp.y, Math.pow(1.0016, -dy)); S.world = s2w(sp.x, sp.y); }, { passive: false });
+let padUntil = 0;
+function isTouchpad(ev) {
+  if (ev.deltaMode !== 0) return false;                       // line/page steps = mouse wheel
+  const now = performance.now();
+  if (S.wheelMode === 'zoom') return false; if (S.wheelMode === 'pan') return true;
+  const pad = ev.deltaX !== 0 || !Number.isInteger(ev.deltaY) || Math.abs(ev.deltaY) < 30;
+  if (pad) padUntil = now + 400;
+  return pad || now < padUntil;
+}
+function panBy(dx, dy) { S.view.cx += dx / S.view.s; S.view.cy -= dy / S.view.s; dirtyBase = true; requestDraw(); }
+ov.addEventListener('wheel', ev => {
+  ev.preventDefault(); const sp = screenOf(ev);
+  if (ev.ctrlKey || ev.metaKey) { zoomAt(sp.x, sp.y, Math.exp(-ev.deltaY * (ev.deltaMode === 1 ? 0.05 : 0.01))); }   // pinch on a touchpad (or Ctrl+wheel)
+  else if (isTouchpad(ev)) panBy(ev.deltaX, ev.deltaY);                                                          // two-finger swipe
+  else { const dy = ev.deltaY * (ev.deltaMode === 1 ? 33 : ev.deltaMode === 2 ? 400 : 1); zoomAt(sp.x, sp.y, Math.pow(1.0016, -dy)); }  // mouse wheel
+  S.world = s2w(sp.x, sp.y); updateSnapNow();
+}, { passive: false });
+let gest = null; // Safari pinch
+ov.addEventListener('gesturestart', ev => { ev.preventDefault(); gest = ev.scale || 1; });
+ov.addEventListener('gesturechange', ev => { ev.preventDefault(); if (!gest || !S.mouse) return; zoomAt(S.mouse.x, S.mouse.y, (ev.scale || 1) / gest); gest = ev.scale || 1; });
+ov.addEventListener('gestureend', ev => { ev.preventDefault(); gest = null; });
 ov.addEventListener('dblclick', ev => { if (ev.button === 1) return fit(); if (tool.name === 'parts' && selParts().length) setTool('select'); });
 ov.addEventListener('auxclick', ev => { if (ev.button === 1) ev.preventDefault(); });
 
@@ -2677,13 +2731,15 @@ $('bTheme').onclick = () => {
 };
 $('langSeg').addEventListener('click', ev => { const b = ev.target.closest('button[data-l]'); if (!b) return; lang = b.dataset.l; LS.set('dxfed.lang', lang); applyLang(); });
 document.querySelectorAll('.tg[data-snap]').forEach(b => b.onclick = () => { const k = b.dataset.snap; S.snaps[k] = !S.snaps[k]; LS.set('dxfed.snaps', S.snaps); syncToggles(); focusCmd(); });
+S.wheelMode = LS.get('dxfed.wheel', 'auto');
+$('tWheel').onclick = () => { S.wheelMode = { auto: 'zoom', zoom: 'pan', pan: 'auto' }[S.wheelMode] || 'auto'; LS.set('dxfed.wheel', S.wheelMode); syncToggles(); focusCmd(); };
 $('tOrtho').onclick = () => { S.ortho = !S.ortho; LS.set('dxfed.ortho', S.ortho); syncToggles(); focusCmd(); };
-function syncToggles() { document.querySelectorAll('.tg[data-snap]').forEach(b => b.classList.toggle('on', !!S.snaps[b.dataset.snap])); $('tOrtho').classList.toggle('on', S.ortho); }
+function syncToggles() { document.querySelectorAll('.tg[data-snap]').forEach(b => b.classList.toggle('on', !!S.snaps[b.dataset.snap])); $('tOrtho').classList.toggle('on', S.ortho); $('tWheel').textContent = t('wheel_' + (S.wheelMode || 'auto')); $('tWheel').title = t('wheelTip'); }
 function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i]').forEach(el => { el.textContent = t(el.dataset.i); });
   document.querySelectorAll('#langSeg button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
-  buildRail(); updatePrompt(); renderPanel(); updateInfo();
+  buildRail(); updatePrompt(); renderPanel(); updateInfo(); syncToggles();
   if ($('meas3dHint')) $('meas3dHint').innerHTML = (typeof meas3d !== 'undefined' && meas3d.active) ? t('m3dOn') : t('m3dOff');
   if (typeof renderMeas3dList === 'function') renderMeas3dList(); if (S3.model3d) render3DStats();
 }
