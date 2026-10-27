@@ -139,6 +139,7 @@ body:not(.mode-3d) .only-3d{display:none!important}
 .prow .pd{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
 .pill{font-family:var(--ui);font-size:10px;font-weight:600;padding:1px 7px;border-radius:999px;white-space:nowrap}
 .pill.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.lroles{margin:8px 0 2px}.lroles summary{cursor:pointer;font-size:12px;color:var(--muted)}.lrole{flex-wrap:nowrap;gap:6px;margin-top:4px}.lrole .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:11px}.lrole select{max-width:58%;height:26px;border:1px solid var(--line);border-radius:3px;background:var(--raise);font-size:12px}
 .pill.close,.pill.edge{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
 .pill.overlap,.pill.outside{background:color-mix(in srgb,var(--hot) 16%,transparent);color:var(--hot)}
 .mrow{display:flex;align-items:center;gap:8px;padding:3px 6px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--line)}
@@ -4153,7 +4154,9 @@ function findDuplicates(ents) {
 
 /* ===================== Sheet & parts: detection, checks, snapping, packing ===================== */
 const SHEET_RX = /(^|[^a-z])(sheet|lapas|board|plok[sš]t|stock|ruo[sš]in|material)/i;
-const CUT_RX = /(cut|profil|kont[uū]r|outline|pjov|frez|contour|through|perim)/i;
+const CUT_RX = /(cut|profil|kont[uū]r|outline|pjov|contour|through|perim)/i; // ('frez' is not here: milling layers are often grooves)
+// grooves / pockets: closed outlines that are milled to a depth, not cut through – they must not become cutouts
+const POCKET_RX = /(groov|griov|pocket|kišen|kisen|išdrož|isdroz|gylis|depth|recess|rabbet|falc|įlaid|ilaid|nuleid)/i;
 const NONLOOP_RX = /(engrav|label|text|tekst|dim|anno|grav|mark|drill|hole|pilot|skyl|gr[eę][žz]|pock|kiš|kis)/i;
 
 // segments for an arc so the chord never strays more than 0.05 mm from the curve (small holes: few points, big arcs: accurate gaps)
@@ -4241,8 +4244,13 @@ function analyzeSheet(ents, opts = {}) {
   else if (sheetEnts.length) { const bb = bboxOf(sheetEnts); sheet = { bb, ids: sheetEnts.map(e => e.id) }; sheetEnts.forEach(e => sheetIds.add(e.id)); }
   const cand = ents.filter(e => !sheetIds.has(e.id) && e.type !== 'text');
   const cutLayers = new Set(cand.filter(e => CUT_RX.test(e.layer || '')).map(e => e.layer));
-  let loopEnts = cutLayers.size ? cand.filter(e => cutLayers.has(e.layer)) : cand.filter(e => !NONLOOP_RX.test(e.layer || ''));
-  if (!loopEnts.length) loopEnts = cand;
+  // layer roles: the user's choice wins ('cut' = through, 'pocket' = milled to a depth, 'off' = not part geometry), else names decide
+  const roles = opts.roles || {}, role = n => roles[n] || 'auto';
+  let loopEnts = cutLayers.size ? cand.filter(e => cutLayers.has(e.layer) || role(e.layer) === 'cut') : cand.filter(e => (!NONLOOP_RX.test(e.layer || '') && role(e.layer) !== 'off') || role(e.layer) === 'cut');
+  loopEnts = loopEnts.filter(e => role(e.layer) !== 'off' && role(e.layer) !== 'pocket' && !(role(e.layer) === 'auto' && POCKET_RX.test(e.layer || '')));
+  if (!loopEnts.length) loopEnts = cand.filter(e => role(e.layer) !== 'off' && role(e.layer) !== 'pocket');
+  const entById = new Map(ents.map(e => [e.id, e])), layerOf = L => (entById.get(L.ids[0]) || {}).layer || '0';
+  const styleOf = L => { const e = entById.get(L.ids[0]) || {}; return (e.layer || '0') + '|' + (e.color != null ? e.color : ''); }; // layer + own colour
   const loops = [];
   const openEnts = [];
   for (const e of loopEnts) {
@@ -4265,6 +4273,19 @@ function analyzeSheet(ents, opts = {}) {
       if (bbIn(L.bb, M.bb) && pointInPoly(probe, M.poly)) { best = M; stuck = sticky; }
     }
     L.parent = best;
+  }
+  // a closed outline on another layer that holds cut-outs of the part's own layer is a groove/pocket around them, not a hole:
+  // drop it from the tree so the cut-outs belong to the part (it stays part of the part as inner geometry)
+  const pockets = new Set();
+  for (const L of loops) {
+    const P = L.parent; if (!P || role(layerOf(L)) === 'cut') continue;
+    const ps = styleOf(P); if (styleOf(L) === ps) continue;
+    if (loops.some(C => C.parent === L && styleOf(C) === ps)) pockets.add(L);
+  }
+  if (pockets.size) {
+    const up = L => { let q = L.parent; while (q && pockets.has(q)) q = q.parent; return q; };
+    for (const L of loops) if (!pockets.has(L)) L.parent = up(L);
+    for (let i = loops.length - 1; i >= 0; i--) if (pockets.has(loops[i])) { loops[i].removed = true; loops.splice(i, 1); }
   }
   const depthOf = L => { let d = 0, p = L.parent; while (p) { d++; p = p.parent; } return d; };
   // parents are larger, so they come first: a loop that was a part before and now lies on another part's material
@@ -4321,7 +4342,11 @@ function analyzeSheet(ents, opts = {}) {
   for (const L of loops) if (L.parent) memo.parent.set(keyOf(L), keyOf(L.parent));
   for (const P of parts) { const k = keyOf(P.outer); P.key = k; memo.partKeys.add(k); for (const id of P.ids) memo.owner.set(id, k); }
   memo.num = new Map(parts.map(P => [P.key, P.n]));
-  return { sheet, parts, free, open: ch.open, memo };
+  const layerRole = {}; for (const e of cand) if (layerRole[e.layer] == null) layerRole[e.layer] = role(e.layer) !== 'auto' ? role(e.layer) : 'other';
+  for (const L of loops) layerRole[layerOf(L)] = role(layerOf(L)) === 'auto' ? 'cut' : role(layerOf(L));
+  for (const L of pockets) if (layerRole[layerOf(L)] !== 'cut') layerRole[layerOf(L)] = 'pocket';
+  for (const e of cand) if (role(e.layer) === 'auto' && POCKET_RX.test(e.layer || '')) layerRole[e.layer] = 'pocket';
+  return { sheet, parts, free, open: ch.open, memo, layerRole };
 }
 
 /* ---------- geometric checks ---------- */
@@ -4542,7 +4567,7 @@ const I18N = {
     copyMade: 'Kopija padėta', rotated: 'Pasukta', layerName: 'Pavadinimas', closed: 'Uždara', vertices: 'Viršūnės', bulge: 'Išgaub.',
     length: 'Ilgis', angle: 'Kampas °', text: 'Tekstas', textH: 'Aukštis', start: 'Pradžia °', end: 'Pabaiga °', diameter: 'Skersmuo',
 
-    diameterAll: 'Skersmuo (visų {0})', layerColor: 'Spalva', layerHint: 'Spustelėkite – dabartinis, dukart – pervadinti', layerExists: 'Sluoksnis {0} jau yra', layerShown: 'Sluoksnis {0} buvo paslėptas – vėl rodomas', factorPos: 'Koeficientas turi būti didesnis už 0 (X ir Y atskirai: 2;1)', stretchNone: 'Rėmelis nieko neapėmė – nubrėžkite jį per kraštą, kurį norite perstumti', noExplode: 'Išskaidyti galima tik polilinijas', arcLine: 'Trys taškai vienoje tiesėje – lanko nėra', close: 'Uždaryti', backParts: 'Atgal į detales (G)', trimOneCut: 'Uždarą kontūrą kerta tik viena linija – nukirpti nėra ko (reikia dviejų sankirtų)', notNeg: 'Reikšmė negali būti neigiama', needThree: 'Uždarai polilinijai reikia bent 3 viršūnių', arcSame: 'Lanko pradžia ir pabaiga negali sutapti', noJoin: 'Nėra ką sujungti – objektų galai nesutampa', bigNoSave: 'Brėžinys per didelis išsaugoti naršyklėje – nepamirškite įrašyti DXF', offsetSplit: 'Lygiagreti kopija suskilo į {0} kontūrus', dupWarn: 'Dubliuotų / uždengtų linijų: {0} – CNC jas pjautų du kartus.', dupDel: 'Pašalinti', dupRemoved: 'Pašalinta dublikatų: {0}',
+    layerRoles: 'Sluoksniai detalėse', roleAuto: 'Auto: {0}', role_cut: 'Pjovimas kiaurai', role_pocket: 'Frezavimas / griovelis (ne kiaurai)', role_off: 'Nenaudoti detalėms', role_other: 'Kita', diameterAll: 'Skersmuo (visų {0})', layerColor: 'Spalva', layerHint: 'Spustelėkite – dabartinis, dukart – pervadinti', layerExists: 'Sluoksnis {0} jau yra', layerShown: 'Sluoksnis {0} buvo paslėptas – vėl rodomas', factorPos: 'Koeficientas turi būti didesnis už 0 (X ir Y atskirai: 2;1)', stretchNone: 'Rėmelis nieko neapėmė – nubrėžkite jį per kraštą, kurį norite perstumti', noExplode: 'Išskaidyti galima tik polilinijas', arcLine: 'Trys taškai vienoje tiesėje – lanko nėra', close: 'Uždaryti', backParts: 'Atgal į detales (G)', trimOneCut: 'Uždarą kontūrą kerta tik viena linija – nukirpti nėra ko (reikia dviejų sankirtų)', notNeg: 'Reikšmė negali būti neigiama', needThree: 'Uždarai polilinijai reikia bent 3 viršūnių', arcSame: 'Lanko pradžia ir pabaiga negali sutapti', noJoin: 'Nėra ką sujungti – objektų galai nesutampa', bigNoSave: 'Brėžinys per didelis išsaugoti naršyklėje – nepamirškite įrašyti DXF', offsetSplit: 'Lygiagreti kopija suskilo į {0} kontūrus', dupWarn: 'Dubliuotų / uždengtų linijų: {0} – CNC jas pjautų du kartus.', dupDel: 'Pašalinti', dupRemoved: 'Pašalinta dublikatų: {0}',
     cycleHint: 'Čia {0} obj. vienas ant kito – spustelėkite dar kartą kitam', cycleN: 'Objektas {0} iš {1} šioje vietoje',
     copiedN: 'Nukopijuota: {0} obj. (Ctrl+V – įklijuoti)', cutN: 'Iškirpta: {0} obj. (Ctrl+V – įklijuoti)', pastedN: '{0} obj. – spustelėkite, kur padėti', clipEmpty: 'Nieko nenukopijuota – pirmiausia Ctrl+C', pPlace: 'Spustelėkite, kur padėti (arba įveskite poslinkį) · Esc – atšaukti', pasteCancel: 'Atšaukta', copyClip: 'Kopijuoti', paste: 'Įklijuoti',
     chainSel: 'Pažymėtas visas kontūras: {0} obj.', openShort: 'atviras', repeat: 'Kartoti: {0}', rot90: 'Pasukti 90°', selAll: 'Pažymėti viską', zoomSel: 'Priartinti pažymėtus',
@@ -4637,7 +4662,7 @@ const I18N = {
     copyMade: 'Copy placed', rotated: 'Rotated', layerName: 'Name', closed: 'Closed', vertices: 'Vertices', bulge: 'Bulge',
     length: 'Length', angle: 'Angle °', text: 'Text', textH: 'Height', start: 'Start °', end: 'End °', diameter: 'Diameter',
 
-    diameterAll: 'Diameter (all {0})', layerColor: 'Colour', layerHint: 'Click – make current, double-click – rename', layerExists: 'Layer {0} already exists', layerShown: 'Layer {0} was hidden – it is shown again', factorPos: 'The factor must be greater than 0 (X and Y separately: 2;1)', stretchNone: 'The window caught nothing – draw it across the edge you want to move', noExplode: 'Only polylines can be exploded', arcLine: 'The three points are in a line – there is no arc', close: 'Close', backParts: 'Back to the parts (G)', trimOneCut: 'Only one line crosses this closed outline – there is nothing to cut out (two crossings are needed)', notNeg: 'The value cannot be negative', needThree: 'A closed polyline needs at least 3 vertices', arcSame: 'The arc start and end cannot be the same', noJoin: 'Nothing to join – the ends of the objects do not meet', bigNoSave: 'This drawing is too big to keep in the browser – remember to save the DXF', offsetSplit: 'The offset split into {0} outlines', dupWarn: 'Duplicate / overlapped objects: {0} – the CNC would cut them twice.', dupDel: 'Remove', dupRemoved: 'Removed duplicates: {0}',
+    layerRoles: 'Layers in parts', roleAuto: 'Auto: {0}', role_cut: 'Cut through', role_pocket: 'Groove / pocket (not through)', role_off: 'Not part geometry', role_other: 'Other', diameterAll: 'Diameter (all {0})', layerColor: 'Colour', layerHint: 'Click – make current, double-click – rename', layerExists: 'Layer {0} already exists', layerShown: 'Layer {0} was hidden – it is shown again', factorPos: 'The factor must be greater than 0 (X and Y separately: 2;1)', stretchNone: 'The window caught nothing – draw it across the edge you want to move', noExplode: 'Only polylines can be exploded', arcLine: 'The three points are in a line – there is no arc', close: 'Close', backParts: 'Back to the parts (G)', trimOneCut: 'Only one line crosses this closed outline – there is nothing to cut out (two crossings are needed)', notNeg: 'The value cannot be negative', needThree: 'A closed polyline needs at least 3 vertices', arcSame: 'The arc start and end cannot be the same', noJoin: 'Nothing to join – the ends of the objects do not meet', bigNoSave: 'This drawing is too big to keep in the browser – remember to save the DXF', offsetSplit: 'The offset split into {0} outlines', dupWarn: 'Duplicate / overlapped objects: {0} – the CNC would cut them twice.', dupDel: 'Remove', dupRemoved: 'Removed duplicates: {0}',
     cycleHint: '{0} objects on top of each other here – click again for the next one', cycleN: 'Object {0} of {1} at this spot',
     copiedN: 'Copied {0} objects (Ctrl+V to paste)', cutN: 'Cut {0} objects (Ctrl+V to paste)', pastedN: '{0} objects – click where to place them', clipEmpty: 'Nothing copied yet – press Ctrl+C first', pPlace: 'Click where to place (or type an offset) · Esc – cancel', pasteCancel: 'Cancelled', copyClip: 'Copy', paste: 'Paste',
     chainSel: 'Whole outline selected: {0} objects', openShort: 'open', repeat: 'Repeat: {0}', rot90: 'Rotate 90°', selAll: 'Select all', zoomSel: 'Zoom to selection',
@@ -5849,6 +5874,7 @@ function bindPanels() {
       if (ne) { pushUndo(); replaceEnt(e.id, ne); setTimeout(commit, 0); } else setTimeout(renderPanel, 0);
       return;
     }
+    if (el.dataset.role != null) { const R = S.opts.layerRoles = { ...(S.opts.layerRoles || {}) }; if (el.value === 'auto') delete R[el.dataset.role]; else R[el.dataset.role] = el.value; saveOpts(); S.an = null; S.partChk = null; S.anMemo = null; setTimeout(() => { commit(); focusCmd(); }, 0); return; }
     if (el.dataset.o) { const k = el.dataset.o; if (el.type === 'checkbox') S.opts[k] = el.checked; else { const v = evalNum(el.value); if (v === null || v < 0) { el.value = fmt(S.opts[k]); return toast(v === null ? t('badInput') : t('notNeg'), true); } S.opts[k] = v; el.value = fmt(v); } saveOpts(); S.partChk = null; if (k === 'gap' || k === 'margin' || k === 'withNested' || k === 'allowRot') setTimeout(renderPanel, 0); updatePrompt(); requestDraw(); return; }
     if (el.id === 'dimsHide') { S.dimsHidden = el.checked; requestDraw(); return; }
     if (el.id === 'rsLock') { S.opts.lock = el.checked; saveOpts(); return; }
@@ -7660,7 +7686,7 @@ function infoHtml() {
 }
 
 /* ---------- sheet & parts ---------- */
-function getAn() { if (!S.an) { S.an = analyzeSheet(visEnts(), { sheetRect: S.sheetRect || null, prev: S.anMemo || null }); S.anMemo = S.an.memo; } return S.an; }
+function getAn() { if (!S.an) { S.an = analyzeSheet(visEnts(), { sheetRect: S.sheetRect || null, prev: S.anMemo || null, roles: S.opts.layerRoles || {} }); S.anMemo = S.an.memo; } return S.an; }
 function getChk() { if (!S.partChk) S.partChk = checkParts(getAn(), S.opts.gap, S.opts.margin); return S.partChk; }
 function partAt(w) {
   const an = getAn(); let best = null;
@@ -7957,6 +7983,12 @@ function renderPartsPanel() {
   } else {
     h += `<p class="hint">${t('noSheetHint')}</p><div class="kv three" style="margin-top:6px">${field('shW', 'X', '2800')}${field('shH', 'Y', '2070')}<div class="f"><label>&nbsp;</label><button class="btn small" data-act="pAddSheet">${t('addSheet')}</button></div></div>
     <div class="row"><button class="btn small" data-act="pSelSheet">${t('selAsSheet')}</button></div>`;
+  }
+  // what each layer means for the parts: cut through, groove/pocket (not through), or not part geometry
+  const lr = an.layerRole || {}, rl = Object.keys(lr).filter(n => lr[n] !== 'other' || (o.layerRoles || {})[n]);
+  if (rl.length) {
+    const R = o.layerRoles || {}, opt = (v, l, cur) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${l}</option>`;
+    h += `<details class="lroles" ${Object.keys(R).length ? 'open' : ''}><summary>${t('layerRoles')}</summary>` + rl.map(n => { const cur = R[n] || 'auto', auto = t('role_' + lr[n]); return `<div class="row lrole"><span class="nm" title="${esc(n)}">${esc(n)}</span><select data-role="${esc(n)}">${opt('auto', t('roleAuto', auto), cur)}${opt('cut', t('role_cut'), cur)}${opt('pocket', t('role_pocket'), cur)}${opt('off', t('role_off'), cur)}</select></div>`; }).join('') + `</details>`;
   }
   const num = (k, lab) => `<div class="f"><label for="op_${k}">${lab}</label><input id="op_${k}" data-o="${k}" value="${fmt(o[k])}" inputmode="decimal"></div>`;
   h += `<div class="kv" style="margin-top:8px">${num('gap', t('gap'))}${num('margin', t('margin'))}</div>
