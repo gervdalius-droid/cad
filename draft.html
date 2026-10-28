@@ -163,6 +163,10 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
 .zoomctl button{width:32px;height:32px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--fg);cursor:pointer;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .zoomctl button:hover{border-color:var(--accent)}
 .zoomctl svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.dimedit{position:fixed;z-index:45;pointer-events:none;transform:translate(-50%,-50%);display:flex;align-items:center;gap:2px;padding:3px;background:var(--raise);border:1.5px solid var(--accent);border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.dimedit input,.dimedit button{pointer-events:auto}
+.dimedit input{width:72px;font:600 13px var(--mono);padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--fg)}
+.dimedit button{min-width:28px;height:28px;border:0;border-radius:4px;background:var(--accent);color:var(--accent-fg);font-weight:700;cursor:pointer}
 .ctx{position:fixed;z-index:40;min-width:210px;background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:4px;display:flex;flex-direction:column}
 .ctx button{display:flex;justify-content:space-between;gap:16px;align-items:center;text-align:left;border:0;background:none;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:13px}
 .ctx button:hover:not([disabled]),.ctx button:focus-visible{background:var(--accent-soft);outline:none}
@@ -4537,7 +4541,7 @@ const I18N = {
     pTrim: 'Spustelėkite dalį, kurią norite pašalinti (iki artimiausių sankirtų)',
     pCham: 'Spustelėkite kampą arba pirmą liniją · atstumai {0} / {1} mm (įveskite 5 arba 5,8)',
     pFil: 'Spustelėkite kampą arba pirmą liniją · spindulys {0} mm (įveskite skaičių)', pSecond: 'Antra linija',
-    pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Padėkite matmenį (arba įveskite atstumą) · H horiz. · V vert. · A lygiagretus',
+    dimValue: 'Matmens reikšmė', dimEditTip: 'Įveskite naują reikšmę – figūra persitvarkys (Enter – taikyti, Esc – palikti)', dimBad: 'Reikšmė turi būti didesnė už 0', dimFree: 'Matmuo nepririštas prie jokios figūros', dimCorner: 'Pririškite matmenį prie kampų ar galų, kad galėtumėte keisti figūrą', pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Padėkite matmenį (arba įveskite atstumą) · H horiz. · V vert. · A lygiagretus',
     selection: 'Pasirinkta', nothingSel: 'Nieko nepažymėta.',
     tips: '<li><b>Ratukas</b> – priartinti, <b>vidurinis</b> arba <b>dešinys</b> mygtukas tempiant – slinkti, <b>Z</b> – visas vaizdas</li><li>Pažymėtą figūrą keiskite tempdami <b>rankenėles</b>. Kraštinės vidurio rankenėlė stumia visą kraštinę.</li><li>Apačioje įveskite: <code>50</code> – atstumas pelės kryptimi, <code>600,400</code> – poslinkis X,Y, <code>#0,0</code> – absoliuti vieta, <code>100&lt;45</code> – atstumas ir kampas</li><li>Galima skaičiuoti: <code>720-18*2</code></li><li>Dydį keiskite skiltyje <b>Dydis</b>: „Ištempti“ nekeičia skylių, nuožulų ir apvalinimų</li><li>Atidaro DXF, DWG ir 3D (STEP, IGES, STL, OBJ). Failą galima tiesiog nutempti į langą</li><li>Lapas su detalėmis: įrankis <b>Detalės lape</b> (G) – tempkite detales, R – pasukti</li>',
     W: 'Plotis', H: 'Aukštis', layer: 'Sluoksnis', layers: 'Sluoksniai', addLayer: 'Naujas sluoksnis', current: 'dabartinis',
@@ -4580,7 +4584,7 @@ const I18N = {
       + '<h4>Įrankiai</h4><kbd>V</kbd><span>Žymėti</span><kbd>G</kbd><span>Detalės lape (R pasukti, F apversti, rodyklės stumti, Ctrl+D kopija)</span><kbd>L P R C A</kbd><span>Linija, polilinija, stačiakampis, apskritimas, lankas</span><kbd>M K Q S I H</kbd><span>Perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti</span><kbd>O T N F</kbd><span>Lygiagreti kopija, nukirpti, nuožula, apvalinimas</span><kbd>J X D U</kbd><span>Sujungti, išskaidyti, matmuo, kampas</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Atšaukti / grąžinti</span><kbd>Ctrl+S</kbd><span>Įrašyti DXF</span></div>',
     gSel: '', gSheet: 'Lapas', parts: 'Detalės lape', dim: 'Matmuo', angle: 'Kampas',
     joinedForEdit: 'Kontūrai sujungti redagavimui: {0} · G – atgal į detales', refilleted: 'Kampas pakeistas', notfillet: 'Tai ne apvalinimas tarp dviejų tiesių', movedBy: 'Perkelta: {0}, {1}', pMoveDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · paėmus už kampo – prisitraukia prie taškų', help_parts: 'Spustelėkite detalę ir tempkite. R – pasukti 90°, F – apversti, rodyklės – po 1 mm (Shift – 10 mm), Ctrl+D – kopija, Alt – be pritraukimo. Detalė nusidažo raudonai, jei persidengia ar išlenda už lapo.',
-    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją: pele aukščiau/žemiau – horizontalus, į šoną – vertikalus, tarp taškų – lygiagretus (H / V / A – priverstinai). Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
+    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją. Atsiradusiame langelyje įveskite naują reikšmę – linija ar figūra persitvarkys (kaip SolidWorks); dukart spustelėjus matmenį jį vėl galima keisti. Kryptis: pele aukščiau/žemiau – horizontalus, į šoną – vertikalus, tarp taškų – lygiagretus (H / V / A – priverstinai). Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
     pParts: 'Spustelėkite detalę ir tempkite · R pasukti · F apversti · rodyklės – stumti', pPartDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · Alt – be pritraukimo',
     pAng1: 'Pirmo spindulio taškas', pAng2: 'Kampo viršūnė', pAng3: 'Antro spindulio taškas',
     measurements: 'Matavimai', hideDims: 'Slėpti', clearAll: 'Išvalyti', noMeas: 'Matavimų nėra',
@@ -4633,7 +4637,7 @@ const I18N = {
     pTrim: 'Click the part to remove (up to the nearest intersections)',
     pCham: 'Click a corner or the first line · distances {0} / {1} mm (type 5 or 5,8)',
     pFil: 'Click a corner or the first line · radius {0} mm (type a number)', pSecond: 'Second line',
-    pM1: 'Measure from', pM2: 'Measure to', pM3: 'Place the dimension (or type the distance) · H horizontal · V vertical · A aligned',
+    dimValue: 'Dimension value', dimEditTip: 'Type a new value and the shape follows (Enter apply, Esc keep)', dimBad: 'The value must be greater than 0', dimFree: 'This dimension is not attached to any shape', dimCorner: 'Attach the dimension to corners or ends to change the shape', pM1: 'Measure from', pM2: 'Measure to', pM3: 'Place the dimension (or type the distance) · H horizontal · V vertical · A aligned',
     selection: 'Selection', nothingSel: 'Nothing selected.',
     tips: '<li><b>Wheel</b> zooms, drag with the <b>middle</b> or <b>right</b> button to pan, <b>Z</b> zooms to everything</li><li>Drag the <b>grips</b> of a selected shape. The midpoint grip of an edge moves the whole edge.</li><li>Type at the bottom: <code>50</code> – distance in the mouse direction, <code>600,400</code> – offset X,Y, <code>#0,0</code> – absolute, <code>100&lt;45</code> – distance and angle</li><li>Math works: <code>720-18*2</code></li><li>Change sizes in <b>Size</b>: “Stretch” keeps holes, chamfers and fillets unchanged</li><li>Opens DXF, DWG and 3D (STEP, IGES, STL, OBJ). Just drop a file on the window</li><li>Sheets with parts: the <b>Parts on sheet</b> tool (G) – drag parts, R rotates</li>',
     W: 'Width', H: 'Height', layer: 'Layer', layers: 'Layers', addLayer: 'New layer', current: 'current',
@@ -4676,7 +4680,7 @@ const I18N = {
       + '<h4>Tools</h4><kbd>V</kbd><span>Select</span><kbd>G</kbd><span>Parts on sheet (R rotate, F flip, arrows nudge, Ctrl+D copy)</span><kbd>L P R C A</kbd><span>Line, polyline, rectangle, circle, arc</span><kbd>M K Q S I H</kbd><span>Move, copy, rotate, scale, mirror, stretch</span><kbd>O T N F</kbd><span>Offset, trim, chamfer, fillet</span><kbd>J X D U</kbd><span>Join, explode, dimension, angle</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Undo / redo</span><kbd>Ctrl+S</kbd><span>Save DXF</span></div>',
     gSel: '', gSheet: 'Sheet', parts: 'Parts on sheet', dim: 'Dimension', angle: 'Angle',
     joinedForEdit: 'Contours joined for editing: {0} · G – back to the parts', refilleted: 'Corner changed', notfillet: 'This is not a fillet between two straight edges', movedBy: 'Moved by {0}, {1}', pMoveDrag: 'Release to place · almost straight locks to 0°/90° · grab by a corner to snap to points', help_parts: 'Click a part and drag it. R rotates 90°, F flips, arrows nudge 1 mm (Shift 10 mm), Ctrl+D copies, hold Alt to drag without snapping. A part turns red when it overlaps another or leaves the sheet.',
-    help_dim: 'Two points, then a third click places the dimension line: move above/below for horizontal, to the side for vertical, between the points for aligned (H / V / A to force). Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
+    help_dim: 'Two points, then a third click places the dimension line. Type a new value in the box that pops up and the line or shape follows (like SolidWorks); double-click a dimension to change it again. Direction: move above/below for horizontal, to the side for vertical, between the points for aligned (H / V / A to force). Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
     pParts: 'Click a part and drag · R rotate · F flip · arrows nudge', pPartDrag: 'Release to place · almost straight locks to 0°/90° · Alt disables snapping',
     pAng1: 'Point on the first ray', pAng2: 'Vertex', pAng3: 'Point on the second ray',
     measurements: 'Measurements', hideDims: 'Hide', clearAll: 'Clear all', noMeas: 'No measurements yet',
@@ -6258,6 +6262,7 @@ ov.addEventListener('gestureend', ev => { ev.preventDefault(); gest = null; });
 ov.addEventListener('dblclick', ev => {
   if (ev.button === 1) return fit();
   if (tool.name === 'parts' && selParts().length) { partsAction('pEdit'); return; }
+  if ((tool.name === 'select' && !tool.hot) || (tool.name === 'dim' && !tool.pts.length)) { const dm = S.mouse && !S.dimsHidden && hitDim(S.mouse); if (dm) { openDimEdit(dm); return; } }
   if (tool.name === 'select' && !tool.hot) { const e = hitEnt(S.world); if (e) { const ids = chainIds(e); if (!(ev.shiftKey || ev.ctrlKey || ev.metaKey)) S.sel.clear(); ids.forEach(id => S.sel.add(id)); selChanged(); if (ids.length > 1) toast(t('chainSel', ids.length)); } }
 });
 ov.addEventListener('auxclick', ev => { if (ev.button === 1) ev.preventDefault(); });
@@ -7733,13 +7738,122 @@ TOOLS.dim = () => ({
     if (vdist(p, this.pts[0]) < 1e-9) return;
     this.pts.push(p); this.lastOff = 18 / S.view.s;
   },
-  place(off) { const c = this.cand(); pushUndo(); updateInfo(); S.dims.push({ k: 'd', a: this.pts[0], b: this.pts[1], off, ...(c.dir ? { dir: c.dir } : {}) }); this.force = undefined; saveDims(); this.pts = []; this.lastOff = null; renderPanel(); },
+  place(off) { const c = this.cand(); pushUndo(); updateInfo(); S.dims.push({ k: 'd', a: this.pts[0], b: this.pts[1], off, ...(c.dir ? { dir: c.dir } : {}) }); this.force = undefined; saveDims(); this.pts = []; this.lastOff = null; renderPanel(); openDimEdit(S.dims[S.dims.length - 1]); },
   enter() { if (this.pts.length === 2) this.place(this.lastOff); else setTool('select'); },
   draw(c, cur) {
     if (this.pts.length === 1) drawDim(c, { k: 'd', a: this.pts[0], b: cur, off: 18 / S.view.s });
     if (this.pts.length === 2) { const off = S.mouse && S.mouse.inside ? dimOffsetFor(this.cand(), S.world) : this.lastOff; this.lastOff = off; drawDim(c, { ...this.cand(), off }); }
   }
 });
+/* ---------- driving dimensions (like SolidWorks): type a new value and the geometry follows ---------- */
+function dvEnds(e) { return e.type === 'line' || e.type === 'arc' || e.type === 'poly' ? entPoints(e) : []; }
+function dvTouch(e, p, tol) { return distEnt(p, e) < tol || ((e.type === 'circle' || e.type === 'arc') && Math.hypot(p.x - e.cx, p.y - e.cy) < tol); }
+function dvArcSegs(e) {
+  if (e.type === 'arc') { const P = prims(e)[0]; return [[ptOn(P, 0), ptOn(P, 1)]]; }
+  if (e.type !== 'poly') return [];
+  const n = e.pts.length, out = [];
+  for (let i = 0; i < n - (e.closed ? 0 : 1); i++) if (e.pts[i].b) out.push([e.pts[i], e.pts[(i + 1) % n]]);
+  return out;
+}
+// everything joined end-to-end with the seed objects (one outline / one chain of lines)
+function dvGroup(seeds, ents, tol) {
+  const key = (i, j) => i + ',' + j, map = new Map(), out = new Map(seeds.map(e => [e.id, e])), st = [...seeds];
+  for (const e of ents) for (const p of dvEnds(e)) { const k = key(Math.round(p.x / tol), Math.round(p.y / tol)); let a = map.get(k); if (!a) map.set(k, a = []); a.push(e); }
+  while (st.length) {
+    const e = st.pop();
+    for (const p of dvEnds(e)) {
+      const i = Math.round(p.x / tol), j = Math.round(p.y / tol);
+      for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) for (const o of map.get(key(i + di, j + dj)) || [])
+        if (!out.has(o.id) && dvEnds(o).some(r => vdist(r, p) < tol)) { out.set(o.id, o); st.push(o); }
+    }
+  }
+  return out;
+}
+// returns 'ok' | 'same' | 'bad' | 'free' | 'corner'
+function dimDrive(m, nv) {
+  const val = dimWorld(m).val;
+  if (!(nv > 1e-9) || !isFinite(nv)) return 'bad';
+  if (Math.abs(nv - val) < 1e-9) return 'same';
+  const ct = 1e-3, tol = 1e-4, Z = { x: 0, y: 0 }, ents = visEnts().filter(e => e.type !== 'text');
+  let A = m.a, B = m.b;
+  const ab = vsub(B, A), u0 = m.dir === 'h' ? { x: Math.sign(ab.x) || 1, y: 0 } : m.dir === 'v' ? { x: 0, y: Math.sign(ab.y) || 1 } : vmul(ab, 1 / (vlen(ab) || 1));
+  const sa = ents.filter(e => dvTouch(e, A, ct)), sb = ents.filter(e => dvTouch(e, B, ct));
+  if (!sa.length && !sb.length) return 'free';
+  let GA = sa.length ? dvGroup(sa, ents, ct) : new Map(), GB = sb.length ? dvGroup(sb, ents, ct) : new Map();
+  const same = [...GB.keys()].some(id => GA.has(id));
+  let u = u0, d = vmul(u0, nv - val);
+  // the second point's side moves; between two separate shapes the smaller one moves (the hole, not the panel)
+  const size = G => { const bb = bboxOf([...G.values()]); return (bb[2] - bb[0]) * (bb[3] - bb[1]) + (bb[2] - bb[0]) + (bb[3] - bb[1]); };
+  if (!GB.size || (!same && GA.size && size(GA) < size(GB) * 0.999)) { [A, B] = [B, A]; [GA, GB] = [GB, GA]; u = vmul(u0, -1); d = vmul(d, -1); }
+  const list = [...GB.values()];
+  let targets, entF, ptMap;
+  const e0 = list.length === 1 ? list[0] : null, cen = e0 && (e0.type === 'circle' || e0.type === 'arc') ? { x: e0.cx, y: e0.cy } : null;
+  if (same && cen && (e0.type === 'circle' || vdist(cen, A) < ct || vdist(cen, B) < ct)) {
+    // a circle (or an arc measured from its centre): change the radius
+    const k = nv / val;
+    pushUndo(); replaceEnt(e0.id, { ...e0, r: e0.r * k });
+    ptMap = p => dvTouch(e0, p, ct) ? vadd(cen, vmul(vsub(p, cen), k)) : null;
+  } else if (same) {
+    // one shape: whatever lies on the line through the moving point (across the dimension) slides along,
+    // and rounded corners that end there go along whole, so the shape stretches like a SolidWorks sketch
+    const proj = p => (p.x - B.x) * u.x + (p.y - B.y) * u.y, M = [], inM = p => M.some(q => vdist(q, p) < tol);
+    for (const e of list) for (const p of entPoints(e)) if (Math.abs(proj(p)) < tol && !inM(p)) M.push(p);
+    for (let again = true, guard = 0; again && guard < 50; guard++) {
+      again = false;
+      for (const e of list) for (const [s0, s1] of dvArcSegs(e)) {
+        const m0 = inM(s0), m1 = inM(s1); if (m0 === m1) continue;
+        const o = m0 ? s1 : s0; if (proj(o) > -val / 2) { M.push(o); again = true; }
+      }
+    }
+    if (!M.length) return 'corner';
+    targets = list.filter(e => entPoints(e).some(inM)); entF = p => inM(p) ? d : Z;
+    const touchesList = p => targets.some(e => dvTouch(e, p, ct));
+    ptMap = p => (inM(p) || (Math.abs(proj(p)) < tol && touchesList(p))) ? vadd(p, d) : null;
+  } else {
+    targets = list; entF = () => d;
+    ptMap = p => list.some(e => dvTouch(e, p, ct)) ? vadd(p, d) : null;
+  }
+  if (targets) { pushUndo(); for (const e of targets) replaceEnt(e.id, stretchEnt(e, entF)); }
+  // dimensions attached to the moved geometry follow it (the edited one ends up showing the new value)
+  for (const dm of S.dims) for (const k of ['a', 'b', 'v']) if (dm[k]) { const q = ptMap(dm[k]); if (q) dm[k] = q; }
+  commit(); saveDims(); renderPanel(); updateInfo();
+  return 'ok';
+}
+// SolidWorks-style "Modify" box over the dimension's value
+let dimEd = null;
+function closeDimEdit(apply) {
+  const E = dimEd; if (!E) return; dimEd = null;
+  if (apply && E.dirty) {
+    const v = evalNum(E.inp.value);
+    const r = v === null ? 'bad' : dimDrive(E.m, v);
+    if (r === 'bad') toast(t('dimBad'), true); else if (r === 'free') toast(t('dimFree'), true); else if (r === 'corner') toast(t('dimCorner'), true);
+  }
+  E.el.remove(); requestDraw();
+}
+function openDimEdit(m) {
+  closeDimEdit(false);
+  if (!m || m.k !== 'd' || !S.dims.includes(m)) return;
+  const g = dimScreen(m), r = ov.getBoundingClientRect(), el = document.createElement('div');
+  el.className = 'dimedit'; el.innerHTML = `<input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="${esc(t('dimValue'))}"><button type="button" aria-label="OK">✓</button>`;
+  el.style.left = Math.round(r.left + (g.ax + g.bx) / 2) + 'px'; el.style.top = Math.round(r.top + (g.ay + g.by) / 2) + 'px'; el.title = t('dimEditTip');
+  document.body.appendChild(el);
+  const inp = el.querySelector('input'), E = dimEd = { m, el, inp, dirty: false };
+  inp.value = fmt(g.val, 3);
+  inp.addEventListener('input', () => { E.dirty = true; });
+  inp.addEventListener('keydown', ev => {
+    ev.stopPropagation();
+    const k = ev.key.toLowerCase();
+    if ((ev.ctrlKey || ev.metaKey) && (k === 'z' || k === 'y')) { ev.preventDefault(); closeDimEdit(false); focusCmd(); if (k === 'z' && !ev.shiftKey) undoAction(); else redo(); return; }
+    if (ev.key === 'Enter') { ev.preventDefault(); E.dirty = true; closeDimEdit(true); focusCmd(); }
+    else if (ev.key === 'Escape') { ev.preventDefault(); closeDimEdit(false); focusCmd(); }
+  });
+  inp.addEventListener('blur', () => setTimeout(() => { if (dimEd === E) closeDimEdit(true); }, 0));
+  const btn = el.querySelector('button');
+  btn.addEventListener('pointerdown', ev => ev.preventDefault());
+  btn.addEventListener('click', () => { E.dirty = true; closeDimEdit(true); focusCmd(); });
+  inp.focus({ preventScroll: true }); inp.select();
+}
+ov.addEventListener('wheel', () => { if (dimEd) closeDimEdit(true); }, { passive: true });
 TOOLS.angle = () => ({
   name: 'angle', pts: [],
   prompt() { return [t('pAng1'), t('pAng2'), t('pAng3')][this.pts.length]; }, base() { return this.pts[this.pts.length - 1] || null; }, wantsPoint: () => true,
