@@ -275,6 +275,7 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
     <button class="tg only-2d" data-snap="qua" data-i="sQua"></button>
     <button class="tg only-2d" data-snap="per" data-i="sPer"></button>
     <button class="tg only-2d" data-snap="nea" data-i="sNea"></button>
+    <button class="tg only-2d" data-snap="trk" data-i="sTrk" data-ti="sTrkTip"></button>
     <button class="tg only-2d" data-snap="grid" data-i="sGrid"></button>
     <button class="tg only-2d" id="tPolar" data-i="polar" data-ti="polarTip"></button>
     <button class="tg only-2d" id="tOrtho" data-i="ortho"></button>
@@ -4515,7 +4516,7 @@ const I18N = {
   lt: {
     open: 'Atidaryti', insert: 'Įterpti', save: 'Įrašyti DXF', new: 'Naujas', undo: 'Atšaukti', redo: 'Grąžinti', fit: 'Visas vaizdas', props: 'Savybės',
     dropHere: 'Paleiskite DXF failą čia',
-    wheel_auto: 'Ratukas: auto', wheel_zoom: 'Ratukas: mastelis', wheel_pan: 'Ratukas: slinkti', wheelTip: 'Auto: pelės ratukas keičia mastelį, jutiklinio kilimėlio dviem pirštais – slenka, suspaudus – keičia mastelį', sNea: 'Ant linijos', sEnd: 'Galas', sMid: 'Vidurys', sCen: 'Centras', sScen: 'Figūros centras', sInt: 'Sankirta', sQua: 'Kvadrantas', sPer: 'Statmuo', sGrid: 'Tinklelis', ortho: 'Orto (F8)', polar: '90° (F10)', polarTip: 'Judant beveik horizontaliai ar vertikaliai, kryptis užfiksuojama tiksliai 0° / 90°', polarOn: '90° fiksavimas įjungtas', polarOff: '90° fiksavimas išjungtas',
+    wheel_auto: 'Ratukas: auto', wheel_zoom: 'Ratukas: mastelis', wheel_pan: 'Ratukas: slinkti', wheelTip: 'Auto: pelės ratukas keičia mastelį, jutiklinio kilimėlio dviem pirštais – slenka, suspaudus – keičia mastelį', sNea: 'Ant linijos', sTrk: 'Lygiavimas', sTrkTip: 'Rodo, kai žymeklis lygiuojasi su kitų figūrų kampais, viduriais ir centrais (horizontaliai ar vertikaliai), ir prie jų prisitraukia', sEnd: 'Galas', sMid: 'Vidurys', sCen: 'Centras', sScen: 'Figūros centras', sInt: 'Sankirta', sQua: 'Kvadrantas', sPer: 'Statmuo', sGrid: 'Tinklelis', ortho: 'Orto (F8)', polar: '90° (F10)', polarTip: 'Judant beveik horizontaliai ar vertikaliai, kryptis užfiksuojama tiksliai 0° / 90°', polarOn: '90° fiksavimas įjungtas', polarOff: '90° fiksavimas išjungtas',
     gDraw: 'Braižyti', gEdit: 'Keisti', gMore: 'Kita',
     select: 'Žymėti', line: 'Linija', poly: 'Polilinija', rect: 'Stačiakampis', circle: 'Apskritimas', arc: 'Lankas per 3 taškus',
     move: 'Perkelti', copy: 'Kopijuoti', rotate: 'Pasukti', scale: 'Mastelis', mirror: 'Veidrodis', stretch: 'Ištempti',
@@ -4536,7 +4537,7 @@ const I18N = {
     pTrim: 'Spustelėkite dalį, kurią norite pašalinti (iki artimiausių sankirtų)',
     pCham: 'Spustelėkite kampą arba pirmą liniją · atstumai {0} / {1} mm (įveskite 5 arba 5,8)',
     pFil: 'Spustelėkite kampą arba pirmą liniją · spindulys {0} mm (įveskite skaičių)', pSecond: 'Antra linija',
-    pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Spustelėkite, kur padėti matmens liniją (arba įveskite atstumą)',
+    pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Padėkite matmenį (arba įveskite atstumą) · H horiz. · V vert. · A lygiagretus',
     selection: 'Pasirinkta', nothingSel: 'Nieko nepažymėta.',
     tips: '<li><b>Ratukas</b> – priartinti, <b>vidurinis</b> arba <b>dešinys</b> mygtukas tempiant – slinkti, <b>Z</b> – visas vaizdas</li><li>Pažymėtą figūrą keiskite tempdami <b>rankenėles</b>. Kraštinės vidurio rankenėlė stumia visą kraštinę.</li><li>Apačioje įveskite: <code>50</code> – atstumas pelės kryptimi, <code>600,400</code> – poslinkis X,Y, <code>#0,0</code> – absoliuti vieta, <code>100&lt;45</code> – atstumas ir kampas</li><li>Galima skaičiuoti: <code>720-18*2</code></li><li>Dydį keiskite skiltyje <b>Dydis</b>: „Ištempti“ nekeičia skylių, nuožulų ir apvalinimų</li><li>Atidaro DXF, DWG ir 3D (STEP, IGES, STL, OBJ). Failą galima tiesiog nutempti į langą</li><li>Lapas su detalėmis: įrankis <b>Detalės lape</b> (G) – tempkite detales, R – pasukti</li>',
     W: 'Plotis', H: 'Aukštis', layer: 'Sluoksnis', layers: 'Sluoksniai', addLayer: 'Naujas sluoksnis', current: 'dabartinis',
@@ -4569,6 +4570,7 @@ const I18N = {
 
     layerRoles: 'Sluoksniai detalėse', roleAuto: 'Auto: {0}', role_cut: 'Pjovimas kiaurai', role_pocket: 'Frezavimas / griovelis (ne kiaurai)', role_off: 'Nenaudoti detalėms', role_other: 'Kita', diameterAll: 'Skersmuo (visų {0})', layerColor: 'Spalva', layerHint: 'Spustelėkite – dabartinis, dukart – pervadinti', layerExists: 'Sluoksnis {0} jau yra', layerShown: 'Sluoksnis {0} buvo paslėptas – vėl rodomas', factorPos: 'Koeficientas turi būti didesnis už 0 (X ir Y atskirai: 2;1)', stretchNone: 'Rėmelis nieko neapėmė – nubrėžkite jį per kraštą, kurį norite perstumti', noExplode: 'Išskaidyti galima tik polilinijas', arcLine: 'Trys taškai vienoje tiesėje – lanko nėra', close: 'Uždaryti', backParts: 'Atgal į detales (G)', trimOneCut: 'Uždarą kontūrą kerta tik viena linija – nukirpti nėra ko (reikia dviejų sankirtų)', notNeg: 'Reikšmė negali būti neigiama', needThree: 'Uždarai polilinijai reikia bent 3 viršūnių', arcSame: 'Lanko pradžia ir pabaiga negali sutapti', noJoin: 'Nėra ką sujungti – objektų galai nesutampa', bigNoSave: 'Brėžinys per didelis išsaugoti naršyklėje – nepamirškite įrašyti DXF', offsetSplit: 'Lygiagreti kopija suskilo į {0} kontūrus', dupWarn: 'Dubliuotų / uždengtų linijų: {0} – CNC jas pjautų du kartus.', dupDel: 'Pašalinti', dupRemoved: 'Pašalinta dublikatų: {0}',
     cycleHint: 'Čia {0} obj. vienas ant kito – spustelėkite dar kartą kitam', cycleN: 'Objektas {0} iš {1} šioje vietoje',
+    extractSel: 'Išsaugoti pažymėtus kaip DXF', extractSel0: 'Išsaugoti pažymėtus DXF (kampas į 0,0)',
     copiedN: 'Nukopijuota: {0} obj. (Ctrl+V – įklijuoti)', cutN: 'Iškirpta: {0} obj. (Ctrl+V – įklijuoti)', pastedN: '{0} obj. – spustelėkite, kur padėti', clipEmpty: 'Nieko nenukopijuota – pirmiausia Ctrl+C', pPlace: 'Spustelėkite, kur padėti (arba įveskite poslinkį) · Esc – atšaukti', pasteCancel: 'Atšaukta', copyClip: 'Kopijuoti', paste: 'Įklijuoti',
     chainSel: 'Pažymėtas visas kontūras: {0} obj.', openShort: 'atviras', repeat: 'Kartoti: {0}', rot90: 'Pasukti 90°', selAll: 'Pažymėti viską', zoomSel: 'Priartinti pažymėtus',
     helpTitle: 'Klavišai ir pelė', dropWarn: 'Dėmesio: {0}', pOverlaps: '#{0} persidengia su #{1}', pOutside: '#{0} išlenda už lapo', pClose: '#{0} per arti #{1}',
@@ -4578,7 +4580,7 @@ const I18N = {
       + '<h4>Įrankiai</h4><kbd>V</kbd><span>Žymėti</span><kbd>G</kbd><span>Detalės lape (R pasukti, F apversti, rodyklės stumti, Ctrl+D kopija)</span><kbd>L P R C A</kbd><span>Linija, polilinija, stačiakampis, apskritimas, lankas</span><kbd>M K Q S I H</kbd><span>Perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti</span><kbd>O T N F</kbd><span>Lygiagreti kopija, nukirpti, nuožula, apvalinimas</span><kbd>J X D U</kbd><span>Sujungti, išskaidyti, matmuo, kampas</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Atšaukti / grąžinti</span><kbd>Ctrl+S</kbd><span>Įrašyti DXF</span></div>',
     gSel: '', gSheet: 'Lapas', parts: 'Detalės lape', dim: 'Matmuo', angle: 'Kampas',
     joinedForEdit: 'Kontūrai sujungti redagavimui: {0} · G – atgal į detales', refilleted: 'Kampas pakeistas', notfillet: 'Tai ne apvalinimas tarp dviejų tiesių', movedBy: 'Perkelta: {0}, {1}', pMoveDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · paėmus už kampo – prisitraukia prie taškų', help_parts: 'Spustelėkite detalę ir tempkite. R – pasukti 90°, F – apversti, rodyklės – po 1 mm (Shift – 10 mm), Ctrl+D – kopija, Alt – be pritraukimo. Detalė nusidažo raudonai, jei persidengia ar išlenda už lapo.',
-    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją. Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
+    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją: pele aukščiau/žemiau – horizontalus, į šoną – vertikalus, tarp taškų – lygiagretus (H / V / A – priverstinai). Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
     pParts: 'Spustelėkite detalę ir tempkite · R pasukti · F apversti · rodyklės – stumti', pPartDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · Alt – be pritraukimo',
     pAng1: 'Pirmo spindulio taškas', pAng2: 'Kampo viršūnė', pAng3: 'Antro spindulio taškas',
     measurements: 'Matavimai', hideDims: 'Slėpti', clearAll: 'Išvalyti', noMeas: 'Matavimų nėra',
@@ -4610,7 +4612,7 @@ const I18N = {
   en: {
     open: 'Open', insert: 'Insert', save: 'Save DXF', new: 'New', undo: 'Undo', redo: 'Redo', fit: 'Zoom extents', props: 'Properties',
     dropHere: 'Drop the DXF file here',
-    wheel_auto: 'Wheel: auto', wheel_zoom: 'Wheel: zoom', wheel_pan: 'Wheel: pan', wheelTip: 'Auto: the mouse wheel zooms; on a touchpad two fingers pan and a pinch zooms', sNea: 'Nearest', sEnd: 'End', sMid: 'Mid', sCen: 'Center', sScen: 'Shape centre', sInt: 'Intersect', sQua: 'Quadrant', sPer: 'Perp.', sGrid: 'Grid', ortho: 'Ortho (F8)', polar: '90° (F10)', polarTip: 'When moving almost horizontally or vertically the direction locks to exactly 0° / 90°', polarOn: '90° lock on', polarOff: '90° lock off',
+    wheel_auto: 'Wheel: auto', wheel_zoom: 'Wheel: zoom', wheel_pan: 'Wheel: pan', wheelTip: 'Auto: the mouse wheel zooms; on a touchpad two fingers pan and a pinch zooms', sNea: 'Nearest', sTrk: 'Align', sTrkTip: 'Shows when the cursor lines up with corners, midpoints and centres of other shapes (horizontally or vertically) and snaps to them', sEnd: 'End', sMid: 'Mid', sCen: 'Center', sScen: 'Shape centre', sInt: 'Intersect', sQua: 'Quadrant', sPer: 'Perp.', sGrid: 'Grid', ortho: 'Ortho (F8)', polar: '90° (F10)', polarTip: 'When moving almost horizontally or vertically the direction locks to exactly 0° / 90°', polarOn: '90° lock on', polarOff: '90° lock off',
     gDraw: 'Draw', gEdit: 'Modify', gMore: 'More',
     select: 'Select', line: 'Line', poly: 'Polyline', rect: 'Rectangle', circle: 'Circle', arc: 'Arc through 3 points',
     move: 'Move', copy: 'Copy', rotate: 'Rotate', scale: 'Scale', mirror: 'Mirror', stretch: 'Stretch',
@@ -4631,7 +4633,7 @@ const I18N = {
     pTrim: 'Click the part to remove (up to the nearest intersections)',
     pCham: 'Click a corner or the first line · distances {0} / {1} mm (type 5 or 5,8)',
     pFil: 'Click a corner or the first line · radius {0} mm (type a number)', pSecond: 'Second line',
-    pM1: 'Measure from', pM2: 'Measure to', pM3: 'Click where the dimension line goes (or type the distance)',
+    pM1: 'Measure from', pM2: 'Measure to', pM3: 'Place the dimension (or type the distance) · H horizontal · V vertical · A aligned',
     selection: 'Selection', nothingSel: 'Nothing selected.',
     tips: '<li><b>Wheel</b> zooms, drag with the <b>middle</b> or <b>right</b> button to pan, <b>Z</b> zooms to everything</li><li>Drag the <b>grips</b> of a selected shape. The midpoint grip of an edge moves the whole edge.</li><li>Type at the bottom: <code>50</code> – distance in the mouse direction, <code>600,400</code> – offset X,Y, <code>#0,0</code> – absolute, <code>100&lt;45</code> – distance and angle</li><li>Math works: <code>720-18*2</code></li><li>Change sizes in <b>Size</b>: “Stretch” keeps holes, chamfers and fillets unchanged</li><li>Opens DXF, DWG and 3D (STEP, IGES, STL, OBJ). Just drop a file on the window</li><li>Sheets with parts: the <b>Parts on sheet</b> tool (G) – drag parts, R rotates</li>',
     W: 'Width', H: 'Height', layer: 'Layer', layers: 'Layers', addLayer: 'New layer', current: 'current',
@@ -4664,6 +4666,7 @@ const I18N = {
 
     layerRoles: 'Layers in parts', roleAuto: 'Auto: {0}', role_cut: 'Cut through', role_pocket: 'Groove / pocket (not through)', role_off: 'Not part geometry', role_other: 'Other', diameterAll: 'Diameter (all {0})', layerColor: 'Colour', layerHint: 'Click – make current, double-click – rename', layerExists: 'Layer {0} already exists', layerShown: 'Layer {0} was hidden – it is shown again', factorPos: 'The factor must be greater than 0 (X and Y separately: 2;1)', stretchNone: 'The window caught nothing – draw it across the edge you want to move', noExplode: 'Only polylines can be exploded', arcLine: 'The three points are in a line – there is no arc', close: 'Close', backParts: 'Back to the parts (G)', trimOneCut: 'Only one line crosses this closed outline – there is nothing to cut out (two crossings are needed)', notNeg: 'The value cannot be negative', needThree: 'A closed polyline needs at least 3 vertices', arcSame: 'The arc start and end cannot be the same', noJoin: 'Nothing to join – the ends of the objects do not meet', bigNoSave: 'This drawing is too big to keep in the browser – remember to save the DXF', offsetSplit: 'The offset split into {0} outlines', dupWarn: 'Duplicate / overlapped objects: {0} – the CNC would cut them twice.', dupDel: 'Remove', dupRemoved: 'Removed duplicates: {0}',
     cycleHint: '{0} objects on top of each other here – click again for the next one', cycleN: 'Object {0} of {1} at this spot',
+    extractSel: 'Save selection as DXF', extractSel0: 'Save selection as DXF (corner at 0,0)',
     copiedN: 'Copied {0} objects (Ctrl+V to paste)', cutN: 'Cut {0} objects (Ctrl+V to paste)', pastedN: '{0} objects – click where to place them', clipEmpty: 'Nothing copied yet – press Ctrl+C first', pPlace: 'Click where to place (or type an offset) · Esc – cancel', pasteCancel: 'Cancelled', copyClip: 'Copy', paste: 'Paste',
     chainSel: 'Whole outline selected: {0} objects', openShort: 'open', repeat: 'Repeat: {0}', rot90: 'Rotate 90°', selAll: 'Select all', zoomSel: 'Zoom to selection',
     helpTitle: 'Keys and mouse', dropWarn: 'Check: {0}', pOverlaps: '#{0} overlaps #{1}', pOutside: '#{0} is off the sheet', pClose: '#{0} is too close to #{1}',
@@ -4673,7 +4676,7 @@ const I18N = {
       + '<h4>Tools</h4><kbd>V</kbd><span>Select</span><kbd>G</kbd><span>Parts on sheet (R rotate, F flip, arrows nudge, Ctrl+D copy)</span><kbd>L P R C A</kbd><span>Line, polyline, rectangle, circle, arc</span><kbd>M K Q S I H</kbd><span>Move, copy, rotate, scale, mirror, stretch</span><kbd>O T N F</kbd><span>Offset, trim, chamfer, fillet</span><kbd>J X D U</kbd><span>Join, explode, dimension, angle</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Undo / redo</span><kbd>Ctrl+S</kbd><span>Save DXF</span></div>',
     gSel: '', gSheet: 'Sheet', parts: 'Parts on sheet', dim: 'Dimension', angle: 'Angle',
     joinedForEdit: 'Contours joined for editing: {0} · G – back to the parts', refilleted: 'Corner changed', notfillet: 'This is not a fillet between two straight edges', movedBy: 'Moved by {0}, {1}', pMoveDrag: 'Release to place · almost straight locks to 0°/90° · grab by a corner to snap to points', help_parts: 'Click a part and drag it. R rotates 90°, F flips, arrows nudge 1 mm (Shift 10 mm), Ctrl+D copies, hold Alt to drag without snapping. A part turns red when it overlaps another or leaves the sheet.',
-    help_dim: 'Two points, then a third click places the dimension line. Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
+    help_dim: 'Two points, then a third click places the dimension line: move above/below for horizontal, to the side for vertical, between the points for aligned (H / V / A to force). Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
     pParts: 'Click a part and drag · R rotate · F flip · arrows nudge', pPartDrag: 'Release to place · almost straight locks to 0°/90° · Alt disables snapping',
     pAng1: 'Point on the first ray', pAng2: 'Vertex', pAng3: 'Point on the second ray',
     measurements: 'Measurements', hideDims: 'Hide', clearAll: 'Clear all', noMeas: 'No measurements yet',
@@ -4710,7 +4713,7 @@ function t(k, ...a) { let s = I18N[lang][k]; if (s == null) s = I18N.en[k]; if (
 const S = {
   doc: { ents: [], layers: { '0': { color: 7, visible: true } } },
   sel: new Set(), view: { cx: 0, cy: 0, s: 1 }, fname: '', sample: false,
-  snaps: Object.assign({ end: true, mid: true, cen: true, int: true, qua: false, per: true, nea: true, grid: false }, LS.get('dxfed.snaps', {})),
+  snaps: Object.assign({ end: true, mid: true, cen: true, int: true, qua: false, per: true, nea: true, grid: false, trk: true }, LS.get('dxfed.snaps', {})),
   ortho: LS.get('dxfed.ortho', false), polar: LS.get('dxfed.polar', true), curLayer: '0', undo: [], redo: [],
   opts: Object.assign({ chD1: 5, chD2: 5, fR: 5, offD: 16, mirrorKeep: false, rectR: 0, circDia: false, anchor: 'bl', rsMode: 'stretch', keepHoles: true, lock: false, gap: 8, margin: 4, withNested: true, allowRot: true }, LS.get('dxfed.opts', {})),
   fmt: LS.get('dxfed.fmt', 'r12'), lastTool: null, hover: null, snap: null, shift: false, mouse: null, world: { x: 0, y: 0 }, measure: null,
@@ -5089,7 +5092,44 @@ function axisLock(w, base) {
   if (ax <= band && ay > ax * 2) return 'v';
   return null;
 }
+/* ---------- alignment guides: show (and snap to) the X or Y of corners, midpoints and centres around the cursor ---------- */
+function guidePoints() {
+  const vb = viewBox(), key = [S.rev, vb.map(v => Math.round(v * 1000)).join(','), tool && tool.name, tool && tool.skipSnapId, tool && tool.skipSnapSet ? tool.skipSnapSet.size : 0].join('|');
+  if (guidePoints.key === key) return guidePoints.v;
+  const pts = [], m = (vb[2] - vb[0]) * .25, box = [vb[0] - m, vb[1] - m, vb[2] + m, vb[3] + m];
+  for (const e of S.doc.ents) {
+    if (pts.length > 40000) break;
+    if (!layerVis(e.layer) || e.type === 'text') continue;
+    if (tool && (tool.skipSnapId === e.id || (tool.skipSnapSet && tool.skipSnapSet.has(e.id)))) continue;
+    const b = entBBox(e); if (b[0] > box[2] || b[2] < box[0] || b[1] > box[3] || b[3] < box[1]) continue;
+    for (const P of prims(e)) { if (P.full) { pts.push(P.c); continue; } pts.push(ptOn(P, 0), ptOn(P, 1)); if (P.k === 'L') pts.push(ptOn(P, .5)); else pts.push(P.c); }
+  }
+  const bx = pts.slice().sort((a, b) => a.x - b.x), by = pts.slice().sort((a, b) => a.y - b.y);
+  guidePoints.key = key; guidePoints.v = { bx, by }; return guidePoints.v;
+}
+// nearest point whose X (axis 'x') or Y is within the band of the cursor; among those, the one closest to the cursor
+function nearGuide(arr, axis, w, band, skip) {
+  let lo = 0, hi = arr.length; const v = w[axis]; while (lo < hi) { const mid = (lo + hi) >> 1; if (arr[mid][axis] < v - band) lo = mid + 1; else hi = mid; }
+  let best = null, bd = Infinity, n = 0; const o = axis === 'x' ? 'y' : 'x';
+  for (let i = lo; i < arr.length && arr[i][axis] <= v + band && n < 400; i++, n++) { const q = arr[i]; if (skip && vdist(q, skip) < 1e-9) continue; const d = Math.abs(q[axis] - v) * 1e3 + Math.abs(q[o] - w[o]) * 1e-3; if (Math.abs(q[o] - w[o]) * S.view.s < 4) continue; if (d < bd) { bd = d; best = q; } }
+  return best;
+}
 function curPoint() {
+  S.guides = null; const p0 = curPoint0(), base = tool && tool.base ? tool.base() : null;
+  if (!S.snaps.trk || !(tool && tool.wantsPoint && tool.wantsPoint()) || (tool.noSnap && tool.noSnap()) || (S.snap && S.snap.kind !== 'grid' && S.snap.kind !== 'nea')) return p0;
+  const band = 7 / S.view.s, G = guidePoints(), p = { ...p0 }, lock = S.lock && S.lock.kind, orth = base && (S.ortho !== S.shift);
+  const fixX = lock === 'v' || (orth && Math.abs(p.x - base.x) < 1e-12), fixY = lock === 'h' || (orth && Math.abs(p.y - base.y) < 1e-12);
+  const gx = fixX ? null : nearGuide(G.bx, 'x', S.world, band, null), gy = fixY ? null : nearGuide(G.by, 'y', S.world, band, null);
+  if (gx) p.x = gx.x; if (gy) p.y = gy.y;
+  if (gx || gy) S.guides = { gx, gy, p };
+  return p;
+}
+function drawGuides(c, g) {
+  const q = w2s(g.p); c.save(); c.strokeStyle = col.cross; c.fillStyle = col.cross; c.lineWidth = 1; c.setLineDash([4, 4]);
+  for (const src of [g.gx, g.gy]) if (src) { const a = w2s(src); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(q.x, q.y); c.stroke(); c.setLineDash([]); c.beginPath(); c.moveTo(a.x - 4, a.y - 4); c.lineTo(a.x + 4, a.y + 4); c.moveTo(a.x - 4, a.y + 4); c.lineTo(a.x + 4, a.y - 4); c.stroke(); c.setLineDash([4, 4]); }
+  c.restore();
+}
+function curPoint0() {
   const w = S.world, base = tool && tool.base ? tool.base() : null, lock = axisLock(w, base); S.lock = lock ? { kind: lock, base } : null;
   if (S.snap && S.snap.kind !== 'grid') {
     const sp = S.snap.p; if (!lock) return sp;
@@ -5213,6 +5253,7 @@ function renderOverlay() {
   { const ch = centerHandle(); if (ch) drawCenterMark(c, ch, S.centerHover); else { const sc = selCenterSnap(); if (sc && !(S.snap && S.snap.kind === 'scen')) drawCenterMark(c, sc, false); } }
   if (S.mouse && S.mouse.inside) {
     if (S.lock && tool.wantsPoint && tool.wantsPoint()) drawLock(c, S.lock);
+    if (S.guides && tool.wantsPoint && tool.wantsPoint()) drawGuides(c, S.guides);
     if (S.snap) drawSnap(c, S.snap);
     const base = tool.base ? tool.base() : null;
     if (base && tool.wantsPoint && tool.wantsPoint()) {
@@ -5245,7 +5286,16 @@ function carryDims(list, m) {
   const bb = bboxOf(list), tol = 1e-6 * Math.max(1, bb[2] - bb[0], bb[3] - bb[1]);
   const on = p => p.x >= bb[0] - tol && p.x <= bb[2] + tol && p.y >= bb[1] - tol && p.y <= bb[3] + tol && list.some(e => distEnt(p, e) < tol || ((e.type === 'circle' || e.type === 'arc') && Math.hypot(p.x - e.cx, p.y - e.cy) < tol));
   let any = false;
-  for (const d of S.dims) for (const k of ['a', 'b', 'v']) if (d[k] && on(d[k])) { d[k] = mApply(m, d[k]); any = true; }
+  for (const d of S.dims) {
+    const q = d.k === 'd' && on(d.a) && on(d.b) ? dimWorld(d).q1 : null;
+    for (const k of ['a', 'b', 'v']) if (d[k] && on(d[k])) { d[k] = mApply(m, d[k]); any = true; }
+    if (!q) continue;
+    // the whole dimension moved with the part: keep its line where it was relative to the part
+    // (a rotated horizontal dimension becomes vertical, an odd angle makes it aligned, a mirror keeps the side)
+    const q1 = mApply(m, q), ux = d.dir === 'h' ? m[0] : m[2], uy = d.dir === 'h' ? m[1] : m[3], L = Math.hypot(ux, uy) || 1;
+    if (d.dir && Math.abs(uy / L) < 1e-9) d.dir = 'h'; else if (d.dir && Math.abs(ux / L) < 1e-9) d.dir = 'v'; else delete d.dir;
+    d.off = dimOffsetFor(d, q1);
+  }
   if (any) saveDims();
 }
 function applyM(m, copy, opt = {}) {
@@ -5971,12 +6021,19 @@ function loadParsed(res, file, insert) {
   }
   if (k) setTimeout(() => toast(t('units', t('u' + res.units), k)), 2600);
 }
-function saveDXF(selOnly) {
-  const doc = selOnly ? { ents: selEnts(), layers: S.doc.layers } : S.doc;
+// selOnly: only the selection (its own layers); toOrigin: moved so its lower-left corner is at 0,0
+function saveDXF(selOnly, toOrigin) {
+  let doc = S.doc;
+  if (selOnly) {
+    let ents = selEnts(); if (!ents.length) return toast(t('needSel'), true);
+    if (toOrigin) { const bb = bboxOf(ents), m = mTrans(-bb[0], -bb[1]); ents = ents.map(e => transformEnt(e, m)[0]); }
+    const layers = { '0': S.doc.layers['0'] || { color: 7, visible: true } }; for (const e of ents) if (S.doc.layers[e.layer]) layers[e.layer] = { ...S.doc.layers[e.layer], visible: true };
+    doc = { ents, layers };
+  }
   if (!doc.ents.length) return toast(t('needSel'), true);
   const txt = writeDXF(doc, S.fmt);
   let name = (S.fname || 'brezinys.dxf').replace(/\.(dxf|dwg|stp|step|igs|iges|stl|obj)$/i, '');
-  if (selOnly) name += '_dalis';
+  if (selOnly) { const ps = typeof selParts === 'function' && getAn().parts.length ? selParts() : []; name += ps.length === 1 && [...ps[0].ids].length === S.sel.size ? '_detale_' + ps[0].n : '_dalis'; }
   name += '.dxf';
   const blob = new Blob([txt], { type: 'application/dxf' }), a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
@@ -6084,6 +6141,11 @@ document.addEventListener('keyup', ev => {
 window.addEventListener('blur', () => { S.shift = false; S.alt = false; S.space = null; pan = null; updateCursor(); requestDraw(); });
 
 const ptrs = new Map(); let pan = null, rdown = null, pinch = null, downInfo = null;
+// right-click on something that is not selected selects it first (the menu then acts on what was clicked)
+function ctxPick(w) {
+  if (tool.name === 'parts') { const P = partAt(w); if (P && !partSelected(P)) selectParts([P]); return; }
+  const under = hitAll(w); if (under.length && !under.some(e => S.sel.has(e.id))) { S.sel.clear(); S.sel.add(under[0].id); selChanged(); }
+}
 function screenOf(ev) { const r = ov.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
 function updateHover() {
   const pickPhase = tool.phase === 'pick' || (tool.picking && !(tool.wantsPoint && tool.wantsPoint()));
@@ -6160,7 +6222,7 @@ ov.addEventListener('pointerup', ev => {
   const sp = screenOf(ev); ptrs.delete(ev.pointerId);
   if (pinch) { if (ptrs.size < 2) pinch = null; return; }
   if (pan) { pan = null; if (S.space) S.space.panning = false; updateCursor(); return; }
-  if (rdown) { const r = rdown; rdown = null; updateCursor(); if (!r.moved) { if ((tool.name === 'select' && !tool.hot) || (tool.name === 'parts' && !tool.drag)) openCtx(ev.clientX, ev.clientY); else confirmKey(); } return; }
+  if (rdown) { const r = rdown; rdown = null; updateCursor(); if (!r.moved) { if ((tool.name === 'select' && !tool.hot) || (tool.name === 'parts' && !tool.drag)) { ctxPick(s2w(sp.x, sp.y)); openCtx(ev.clientX, ev.clientY); } else confirmKey(); } return; }
   if (!downInfo) return;
   const info = { ...downInfo, screen: sp, world: s2w(sp.x, sp.y), shift: ev.shiftKey, ctrl: ev.ctrlKey || ev.metaKey, moved: downInfo.moved };
   downInfo = null;
@@ -7581,10 +7643,18 @@ function downloadText(txt, name) {
 
 /* ---------- persistent dimensions (from Draft viewer) ---------- */
 function saveDims() { LS.set('dxfed.dims', S.dims); }
+// dimension geometry in world units: feature points a, b; dimension line q1–q2; the measured value.
+// dir 'h' / 'v' = horizontal / vertical dimension (off = distance of the line from a along Y / X), otherwise aligned
+function dimWorld(m) {
+  const a = m.a, b = m.b, o = m.off || 0;
+  if (m.dir === 'h') { const y = a.y + o; return { q1: { x: a.x, y }, q2: { x: b.x, y }, val: Math.abs(b.x - a.x) }; }
+  if (m.dir === 'v') { const x = a.x + o; return { q1: { x, y: a.y }, q2: { x, y: b.y }, val: Math.abs(b.y - a.y) }; }
+  const d = vsub(b, a), L = vlen(d) || 1, n = { x: -d.y / L, y: d.x / L };
+  return { q1: vadd(a, vmul(n, o)), q2: vadd(b, vmul(n, o)), val: vlen(d) };
+}
 function dimScreen(m) {
-  const a = w2s(m.a), b = w2s(m.b), dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
-  const nx = -dy / len, ny = dx / len, o = (m.off || 0) * S.view.s;
-  return { a, b, nx, ny, o, ax: a.x + nx * o, ay: a.y + ny * o, bx: b.x + nx * o, by: b.y + ny * o, ang: Math.atan2(dy, dx) };
+  const g = dimWorld(m), a = w2s(m.a), b = w2s(m.b), q1 = w2s(g.q1), q2 = w2s(g.q2), dx = q2.x - q1.x, dy = q2.y - q1.y, len = Math.hypot(dx, dy) || 1;
+  return { a, b, ax: q1.x, ay: q1.y, bx: q2.x, by: q2.y, nx: -dy / len, ny: dx / len, ang: Math.atan2(dy, dx), val: g.val };
 }
 function dimLabel(c, x, y, ang, text) {
   c.save(); c.translate(x, y); let a = ang; if (a > PI / 2) a -= PI; if (a < -PI / 2) a += PI; c.rotate(a);
@@ -7595,14 +7665,16 @@ function dimLabel(c, x, y, ang, text) {
 function drawDim(c, m) {
   c.save(); c.strokeStyle = col.measure; c.fillStyle = col.measure; c.lineWidth = 1.2; c.setLineDash([]);
   if (m.k === 'd') {
-    const g = dimScreen(m), sg = Math.sign(g.o) || 1;
-    if (Math.abs(g.o) > .5) { c.beginPath(); c.moveTo(g.a.x + g.nx * sg * 4, g.a.y + g.ny * sg * 4); c.lineTo(g.ax + g.nx * sg * 6, g.ay + g.ny * sg * 6); c.moveTo(g.b.x + g.nx * sg * 4, g.b.y + g.ny * sg * 4); c.lineTo(g.bx + g.nx * sg * 6, g.by + g.ny * sg * 6); c.stroke(); }
+    const g = dimScreen(m);
+    c.beginPath();
+    for (const [p, qx, qy] of [[g.a, g.ax, g.ay], [g.b, g.bx, g.by]]) { const ex = qx - p.x, ey = qy - p.y, el = Math.hypot(ex, ey); if (el > .5) { const ux = ex / el, uy = ey / el; c.moveTo(p.x + ux * 4, p.y + uy * 4); c.lineTo(qx + ux * 6, qy + uy * 6); } }
+    c.stroke();
     c.beginPath(); c.moveTo(g.ax, g.ay); c.lineTo(g.bx, g.by); c.stroke();
     const ux = (g.bx - g.ax), uy = (g.by - g.ay), ul = Math.hypot(ux, uy) || 1;
-    for (const [px, py, s] of [[g.ax, g.ay, 1], [g.bx, g.by, -1]]) { c.beginPath(); c.moveTo(px, py); c.lineTo(px + (ux / ul * 8 + g.nx * 3) * s, py + (uy / ul * 8 + g.ny * 3) * s); c.lineTo(px + (ux / ul * 8 - g.nx * 3) * s, py + (uy / ul * 8 - g.ny * 3) * s); c.closePath(); c.fill(); }
+    if (ul > 1) for (const [px, py, s] of [[g.ax, g.ay, 1], [g.bx, g.by, -1]]) { c.beginPath(); c.moveTo(px, py); c.lineTo(px + (ux / ul * 8 + g.nx * 3) * s, py + (uy / ul * 8 + g.ny * 3) * s); c.lineTo(px + (ux / ul * 8 - g.nx * 3) * s, py + (uy / ul * 8 - g.ny * 3) * s); c.closePath(); c.fill(); }
     for (const p of [g.a, g.b]) { c.beginPath(); c.arc(p.x, p.y, 2.5, 0, TAU); c.fill(); }
-    const L = vdist(m.a, m.b), dx = Math.abs(m.b.x - m.a.x), dy = Math.abs(m.b.y - m.a.y);
-    let txt = fmt(L, 2); if (dx > 1e-6 && dy > 1e-6) txt += `  (${fmt(dx, 2)} × ${fmt(dy, 2)})`;
+    const dx = Math.abs(m.b.x - m.a.x), dy = Math.abs(m.b.y - m.a.y);
+    let txt = fmt(g.val, 2); if (!m.dir && dx > 1e-6 && dy > 1e-6) txt += `  (${fmt(dx, 2)} × ${fmt(dy, 2)})`;
     dimLabel(c, (g.ax + g.bx) / 2, (g.ay + g.by) / 2, g.ang, txt);
   } else if (m.k === 'a') {
     const a = w2s(m.a), v = w2s(m.v), b = w2s(m.b);
@@ -7621,7 +7693,18 @@ function hitDim(sp) {
   for (let i = S.dims.length - 1; i >= 0; i--) { const m = S.dims[i]; if (m.k !== 'd') continue; const g = dimScreen(m); if (distSeg(sp, { x: g.ax, y: g.ay }, { x: g.bx, y: g.by }) <= 7) return m; }
   return null;
 }
-function dimOffsetFor(m, w) { const g = dimScreen(m), s = w2s(w); return ((s.x - g.a.x) * g.nx + (s.y - g.a.y) * g.ny) / S.view.s; }
+function dimOffsetFor(m, w) {
+  if (m.dir === 'h') return w.y - m.a.y; if (m.dir === 'v') return w.x - m.a.x;
+  const d = vsub(m.b, m.a), L = vlen(d) || 1; return ((w.x - m.a.x) * -d.y + (w.y - m.a.y) * d.x) / L;
+}
+// like AutoCAD: move the mouse above/below the two points for a horizontal dimension, left/right for a vertical one,
+// between them for an aligned one (H / V / A force a kind)
+function dimAutoDir(a, b, w) {
+  const x0 = Math.min(a.x, b.x), x1 = Math.max(a.x, b.x), y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
+  if (x1 - x0 < 1e-9 || y1 - y0 < 1e-9) return null;
+  const ox = w.x < x0 ? x0 - w.x : w.x > x1 ? w.x - x1 : 0, oy = w.y < y0 ? y0 - w.y : w.y > y1 ? w.y - y1 : 0;
+  if (!ox && !oy) return null; return oy >= ox ? 'h' : 'v';
+}
 function drawDims(c) { if (S.dimsHidden) return; for (const m of S.dims) drawDim(c, m); }
 TOOLS.dim = () => ({
   // 1st click, 2nd click, then the dimension line follows the mouse until the 3rd click (or a typed distance / Enter) places it
@@ -7629,15 +7712,28 @@ TOOLS.dim = () => ({
   prompt() { return this.pts.length === 2 ? t('pM3') : this.pts.length ? t('pM2') : t('pM1'); },
   base() { return this.pts.length === 1 ? this.pts[0] : null; }, wantsPoint: () => true,
   acceptsValue() { return this.pts.length === 2; },
-  value(v) { const side = Math.sign(this.lastOff || 1) || 1; this.place(Math.abs(v) * side); },
-  cand() { return { k: 'd', a: this.pts[0], b: this.pts[1], off: 0 }; },
+  value(v) {
+    // typed distance = gap between the dimension line and the outermost of the two points on that side
+    const c = this.cand(), a = this.pts[0], b = this.pts[1], lo = this.lastOff || 0, d = Math.abs(v);
+    if (c.dir === 'h' || c.dir === 'v') {
+      const k = c.dir === 'h' ? 'y' : 'x', up = a[k] + lo >= (a[k] + b[k]) / 2;
+      this.place(up ? Math.max(a[k], b[k]) - a[k] + d : Math.min(a[k], b[k]) - a[k] - d); return;
+    }
+    this.place(d * (Math.sign(lo) || 1));
+  },
+  cand() { const w = S.mouse && S.mouse.inside ? S.world : null, dir = this.force !== undefined ? this.force : w ? dimAutoDir(this.pts[0], this.pts[1], w) : this.lastDir; if (w) this.lastDir = dir; return { k: 'd', a: this.pts[0], b: this.pts[1], off: 0, dir: dir || undefined }; },
+  onKey(ev) {
+    if (this.pts.length !== 2 || ev.ctrlKey || ev.metaKey || ev.altKey) return false;
+    const k = ev.key.toLowerCase(), f = { h: 'h', v: 'v', a: null }[k]; if (f === undefined) return false;
+    this.force = this.force === f ? undefined : f; requestDraw(); return true;
+  },
   point(p) {
     if (this.pts.length === 2) { this.place(dimOffsetFor(this.cand(), p)); return; }
     if (!this.pts.length) { this.pts = [p]; return; }
     if (vdist(p, this.pts[0]) < 1e-9) return;
     this.pts.push(p); this.lastOff = 18 / S.view.s;
   },
-  place(off) { pushUndo(); updateInfo(); S.dims.push({ k: 'd', a: this.pts[0], b: this.pts[1], off }); saveDims(); this.pts = []; this.lastOff = null; renderPanel(); },
+  place(off) { const c = this.cand(); pushUndo(); updateInfo(); S.dims.push({ k: 'd', a: this.pts[0], b: this.pts[1], off, ...(c.dir ? { dir: c.dir } : {}) }); this.force = undefined; saveDims(); this.pts = []; this.lastOff = null; renderPanel(); },
   enter() { if (this.pts.length === 2) this.place(this.lastOff); else setTool('select'); },
   draw(c, cur) {
     if (this.pts.length === 1) drawDim(c, { k: 'd', a: this.pts[0], b: cur, off: 18 / S.view.s });
@@ -7657,7 +7753,7 @@ function renderDims() {
   const el = $('measPanel'); if (!el) return;
   if (!S.dims.length) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
-  el.innerHTML = `<h3>${t('measurements')} <em>${S.dims.length}</em></h3><div class="mlist">${S.dims.map((m, i) => `<div class="mrow"><span class="mn">#${i + 1}</span><span class="mv">${m.k === 'd' ? 'L ' + fmt(vdist(m.a, m.b), 2) : '∠ ' + fmt(angleOf(m), 2) + '°'}</span><button class="x" data-act="dimDel" data-i="${i}" aria-label="${t('del')}">✕</button></div>`).join('')}</div>
+  el.innerHTML = `<h3>${t('measurements')} <em>${S.dims.length}</em></h3><div class="mlist">${S.dims.map((m, i) => `<div class="mrow"><span class="mn">#${i + 1}</span><span class="mv">${m.k === 'd' ? (m.dir === 'h' ? '↔ ' : m.dir === 'v' ? '↕ ' : 'L ') + fmt(dimWorld(m).val, 2) : '∠ ' + fmt(angleOf(m), 2) + '°'}</span><button class="x" data-act="dimDel" data-i="${i}" aria-label="${t('del')}">✕</button></div>`).join('')}</div>
   <div class="row"><label class="chk"><input type="checkbox" id="dimsHide" ${S.dimsHidden ? 'checked' : ''}> ${t('hideDims')}</label><span class="spacer"></span><button class="btn small" data-act="dimClear">${t('clearAll')}</button></div>`;
 }
 
@@ -8066,6 +8162,8 @@ function openCtx(x, y) {
   it(t('copyClip'), 'Ctrl+C', () => copySel(false), !has); it(t('paste'), 'Ctrl+V', pasteClip, !(S.clip || (() => { try { return localStorage.getItem('dxfed.clip'); } catch (e) { return null; } })()));
   it(t('join'), 'J', () => runAction('join'), !has); it(t('explode'), 'X', () => runAction('explode'), !has);
   it(t('del'), 'Del', () => runAction('del'), !has);
+  items.push('-');
+  it(t('extractSel'), '', () => saveDXF(true), !has); it(t('extractSel0'), '', () => saveDXF(true, true), !has);
   items.push('-');
   it(t('selAll'), 'Ctrl+A', () => { for (const e of visEnts()) S.sel.add(e.id); selChanged(); });
   if (has) it(t('zoomSel'), '', () => zoomToBB(bboxOf(selEnts())));
