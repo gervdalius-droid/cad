@@ -143,6 +143,7 @@ body:not(.mode-3d) .only-3d{display:none!important}
 .pill.close,.pill.edge{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
 .pill.overlap,.pill.outside{background:color-mix(in srgb,var(--hot) 16%,transparent);color:var(--hot)}
 .mrow{display:flex;align-items:center;gap:8px;padding:3px 6px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--line)}
+.mrow{cursor:pointer}.mrow:hover{background:var(--accent-soft)}.mrow.on{background:var(--accent-soft);box-shadow:inset 3px 0 var(--sel)}
 .mrow .mn{color:var(--muted);min-width:26px}.mrow .mv{color:var(--measure);font-weight:600;flex:1}
 .x{border:0;background:none;cursor:pointer;color:var(--muted);font-size:12px;padding:2px 4px}
 .grow{display:grid;grid-template-columns:16px minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:2px 0;font-size:12px}
@@ -4541,7 +4542,7 @@ const I18N = {
     pTrim: 'Spustelėkite dalį, kurią norite pašalinti (iki artimiausių sankirtų)',
     pCham: 'Spustelėkite kampą arba pirmą liniją · atstumai {0} / {1} mm (įveskite 5 arba 5,8)',
     pFil: 'Spustelėkite kampą arba pirmą liniją · spindulys {0} mm (įveskite skaičių)', pSecond: 'Antra linija',
-    dimValue: 'Matmens reikšmė', dimEditTip: 'Įveskite naują reikšmę – figūra persitvarkys (Enter – taikyti, Esc – palikti)', dimBad: 'Reikšmė turi būti didesnė už 0', dimBroke: 'Kitaip nepavyko – pasikeitė ir kiti matmenys: {0}', dimFree: 'Matmuo nepririštas prie jokios figūros', dimCorner: 'Pririškite matmenį prie kampų ar galų, kad galėtumėte keisti figūrą', pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Padėkite matmenį (arba įveskite atstumą) · H horiz. · V vert. · A lygiagretus',
+    dimValue: 'Matmens reikšmė', dimEditTip: 'Įveskite naują reikšmę – figūra persitvarkys (Enter – taikyti, Esc – palikti)', dimBad: 'Reikšmė turi būti didesnė už 0', dimSel: 'Matmuo pažymėtas · Delete – ištrinti · dukart spustelėti – keisti reikšmę · = – sulyginti su kitais', dimEqual: 'Sulyginti su kitais matmenimis…', dimUnlink: 'Panaikinti lygybę', pEq: 'Spustelėkite matmenis, kurie turi būti lygūs pažymėtam (Esc – baigti)', eqDone: 'Sulyginta: {0}', dimDeleted: 'Matmuo ištrintas', dimEdit: 'Keisti reikšmę…', dimDelete: 'Ištrinti matmenį', dimDeleteAll: 'Ištrinti visus matmenis', dimHideAll: 'Slėpti matmenis', dimBroke: 'Kitaip nepavyko – pasikeitė ir kiti matmenys: {0}', dimFree: 'Matmuo nepririštas prie jokios figūros', dimCorner: 'Pririškite matmenį prie kampų ar galų, kad galėtumėte keisti figūrą', pM1: 'Matavimo pradžia', pM2: 'Matavimo pabaiga', pM3: 'Padėkite matmenį (arba įveskite atstumą) · H horiz. · V vert. · A lygiagretus',
     selection: 'Pasirinkta', nothingSel: 'Nieko nepažymėta.',
     tips: '<li><b>Ratukas</b> – priartinti, <b>vidurinis</b> arba <b>dešinys</b> mygtukas tempiant – slinkti, <b>Z</b> – visas vaizdas</li><li>Pažymėtą figūrą keiskite tempdami <b>rankenėles</b>. Kraštinės vidurio rankenėlė stumia visą kraštinę.</li><li>Apačioje įveskite: <code>50</code> – atstumas pelės kryptimi, <code>600,400</code> – poslinkis X,Y, <code>#0,0</code> – absoliuti vieta, <code>100&lt;45</code> – atstumas ir kampas</li><li>Galima skaičiuoti: <code>720-18*2</code></li><li>Dydį keiskite skiltyje <b>Dydis</b>: „Ištempti“ nekeičia skylių, nuožulų ir apvalinimų</li><li>Atidaro DXF, DWG ir 3D (STEP, IGES, STL, OBJ). Failą galima tiesiog nutempti į langą</li><li>Lapas su detalėmis: įrankis <b>Detalės lape</b> (G) – tempkite detales, R – pasukti</li>',
     W: 'Plotis', H: 'Aukštis', layer: 'Sluoksnis', layers: 'Sluoksniai', addLayer: 'Naujas sluoksnis', current: 'dabartinis',
@@ -4584,7 +4585,7 @@ const I18N = {
       + '<h4>Įrankiai</h4><kbd>V</kbd><span>Žymėti</span><kbd>G</kbd><span>Detalės lape (R pasukti, F apversti, rodyklės stumti, Ctrl+D kopija)</span><kbd>L P R C A</kbd><span>Linija, polilinija, stačiakampis, apskritimas, lankas</span><kbd>M K Q S I H</kbd><span>Perkelti, kopijuoti, pasukti, mastelis, veidrodis, ištempti</span><kbd>O T N F</kbd><span>Lygiagreti kopija, nukirpti, nuožula, apvalinimas</span><kbd>J X D U</kbd><span>Sujungti, išskaidyti, matmuo, kampas</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Atšaukti / grąžinti</span><kbd>Ctrl+S</kbd><span>Įrašyti DXF</span></div>',
     gSel: '', gSheet: 'Lapas', parts: 'Detalės lape', dim: 'Matmuo', angle: 'Kampas',
     joinedForEdit: 'Kontūrai sujungti redagavimui: {0} · G – atgal į detales', refilleted: 'Kampas pakeistas', notfillet: 'Tai ne apvalinimas tarp dviejų tiesių', movedBy: 'Perkelta: {0}, {1}', pMoveDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · paėmus už kampo – prisitraukia prie taškų', help_parts: 'Spustelėkite detalę ir tempkite. R – pasukti 90°, F – apversti, rodyklės – po 1 mm (Shift – 10 mm), Ctrl+D – kopija, Alt – be pritraukimo. Detalė nusidažo raudonai, jei persidengia ar išlenda už lapo.',
-    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją. Atsiradusiame langelyje įveskite naują reikšmę – linija ar figūra persitvarkys (kaip SolidWorks); dukart spustelėjus matmenį jį vėl galima keisti. Kryptis: pele aukščiau/žemiau – horizontalus, į šoną – vertikalus, tarp taškų – lygiagretus (H / V / A – priverstinai). Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
+    help_dim: 'Du taškai, tada trečiu spustelėjimu padėkite matmens liniją. Atsiradusiame langelyje įveskite naują reikšmę – linija ar figūra persitvarkys (kaip SolidWorks); dukart spustelėjus matmenį jį vėl galima keisti. Ištrinti: spustelėkite matmenį ir Delete (arba dešiniu pelės mygtuku → Ištrinti). Lygūs matmenys: pažymėkite matmenį, spauskite = ir spustelėkite kitus – jie liks lygūs ir keisis kartu. Kryptis: pele aukščiau/žemiau – horizontalus, į šoną – vertikalus, tarp taškų – lygiagretus (H / V / A – priverstinai). Vėliau ją galima patempti žymėjimo įrankiu. Į DXF neeksportuojamas.', help_angle: 'Spindulio taškas, viršūnė, antras spindulio taškas.',
     pParts: 'Spustelėkite detalę ir tempkite · R pasukti · F apversti · rodyklės – stumti', pPartDrag: 'Paleiskite, kur padėti · beveik tiesiai – užsifiksuoja 0°/90° · Alt – be pritraukimo',
     pAng1: 'Pirmo spindulio taškas', pAng2: 'Kampo viršūnė', pAng3: 'Antro spindulio taškas',
     measurements: 'Matavimai', hideDims: 'Slėpti', clearAll: 'Išvalyti', noMeas: 'Matavimų nėra',
@@ -4637,7 +4638,7 @@ const I18N = {
     pTrim: 'Click the part to remove (up to the nearest intersections)',
     pCham: 'Click a corner or the first line · distances {0} / {1} mm (type 5 or 5,8)',
     pFil: 'Click a corner or the first line · radius {0} mm (type a number)', pSecond: 'Second line',
-    dimValue: 'Dimension value', dimEditTip: 'Type a new value and the shape follows (Enter apply, Esc keep)', dimBad: 'The value must be greater than 0', dimBroke: 'No other way – other dimensions changed too: {0}', dimFree: 'This dimension is not attached to any shape', dimCorner: 'Attach the dimension to corners or ends to change the shape', pM1: 'Measure from', pM2: 'Measure to', pM3: 'Place the dimension (or type the distance) · H horizontal · V vertical · A aligned',
+    dimValue: 'Dimension value', dimEditTip: 'Type a new value and the shape follows (Enter apply, Esc keep)', dimBad: 'The value must be greater than 0', dimSel: 'Dimension selected · Delete removes it · double-click changes the value · = makes others equal', dimEqual: 'Make other dimensions equal…', dimUnlink: 'Remove equal link', pEq: 'Click the dimensions that should equal the selected one (Esc to finish)', eqDone: 'Set equal: {0}', dimDeleted: 'Dimension deleted', dimEdit: 'Change value…', dimDelete: 'Delete dimension', dimDeleteAll: 'Delete all dimensions', dimHideAll: 'Hide dimensions', dimBroke: 'No other way – other dimensions changed too: {0}', dimFree: 'This dimension is not attached to any shape', dimCorner: 'Attach the dimension to corners or ends to change the shape', pM1: 'Measure from', pM2: 'Measure to', pM3: 'Place the dimension (or type the distance) · H horizontal · V vertical · A aligned',
     selection: 'Selection', nothingSel: 'Nothing selected.',
     tips: '<li><b>Wheel</b> zooms, drag with the <b>middle</b> or <b>right</b> button to pan, <b>Z</b> zooms to everything</li><li>Drag the <b>grips</b> of a selected shape. The midpoint grip of an edge moves the whole edge.</li><li>Type at the bottom: <code>50</code> – distance in the mouse direction, <code>600,400</code> – offset X,Y, <code>#0,0</code> – absolute, <code>100&lt;45</code> – distance and angle</li><li>Math works: <code>720-18*2</code></li><li>Change sizes in <b>Size</b>: “Stretch” keeps holes, chamfers and fillets unchanged</li><li>Opens DXF, DWG and 3D (STEP, IGES, STL, OBJ). Just drop a file on the window</li><li>Sheets with parts: the <b>Parts on sheet</b> tool (G) – drag parts, R rotates</li>',
     W: 'Width', H: 'Height', layer: 'Layer', layers: 'Layers', addLayer: 'New layer', current: 'current',
@@ -4680,7 +4681,7 @@ const I18N = {
       + '<h4>Tools</h4><kbd>V</kbd><span>Select</span><kbd>G</kbd><span>Parts on sheet (R rotate, F flip, arrows nudge, Ctrl+D copy)</span><kbd>L P R C A</kbd><span>Line, polyline, rectangle, circle, arc</span><kbd>M K Q S I H</kbd><span>Move, copy, rotate, scale, mirror, stretch</span><kbd>O T N F</kbd><span>Offset, trim, chamfer, fillet</span><kbd>J X D U</kbd><span>Join, explode, dimension, angle</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Undo / redo</span><kbd>Ctrl+S</kbd><span>Save DXF</span></div>',
     gSel: '', gSheet: 'Sheet', parts: 'Parts on sheet', dim: 'Dimension', angle: 'Angle',
     joinedForEdit: 'Contours joined for editing: {0} · G – back to the parts', refilleted: 'Corner changed', notfillet: 'This is not a fillet between two straight edges', movedBy: 'Moved by {0}, {1}', pMoveDrag: 'Release to place · almost straight locks to 0°/90° · grab by a corner to snap to points', help_parts: 'Click a part and drag it. R rotates 90°, F flips, arrows nudge 1 mm (Shift 10 mm), Ctrl+D copies, hold Alt to drag without snapping. A part turns red when it overlaps another or leaves the sheet.',
-    help_dim: 'Two points, then a third click places the dimension line. Type a new value in the box that pops up and the line or shape follows (like SolidWorks); double-click a dimension to change it again. Direction: move above/below for horizontal, to the side for vertical, between the points for aligned (H / V / A to force). Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
+    help_dim: 'Two points, then a third click places the dimension line. Type a new value in the box that pops up and the line or shape follows (like SolidWorks); double-click a dimension to change it again. To delete one: click it and press Delete (or right-click → Delete). Equal dimensions: select one, press = and click the others – they stay equal and change together. Direction: move above/below for horizontal, to the side for vertical, between the points for aligned (H / V / A to force). Drag it later with the select tool. It is not exported to DXF.', help_angle: 'Point on the first ray, the vertex, a point on the second ray.',
     pParts: 'Click a part and drag · R rotate · F flip · arrows nudge', pPartDrag: 'Release to place · almost straight locks to 0°/90° · Alt disables snapping',
     pAng1: 'Point on the first ray', pAng2: 'Vertex', pAng3: 'Point on the second ray',
     measurements: 'Measurements', hideDims: 'Hide', clearAll: 'Clear all', noMeas: 'No measurements yet',
@@ -5439,8 +5440,10 @@ const TOOLS = {
     noSnap() { return !!(this.mv && this.mv.moved && !this.mv.strong); },
     down(p, info) {
       // an armed grip is placed by a click; pressing and dragging instead disarms it and works as usual (no accidental reshapes)
+      if (S.eqPick) { eqPickAt(info.screen); return; }
       if (this.hot && !this.dragging) { this.pending = { p, info }; return; }
-      const dm = hitDim(info.screen); if (dm) { this.dimDrag = dm; this.dimOff0 = dm.off; return; }
+      const dm = !S.dimsHidden && hitDim(info.screen); if (dm) { this.dimDrag = dm; this.dimOff0 = dm.off; return; }
+      if (S.selDim) { S.selDim = null; renderDims(); requestDraw(); }
       const g = hitGrip(info.screen);
       if (g) { this.hot = g; this.dragging = true; S.hover = null; updatePrompt(); return; }
       const ch = !info.shift && !info.ctrl ? centerHandle() : null;
@@ -5463,11 +5466,16 @@ const TOOLS = {
         else pick = { start: pp.info.screen };
         return;
       }
-      if (this.dimDrag) this.dimDrag.off = dimOffsetFor(this.dimDrag, S.world);
+      if (this.dimDrag && this.dimDrag.k === 'd' && downInfo && downInfo.moved) this.dimDrag.off = dimOffsetFor(this.dimDrag, S.world);
       if (this.mv && !this.mv.moved && downInfo && downInfo.moved) { this.mv.moved = true; updatePrompt(); }
     },
     up(p, info) {
-      if (this.dimDrag) { const m = this.dimDrag, o1 = m.off; this.dimDrag = null; if (Math.abs(o1 - this.dimOff0) > 1e-9) { m.off = this.dimOff0; pushUndo(); m.off = o1; updateInfo(); } saveDims(); return; }
+      if (this.dimDrag) {
+        const m = this.dimDrag, o1 = m.off; this.dimDrag = null;
+        if (m.k === 'd' && Math.abs(o1 - this.dimOff0) > 1e-9) { m.off = this.dimOff0; pushUndo(); m.off = o1; updateInfo(); saveDims(); }
+        else { selectDim(m); } // a click (no drag) selects the dimension: Delete removes it, double-click changes it
+        return;
+      }
       if (this.pending) { this.pending = null; this.place(p); return; }
       if (this.mv) {
         const mv = this.mv; this.mv = null; updatePrompt();
@@ -5659,6 +5667,7 @@ function moveTool(copy) {
 }
 function setTool(name) {
   if (!TOOLS[name]) return;
+  S.eqPick = null;
   if (tool && tool.cancel && tool.name !== name) tool.cancel();
   S.hover = null; boxDrag = null; pick = null; S.measure = null;
   if (name !== 'select') S.lastTool = name;
@@ -5669,10 +5678,12 @@ function setTool(name) {
 }
 function resetTool() { if (tool) setTool(tool.name === 'select' ? 'select' : tool.name); }
 function updatePrompt() {
-  let p = tool.phase === 'pick' ? t('pickObj') : tool.prompt();
+  let p = S.eqPick ? t('pEq') : tool.phase === 'pick' ? t('pickObj') : tool.prompt();
   $('prompt').textContent = (tool.name !== 'select' ? t(tool.name) + ': ' : '') + p;
 }
 function escapeKey() {
+  if (S.eqPick) { endEqPick(); return; }
+  if (S.selDim) { S.selDim = null; renderDims(); requestDraw(); if (tool.name === 'select') return; }
   if (tool.name === 'parts') { tool.cancel(); if (S.sel.size) { S.sel.clear(); selChanged(); } updatePrompt(); requestDraw(); return; } // the sheet mode stays; Esc only drops the selection
   if (tool.phase === 'pick' || tool.name !== 'select') { const kept = tool.cancel && tool.cancel(); if (!kept || tool.name !== 'select') setTool('select'); }
   else tool.esc();
@@ -5685,6 +5696,7 @@ function confirmKey() {
 }
 function runAction(a) {
   const list = selEnts();
+  if (a === 'del' && selDimOk()) return delDim(S.selDim);
   if (a === 'del') { if (!list.length) return toast(t('needSel'), true); pushUndo(); removeIds(list.map(e => e.id)); commit(); toast(t('deleted', list.length)); return; }
   if (a === 'explode') {
     const polys = list.filter(e => e.type === 'poly'); if (!polys.length) return toast(list.length ? t('noExplode') : t('needSel'), true);
@@ -6091,10 +6103,11 @@ cmd.addEventListener('keydown', ev => {
   if (ev.key === 'Enter') { ev.preventDefault(); onCmd(); return; }
   if (ev.key === 'Escape') { ev.preventDefault(); if (!$('helpOverlay').hidden) { closeHelp(); return; } if (!$('ctx').hidden) { closeCtx(); return; } if (cmd.value) { cmd.value = ''; requestDraw(); return; } escapeKey(); return; }
   if (!cmd.value && tool.onKey && tool.onKey(ev)) { ev.preventDefault(); ev.stopPropagation(); return; }
+  if (!cmd.value && ev.key === '=' && tool.name === 'select' && selDimOk()) { ev.preventDefault(); startEqPick(S.selDim); return; }
   if (cmd.value) return;
   if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
   if (ev.key === 'Backspace' && stepBack()) { ev.preventDefault(); return; }
-  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); if (S.sel.size) runAction('del'); return; }
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); if (S.sel.size || selDimOk()) runAction('del'); return; }
   if (ev.key.length === 1 && /[a-zA-Z]/.test(ev.key)) { ev.preventDefault(); const tn = SHORT[ev.key.toLowerCase()]; if (tn) runShortcut(tn); }
 });
 // while a dialog is open the drawing underneath must not react to keys
@@ -6123,7 +6136,7 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'F10') { ev.preventDefault(); S.polar = !S.polar; LS.set('dxfed.polar', S.polar); syncToggles(); toast(t(S.polar ? 'polarOn' : 'polarOff')); requestDraw(); return; }
   if (ev.key === 'Shift') { S.shift = true; requestDraw(); }
   if (ev.key === 'Backspace' && tg !== cmd && !textField && !ev.ctrlKey && !ev.metaKey && !ev.altKey && stepBack()) { ev.preventDefault(); return; }
-  if ((ev.key === 'Delete' || ev.key === 'Backspace') && tg !== cmd && !textField && !ev.ctrlKey && !ev.metaKey && !ev.altKey && S.sel.size) { ev.preventDefault(); runAction('del'); focusCmd(); return; }
+  if ((ev.key === 'Delete' || ev.key === 'Backspace') && tg !== cmd && !textField && !ev.ctrlKey && !ev.metaKey && !ev.altKey && (S.sel.size || selDimOk())) { ev.preventDefault(); runAction('del'); focusCmd(); return; }
   if (inField) return;
   if (ev.key === 'Tab' && S.snapCands && S.snapCands.length > 1 && S.mouse && S.mouse.inside) { ev.preventDefault(); S.snapPick = (S.snapPick || 0) + 1; updateSnapNow(); requestDraw(); return; }
   if (tool.onKey && tool.onKey(ev)) { ev.preventDefault(); return; }
@@ -6132,7 +6145,8 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'Enter') { if (onButton) return; ev.preventDefault(); confirmKey(); return; }
   if (ev.key === ' ') { if (onButton) return; ev.preventDefault(); if (!ev.repeat && !S.space) { S.space = { panned: false, panning: false }; updateCursor(); } return; }
   if (ev.key === '?' || ev.key === 'F1') { ev.preventDefault(); openHelp(); return; }
-  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); if (S.sel.size) runAction('del'); return; }
+  if (ev.key === '=' && tool.name === 'select' && selDimOk()) { ev.preventDefault(); startEqPick(S.selDim); return; }
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); if (S.sel.size || selDimOk()) runAction('del'); return; }
   if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && ev.key.length === 1) {
     if (/[a-zA-Z]/.test(ev.key)) { ev.preventDefault(); const tn = SHORT[k]; if (tn) runShortcut(tn); return; }
     cmd.focus(); // digits, @, #, -, ( go to the command line
@@ -6147,6 +6161,8 @@ window.addEventListener('blur', () => { S.shift = false; S.alt = false; S.space 
 const ptrs = new Map(); let pan = null, rdown = null, pinch = null, downInfo = null;
 // right-click on something that is not selected selects it first (the menu then acts on what was clicked)
 function ctxPick(w) {
+  S.ctxDim = null;
+  if (tool.name !== 'parts' && S.mouse && !S.dimsHidden) { const dm = hitDim(w2s(w)); if (dm) { S.ctxDim = dm; selectDim(dm, true); return; } }
   if (tool.name === 'parts') { const P = partAt(w); if (P && !partSelected(P)) selectParts([P]); return; }
   const under = hitAll(w); if (under.length && !under.some(e => S.sel.has(e.id))) { S.sel.clear(); S.sel.add(under[0].id); selChanged(); }
 }
@@ -6215,6 +6231,7 @@ ov.addEventListener('pointermove', ev => {
   if (pick && downInfo && downInfo.moved) boxDrag = { a: pick.start, b: sp };
   updateSnapNow(); updateHover();
   S.gripHover = tool.name === 'select' && !tool.hot && !downInfo ? hitGrip(sp) : null;
+  S.hoverDim = (tool.name === 'select' && !tool.hot) || (tool.name === 'dim' && !tool.pts.length) ? (!downInfo && !S.dimsHidden && hitDim(sp)) || null : null;
   S.insideSel = false; { const ch = !downInfo ? centerHandle() : null; S.centerHover = !!(ch && vdist(w2s(ch), sp) <= 11); }
   S.hoverPart = tool.name === 'parts' && !(tool.drag && tool.drag.moved) ? (partAt(S.world) || null) : null;
   if (S.space && downInfo == null && pan) S.space.panning = true;
@@ -6226,7 +6243,7 @@ ov.addEventListener('pointerup', ev => {
   const sp = screenOf(ev); ptrs.delete(ev.pointerId);
   if (pinch) { if (ptrs.size < 2) pinch = null; return; }
   if (pan) { pan = null; if (S.space) S.space.panning = false; updateCursor(); return; }
-  if (rdown) { const r = rdown; rdown = null; updateCursor(); if (!r.moved) { if ((tool.name === 'select' && !tool.hot) || (tool.name === 'parts' && !tool.drag)) { ctxPick(s2w(sp.x, sp.y)); openCtx(ev.clientX, ev.clientY); } else confirmKey(); } return; }
+  if (rdown) { const r = rdown; rdown = null; updateCursor(); if (!r.moved) { if ((tool.name === 'select' && !tool.hot) || (tool.name === 'parts' && !tool.drag) || (tool.name === 'dim' && !tool.pts.length && !S.dimsHidden && hitDim(sp))) { ctxPick(s2w(sp.x, sp.y)); openCtx(ev.clientX, ev.clientY); } else confirmKey(); } return; }
   if (!downInfo) return;
   const info = { ...downInfo, screen: sp, world: s2w(sp.x, sp.y), shift: ev.shiftKey, ctrl: ev.ctrlKey || ev.metaKey, moved: downInfo.moved };
   downInfo = null;
@@ -7661,14 +7678,22 @@ function dimScreen(m) {
   const g = dimWorld(m), a = w2s(m.a), b = w2s(m.b), q1 = w2s(g.q1), q2 = w2s(g.q2), dx = q2.x - q1.x, dy = q2.y - q1.y, len = Math.hypot(dx, dy) || 1;
   return { a, b, ax: q1.x, ay: q1.y, bx: q2.x, by: q2.y, nx: -dy / len, ny: dx / len, ang: Math.atan2(dy, dx), val: g.val };
 }
-function dimLabel(c, x, y, ang, text) {
+const DIM_LAB = new WeakMap(); // where each dimension's value label was last drawn (screen), for picking
+function dimLabel(c, x, y, ang, text, color, m) {
   c.save(); c.translate(x, y); let a = ang; if (a > PI / 2) a -= PI; if (a < -PI / 2) a += PI; c.rotate(a);
   c.font = '600 11px ' + getComputedStyle(document.body).getPropertyValue('--mono');
   const w = c.measureText(text).width; c.fillStyle = col.panel; c.globalAlpha = .92; c.fillRect(-w / 2 - 5, -17, w + 10, 15); c.globalAlpha = 1;
-  c.fillStyle = col.measure; c.textAlign = 'center'; c.textBaseline = 'bottom'; c.fillText(text, 0, -4); c.restore();
+  c.fillStyle = color || col.measure; c.textAlign = 'center'; c.textBaseline = 'bottom'; c.fillText(text, 0, -4); c.restore();
+  if (m) DIM_LAB.set(m, { x, y, a, w });
+}
+function hitLabel(m, sp) {
+  const L = DIM_LAB.get(m); if (!L) return false;
+  const dx = sp.x - L.x, dy = sp.y - L.y, ca = Math.cos(L.a), sa = Math.sin(L.a), u = dx * ca + dy * sa, v = -dx * sa + dy * ca;
+  return Math.abs(u) <= L.w / 2 + 7 && v >= -19 && v <= 0;
 }
 function drawDim(c, m) {
-  c.save(); c.strokeStyle = col.measure; c.fillStyle = col.measure; c.lineWidth = 1.2; c.setLineDash([]);
+  const hl = m === S.selDim ? col.sel : null;
+  c.save(); c.strokeStyle = c.fillStyle = hl || col.measure; c.lineWidth = hl ? 2.2 : m === S.hoverDim ? 2 : 1.2; c.setLineDash([]);
   if (m.k === 'd') {
     const g = dimScreen(m);
     c.beginPath();
@@ -7680,7 +7705,8 @@ function drawDim(c, m) {
     for (const p of [g.a, g.b]) { c.beginPath(); c.arc(p.x, p.y, 2.5, 0, TAU); c.fill(); }
     const dx = Math.abs(m.b.x - m.a.x), dy = Math.abs(m.b.y - m.a.y);
     let txt = fmt(g.val, 2); if (!m.dir && dx > 1e-6 && dy > 1e-6) txt += `  (${fmt(dx, 2)} × ${fmt(dy, 2)})`;
-    dimLabel(c, (g.ax + g.bx) / 2, (g.ay + g.by) / 2, g.ang, txt);
+    if (m.eq) txt += '  =' + eqNo(m);
+    dimLabel(c, (g.ax + g.bx) / 2, (g.ay + g.by) / 2, g.ang, txt, hl, m);
   } else if (m.k === 'a') {
     const a = w2s(m.a), v = w2s(m.v), b = w2s(m.b);
     c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(v.x, v.y); c.lineTo(b.x, b.y); c.stroke();
@@ -7688,15 +7714,27 @@ function drawDim(c, m) {
     let d = r2 - r1; while (d > PI) d -= TAU; while (d < -PI) d += TAU;
     c.beginPath(); c.arc(v.x, v.y, 28, r1, r1 + d, d < 0); c.stroke();
     const mid = r1 + d / 2;
-    dimLabel(c, v.x + Math.cos(mid) * 46, v.y + Math.sin(mid) * 46 + 8, 0, fmt(angleOf(m), 2) + '°');
+    dimLabel(c, v.x + Math.cos(mid) * 46, v.y + Math.sin(mid) * 46 + 8, 0, fmt(angleOf(m), 2) + '°', hl, m);
     for (const p of [a, v, b]) { c.beginPath(); c.arc(p.x, p.y, 2.5, 0, TAU); c.fill(); }
   }
   c.restore();
 }
 function angleOf(m) { let d = Math.abs(deg(Math.atan2(m.b.y - m.v.y, m.b.x - m.v.x) - Math.atan2(m.a.y - m.v.y, m.a.x - m.v.x))); if (d > 180) d = 360 - d; return d; }
+// a dimension is picked by its line, its extension lines or its value label (the closest one wins)
 function hitDim(sp) {
-  for (let i = S.dims.length - 1; i >= 0; i--) { const m = S.dims[i]; if (m.k !== 'd') continue; const g = dimScreen(m); if (distSeg(sp, { x: g.ax, y: g.ay }, { x: g.bx, y: g.by }) <= 7) return m; }
-  return null;
+  let best = null, bd = Infinity;
+  for (let i = S.dims.length - 1; i >= 0; i--) {
+    const m = S.dims[i]; let d = Infinity;
+    if (m.k === 'd') {
+      const g = dimScreen(m), q1 = { x: g.ax, y: g.ay }, q2 = { x: g.bx, y: g.by }, dl = distSeg(sp, q1, q2), de = Math.min(distSeg(sp, g.a, q1), distSeg(sp, g.b, q2));
+      if (dl <= 7) d = dl; if (de <= 4) d = Math.min(d, de + 1); if (hitLabel(m, sp)) d = Math.min(d, 2.5);
+    } else if (m.k === 'a') {
+      const a = w2s(m.a), v = w2s(m.v), b = w2s(m.b), de = Math.min(distSeg(sp, a, v), distSeg(sp, b, v));
+      if (de <= 4) d = de + 1; if (hitLabel(m, sp)) d = Math.min(d, 2.5);
+    }
+    if (d < bd) { bd = d; best = m; }
+  }
+  return best;
 }
 function dimOffsetFor(m, w) {
   if (m.dir === 'h') return w.y - m.a.y; if (m.dir === 'v') return w.x - m.a.x;
@@ -7813,7 +7851,7 @@ const dvVal = dm => dm.k === 'd' ? dimWorld(dm).val : angleOf(dm);
 // returns { r: 'ok' | 'same' | 'bad' | 'free' | 'corner', broke: n other dimensions that had to change }
 // Other dimensions count as constraints (like in SolidWorks): of the possible ways to reach the new value,
 // the one that keeps the most of them unchanged wins.
-function dimDrive(m, nv) {
+function dimDrive(m, nv, opt = {}) {
   const val = dimWorld(m).val;
   if (!(nv > 1e-9) || !isFinite(nv)) return { r: 'bad' };
   if (Math.abs(nv - val) < 1e-9) return { r: 'same' };
@@ -7845,7 +7883,7 @@ function dimDrive(m, nv) {
     if (Math.abs(dimWorld({ ...m, a: mp(m.a), b: mp(m.b) }).val - nv) > 1e-6) continue;
     let broke = 0;
     for (const dm of S.dims) {
-      if (dm === m) continue;
+      if (dm === m || (opt.skip && opt.skip.has(dm))) continue;
       const q = {}; let mv = false;
       for (const k of ['a', 'b', 'v']) if (dm[k]) { const r = c.ptMap(dm[k]); if (r) { q[k] = r; mv = true; } }
       if (mv && Math.abs(dvVal({ ...dm, ...q }) - dvVal(dm)) > 1e-6) broke++;
@@ -7855,7 +7893,7 @@ function dimDrive(m, nv) {
   }
   if (!best) return { r: 'corner' };
   const c = best.c;
-  pushUndo();
+  if (!opt.noUndo) pushUndo();
   if (c.radius) replaceEnt(c.radius.e.id, { ...c.radius.e, r: c.radius.r });
   else for (const e of c.targets) replaceEnt(e.id, dvClean(stretchEnt(e, c.entF)));
   // dimensions attached to the moved geometry follow it (the edited one ends up showing the new value)
@@ -7863,13 +7901,57 @@ function dimDrive(m, nv) {
   commit(); saveDims(); renderPanel(); updateInfo();
   return { r: 'ok', broke: best.broke };
 }
+/* ---------- equal dimensions: linked dimensions always share one value ---------- */
+const eqGroup = m => m && m.eq ? S.dims.filter(d => d.eq === m.eq) : [m];
+function eqNo(m) { const ids = []; for (const d of S.dims) if (d.eq && !ids.includes(d.eq)) ids.push(d.eq); return ids.indexOf(m.eq) + 1; }
+function cleanEq() { const n = new Map(); for (const d of S.dims) if (d.eq) n.set(d.eq, (n.get(d.eq) || 0) + 1); for (const d of S.dims) if (d.eq && n.get(d.eq) < 2) delete d.eq; }
+// set a value on a dimension and on every dimension equal to it
+function driveDim(m, v) {
+  const G = eqGroup(m), skip = new Set(G);
+  const R = dimDrive(m, v, { skip }); if (R.r !== 'ok' && R.r !== 'same') return R;
+  let undone = R.r === 'ok', broke = R.broke || 0, bad = null;
+  skip.delete(m); // from now on the edited one (and each one already done) must stay as it is
+  for (const d of G) {
+    if (d === m || d.k !== 'd') continue;
+    const r = dimDrive(d, v, { noUndo: undone, skip }); skip.delete(d);
+    if (r.r === 'ok') { undone = true; broke += r.broke || 0; } else if (r.r !== 'same') bad = r;
+  }
+  return bad && !undone ? bad : { r: undone ? 'ok' : 'same', broke: broke + (bad ? 1 : 0) };
+}
+function startEqPick(src) {
+  if (!src || src.k !== 'd') return;
+  S.eqPick = { src }; selectDim(src, true); toast(t('pEq')); updatePrompt();
+}
+function endEqPick() { if (!S.eqPick) return; S.eqPick = null; updatePrompt(); requestDraw(); }
+// a click while picking equal dimensions
+function eqPickAt(sp) {
+  const src = S.eqPick.src, dm = !S.dimsHidden && hitDim(sp);
+  if (!S.dims.includes(src) || !dm || dm.k !== 'd') { endEqPick(); return; }
+  if (dm === src || (src.eq && dm.eq === src.eq)) return;
+  const v = dimWorld(src).val, old = { s: src.eq, d: dm.eq }, nU = S.undo.length;
+  pushUndo();
+  if (!src.eq) src.eq = Math.max(0, ...S.dims.map(d => d.eq || 0)) + 1;
+  dm.eq = src.eq;
+  const r = dimDrive(dm, v, { noUndo: true });
+  if (r.r !== 'ok' && r.r !== 'same') { src.eq = old.s; dm.eq = old.d; if (!src.eq) delete src.eq; if (!dm.eq) delete dm.eq; S.undo.length = nU; toast(t(r.r === 'free' ? 'dimFree' : r.r === 'bad' ? 'dimBad' : 'dimCorner'), true); return; }
+  cleanEq(); saveDims(); renderDims(); requestDraw();
+  toast(r.broke ? t('dimBroke', r.broke) : t('eqDone', fmt(v, 2)), !!r.broke);
+}
+// picking / deleting a dimension
+function selDimOk() { if (S.selDim && !S.dims.includes(S.selDim)) S.selDim = null; return !!S.selDim && !S.dimsHidden; }
+function selectDim(m, quiet) { S.selDim = m; if (S.sel.size) { S.sel.clear(); selChanged(); } if (!quiet) toast(t('dimSel')); renderDims(); requestDraw(); }
+function delDim(m) {
+  const i = S.dims.indexOf(m); if (i < 0) return;
+  closeDimEdit(false); pushUndo(); updateInfo(); S.dims.splice(i, 1); cleanEq(); if (S.selDim === m) S.selDim = null; if (S.hoverDim === m) S.hoverDim = null;
+  saveDims(); renderDims(); requestDraw(); toast(t('dimDeleted'));
+}
 // SolidWorks-style "Modify" box over the dimension's value
 let dimEd = null;
 function closeDimEdit(apply) {
   const E = dimEd; if (!E) return; dimEd = null;
   if (apply && E.dirty) {
     const v = evalNum(E.inp.value);
-    const R = v === null ? { r: 'bad' } : dimDrive(E.m, v), r = R.r;
+    const R = v === null ? { r: 'bad' } : driveDim(E.m, v), r = R.r;
     if (r === 'bad') toast(t('dimBad'), true); else if (r === 'free') toast(t('dimFree'), true); else if (r === 'corner') toast(t('dimCorner'), true);
     else if (r === 'ok' && R.broke) toast(t('dimBroke', R.broke), true);
   }
@@ -7912,7 +7994,7 @@ function renderDims() {
   const el = $('measPanel'); if (!el) return;
   if (!S.dims.length) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
-  el.innerHTML = `<h3>${t('measurements')} <em>${S.dims.length}</em></h3><div class="mlist">${S.dims.map((m, i) => `<div class="mrow"><span class="mn">#${i + 1}</span><span class="mv">${m.k === 'd' ? (m.dir === 'h' ? '↔ ' : m.dir === 'v' ? '↕ ' : 'L ') + fmt(dimWorld(m).val, 2) : '∠ ' + fmt(angleOf(m), 2) + '°'}</span><button class="x" data-act="dimDel" data-i="${i}" aria-label="${t('del')}">✕</button></div>`).join('')}</div>
+  el.innerHTML = `<h3>${t('measurements')} <em>${S.dims.length}</em></h3><div class="mlist">${S.dims.map((m, i) => `<div class="mrow${m === S.selDim ? ' on' : ''}" data-act="dimPick" data-i="${i}"><span class="mn">#${i + 1}</span><span class="mv">${m.k === 'd' ? (m.dir === 'h' ? '↔ ' : m.dir === 'v' ? '↕ ' : 'L ') + fmt(dimWorld(m).val, 2) + (m.eq ? '  =' + eqNo(m) : '') : '∠ ' + fmt(angleOf(m), 2) + '°'}</span><button class="x" data-act="dimDel" data-i="${i}" aria-label="${t('del')}">✕</button></div>`).join('')}</div>
   <div class="row"><label class="chk"><input type="checkbox" id="dimsHide" ${S.dimsHidden ? 'checked' : ''}> ${t('hideDims')}</label><span class="spacer"></span><button class="btn small" data-act="dimClear">${t('clearAll')}</button></div>`;
 }
 
@@ -8258,7 +8340,8 @@ function renderPartsPanel() {
 }
 function extAction(b) {
   const a = b.dataset.act;
-  if (a === 'dimDel') { pushUndo(); updateInfo(); S.dims.splice(+b.dataset.i, 1); saveDims(); renderDims(); requestDraw(); return true; }
+  if (a === 'dimPick') { const m = S.dims[+b.dataset.i]; if (m) { S.dimsHidden = false; selectDim(m); } return true; }
+  if (a === 'dimDel') { pushUndo(); updateInfo(); S.dims.splice(+b.dataset.i, 1); cleanEq(); saveDims(); renderDims(); requestDraw(); return true; }
   if (a === 'dimClear') { if (!S.dims.length) return true; pushUndo(); updateInfo(); S.dims = []; saveDims(); renderDims(); requestDraw(); return true; }
   if (a === 'selHoles') { const d = +b.dataset.d; S.sel.clear(); for (const e of visEnts()) if (e.type === 'circle' && Math.abs(2 * e.r - d) < 0.006 && !ANNO_RX.test(e.layer)) S.sel.add(e.id); selChanged(); return true; }
   if (a === 'selDups') { S.sel.clear(); for (const id of dupIds()) S.sel.add(id); selChanged(); zoomToBB(bboxOf(selEnts())); return true; }
@@ -8312,6 +8395,16 @@ function closeCtx() { const m = $('ctx'); if (m && !m.hidden) { m.hidden = true;
 function openCtx(x, y) {
   const has = S.sel.size > 0, items = [];
   const it = (label, key, fn, off) => items.push({ label, key, fn, off });
+  const dm = S.ctxDim && S.dims.includes(S.ctxDim) ? S.ctxDim : null; S.ctxDim = null;
+  if (dm) {
+    if (dm.k === 'd') { it(t('dimEdit'), '', () => openDimEdit(dm)); it(t('dimEqual'), '=', () => startEqPick(dm)); }
+    if (dm.eq) it(t('dimUnlink'), '', () => { pushUndo(); delete dm.eq; cleanEq(); saveDims(); renderDims(); requestDraw(); });
+    it(t('dimDelete'), 'Del', () => delDim(dm));
+    items.push('-');
+    it(t('dimHideAll'), '', () => { S.dimsHidden = true; S.selDim = null; renderDims(); requestDraw(); });
+    it(t('dimDeleteAll'), '', () => { pushUndo(); updateInfo(); S.dims.length = 0; S.selDim = null; saveDims(); renderDims(); requestDraw(); });
+    return showCtx(x, y, items);
+  }
   if (S.lastTool && TOOLS[S.lastTool]) it(t('repeat', t(S.lastTool)), 'Enter', () => setTool(S.lastTool));
   it(t('undo'), 'Ctrl+Z', undoAction, !S.undo.length); it(t('redo'), 'Ctrl+Y', redo, !S.redo.length);
   items.push('-');
@@ -8327,6 +8420,9 @@ function openCtx(x, y) {
   it(t('selAll'), 'Ctrl+A', () => { for (const e of visEnts()) S.sel.add(e.id); selChanged(); });
   if (has) it(t('zoomSel'), '', () => zoomToBB(bboxOf(selEnts())));
   it(t('fit'), 'Z', fit);
+  showCtx(x, y, items);
+}
+function showCtx(x, y, items) {
   const m = $('ctx');
   m.innerHTML = items.map((o, i) => o === '-' ? '<hr>' : `<button type="button" role="menuitem" data-ci="${i}" ${o.off ? 'disabled' : ''}><span>${esc(o.label)}</span><kbd>${o.key}</kbd></button>`).join('');
   m.hidden = false;
