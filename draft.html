@@ -207,11 +207,12 @@ details.tips{margin-top:10px}details.tips summary{cursor:pointer;font-size:11px;
   .cmd #prompt{max-width:55%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.dblogo{display:inline-block;align-self:center;flex:none;color:var(--ink,currentColor);width:26px;height:26px;margin-right:8px;background:currentColor;-webkit-mask:url(https://gervdalius-droid.github.io/hub/shared/logo-mask.png) center/contain no-repeat;mask:url(https://gervdalius-droid.github.io/hub/shared/logo-mask.png) center/contain no-repeat}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand"><b>Draft</b><span class="ver" style="font-family:var(--mono);font-size:10px;color:var(--muted)">v3.0</span><span id="fname"></span></div>
+  <div class="brand"><i class="dblogo" role="img" aria-label="Dėdės Baldai"></i><b>Draft</b><span class="ver" style="font-family:var(--mono);font-size:10px;color:var(--muted)">v3.0</span><span id="fname"></span></div>
   <div class="seg" id="modeSeg"><button id="bMode2" class="on"><span class="lbl" data-i="m2d"></span><span class="sh">2D</span></button><button id="bMode3"><span class="lbl" data-i="m3d"></span><span class="sh">3D</span></button></div>
   <button class="btn primary" id="bOpen"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h5l2 2h7v8H3z"/></svg><span class="lbl" data-i="open"></span></button>
   <button class="btn only-2d" id="bIns"><span data-i="insert"></span></button>
